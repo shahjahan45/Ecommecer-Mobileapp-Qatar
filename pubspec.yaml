@@ -1,0 +1,22 @@
+name: ecommerce_mobile
+version: 1.4.5+8
+publish_to: 'none'
+
+description: Cumulative DCX Online Store Phase 4.5 with production-safe responsive bottom navigation, real-device layout fixes, authentication, home, categories, search, filters, sorting, and product browsing.
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
