@@ -42,8 +42,7 @@ class _VerificationPageState extends State<VerificationPage> {
     super.dispose();
   }
 
-  bool get _complete =>
-      _controllers.every((controller) => controller.text.length == 1);
+  bool get _complete => _controllers.every((controller) => controller.text.length == 1);
 
   Future<void> _verify() async {
     if (!_complete) {
@@ -78,7 +77,8 @@ class _VerificationPageState extends State<VerificationPage> {
     return AuthScaffold(
       showBackButton: true,
       title: 'Verify your account',
-      subtitle: 'Enter the six-digit verification code to continue securely.',
+      subtitle:
+          'Enter the six-digit verification code to continue securely.',
       child: Column(
         children: [
           Container(
@@ -89,8 +89,7 @@ class _VerificationPageState extends State<VerificationPage> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.alternate_email_rounded,
-                    color: AppColors.primary),
+                const Icon(Icons.alternate_email_rounded, color: AppColors.primary),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -151,8 +150,7 @@ class _VerificationPageState extends State<VerificationPage> {
               TextButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Demo verification code resent.')),
+                    const SnackBar(content: Text('Demo verification code resent.')),
                   );
                 },
                 child: const Text('Resend'),

@@ -106,8 +106,7 @@ class AppTheme {
           color: AppColors.textTertiary,
           fontSize: 14,
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 18, vertical: 17),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 17),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide: const BorderSide(color: AppColors.border),

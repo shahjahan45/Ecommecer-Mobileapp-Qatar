@@ -42,9 +42,7 @@ class _ProductGalleryState extends State<ProductGallery> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final galleryHeight = math
-            .min(math.max(constraints.maxWidth * 0.84, 275), 470)
-            .toDouble();
+        final galleryHeight = math.min(math.max(constraints.maxWidth * 0.84, 275), 470).toDouble();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,8 +52,7 @@ class _ProductGalleryState extends State<ProductGallery> {
               decoration: BoxDecoration(
                 color: product.softColor,
                 borderRadius: BorderRadius.circular(AppRadius.xxl),
-                border:
-                    Border.all(color: product.accent.withValues(alpha: 0.10)),
+                border: Border.all(color: product.accent.withValues(alpha: 0.10)),
                 boxShadow: AppShadows.soft,
               ),
               clipBehavior: Clip.antiAlias,
@@ -78,8 +75,7 @@ class _ProductGalleryState extends State<ProductGallery> {
                       top: 16,
                       left: 16,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
                           color: AppColors.danger,
                           borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -98,8 +94,7 @@ class _ProductGalleryState extends State<ProductGallery> {
                     right: 16,
                     bottom: 16,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.90),
                         borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -140,17 +135,14 @@ class _ProductGalleryState extends State<ProductGallery> {
                           color: product.softColor,
                           borderRadius: BorderRadius.circular(AppRadius.md),
                           border: Border.all(
-                            color: _index == index
-                                ? AppColors.primary
-                                : AppColors.border,
+                            color: _index == index ? AppColors.primary : AppColors.border,
                             width: _index == index ? 1.5 : 1,
                           ),
                         ),
                         alignment: Alignment.center,
                         child: Icon(
                           _iconForIndex(index),
-                          color: product.accent
-                              .withValues(alpha: _index == index ? 1 : 0.65),
+                          color: product.accent.withValues(alpha: _index == index ? 1 : 0.65),
                           size: 27,
                         ),
                       ),
@@ -232,11 +224,7 @@ class _GalleryVisual extends StatelessWidget {
         ),
         Center(
           child: Transform.rotate(
-            angle: index == 0
-                ? -0.08
-                : index == 1
-                    ? 0.08
-                    : 0,
+            angle: index == 0 ? -0.08 : index == 1 ? 0.08 : 0,
             child: Icon(
               icon,
               size: index == 0 ? 124 : 104,

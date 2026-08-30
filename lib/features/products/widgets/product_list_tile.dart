@@ -77,8 +77,7 @@ class _ProductListTileState extends State<ProductListTile> {
                       top: 8,
                       left: 8,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
                         decoration: BoxDecoration(
                           color: AppColors.danger,
                           borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -125,13 +124,9 @@ class _ProductListTileState extends State<ProductListTile> {
                           child: AnimatedSwitcher(
                             duration: AppMotion.fast,
                             child: Icon(
-                              _favorite
-                                  ? Icons.favorite_rounded
-                                  : Icons.favorite_border_rounded,
+                              _favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                               key: ValueKey(_favorite),
-                              color: _favorite
-                                  ? AppColors.danger
-                                  : AppColors.textSecondary,
+                              color: _favorite ? AppColors.danger : AppColors.textSecondary,
                               size: 20,
                             ),
                           ),
@@ -153,13 +148,11 @@ class _ProductListTileState extends State<ProductListTile> {
                   const SizedBox(height: 7),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded,
-                          color: AppColors.star, size: 16),
+                      const Icon(Icons.star_rounded, color: AppColors.star, size: 16),
                       const SizedBox(width: 3),
                       Text(
                         product.rating.toStringAsFixed(1),
-                        style: const TextStyle(
-                            fontSize: 11, fontWeight: FontWeight.w900),
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -172,20 +165,15 @@ class _ProductListTileState extends State<ProductListTile> {
                       ),
                       const Spacer(),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
                         decoration: BoxDecoration(
-                          color: product.inStock
-                              ? AppColors.successSoft
-                              : AppColors.dangerSoft,
+                          color: product.inStock ? AppColors.successSoft : AppColors.dangerSoft,
                           borderRadius: BorderRadius.circular(AppRadius.pill),
                         ),
                         child: Text(
                           product.inStock ? 'In stock' : 'Out of stock',
                           style: TextStyle(
-                            color: product.inStock
-                                ? AppColors.success
-                                : AppColors.danger,
+                            color: product.inStock ? AppColors.success : AppColors.danger,
                             fontSize: 8.5,
                             fontWeight: FontWeight.w900,
                           ),
@@ -203,8 +191,7 @@ class _ProductListTileState extends State<ProductListTile> {
                           children: [
                             Text(
                               '${AppConstants.currency} ${product.price.toStringAsFixed(0)}',
-                              style: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w900),
+                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
                             ),
                             if (product.oldPrice != null) ...[
                               const SizedBox(width: 6),
@@ -231,18 +218,14 @@ class _ProductListTileState extends State<ProductListTile> {
                           height: 36,
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           decoration: BoxDecoration(
-                            color: product.inStock
-                                ? AppColors.primary
-                                : AppColors.surfaceStrong,
+                            color: product.inStock ? AppColors.primary : AppColors.surfaceStrong,
                             borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                           alignment: Alignment.center,
                           child: Text(
                             product.inStock ? 'Add' : 'Unavailable',
                             style: TextStyle(
-                              color: product.inStock
-                                  ? Colors.white
-                                  : AppColors.textTertiary,
+                              color: product.inStock ? Colors.white : AppColors.textTertiary,
                               fontSize: 10.5,
                               fontWeight: FontWeight.w900,
                             ),

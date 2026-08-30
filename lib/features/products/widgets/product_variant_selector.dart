@@ -28,8 +28,7 @@ class ProductVariantSelector extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                    fontSize: 13.5, fontWeight: FontWeight.w900),
+                style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900),
               ),
             ),
             Text(
@@ -57,14 +56,10 @@ class ProductVariantSelector extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: AppMotion.fast,
                   curve: AppMotion.standardCurve,
-                  constraints:
-                      const BoxConstraints(minWidth: 52, minHeight: 42),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+                  constraints: const BoxConstraints(minWidth: 52, minHeight: 42),
+                  padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
                   decoration: BoxDecoration(
-                    color: selected
-                        ? AppColors.primarySoft
-                        : AppColors.surfaceMuted,
+                    color: selected ? AppColors.primarySoft : AppColors.surfaceMuted,
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                     border: Border.all(
                       color: selected ? AppColors.primary : AppColors.border,
@@ -75,8 +70,7 @@ class ProductVariantSelector extends StatelessWidget {
                   child: Text(
                     options[index],
                     style: TextStyle(
-                      color:
-                          selected ? AppColors.primary : AppColors.textPrimary,
+                      color: selected ? AppColors.primary : AppColors.textPrimary,
                       fontSize: 11,
                       fontWeight: FontWeight.w900,
                     ),

@@ -99,20 +99,15 @@ class _ProductCardState extends State<ProductCard> {
                         alignment: Alignment.center,
                         child: AnimatedSwitcher(
                           duration: AppMotion.fast,
-                          transitionBuilder: (child, animation) =>
-                              ScaleTransition(
+                          transitionBuilder: (child, animation) => ScaleTransition(
                             scale: animation,
                             child: child,
                           ),
                           child: Icon(
-                            _favorite
-                                ? Icons.favorite_rounded
-                                : Icons.favorite_border_rounded,
+                            _favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                             key: ValueKey(_favorite),
                             size: 19,
-                            color: _favorite
-                                ? AppColors.danger
-                                : AppColors.textPrimary,
+                            color: _favorite ? AppColors.danger : AppColors.textPrimary,
                           ),
                         ),
                       ),
@@ -123,8 +118,7 @@ class _ProductCardState extends State<ProductCard> {
                       top: 10,
                       left: 10,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 9, vertical: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                         decoration: BoxDecoration(
                           color: product.discountPercent > 0
                               ? AppColors.danger
@@ -176,13 +170,11 @@ class _ProductCardState extends State<ProductCard> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded,
-                          color: AppColors.star, size: 17),
+                      const Icon(Icons.star_rounded, color: AppColors.star, size: 17),
                       const SizedBox(width: 3),
                       Text(
                         product.rating.toStringAsFixed(1),
-                        style: const TextStyle(
-                            fontSize: 11.5, fontWeight: FontWeight.w800),
+                        style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -229,16 +221,11 @@ class _ProductCardState extends State<ProductCard> {
                           width: 38,
                           height: 38,
                           decoration: BoxDecoration(
-                            color: product.inStock
-                                ? AppColors.primary
-                                : AppColors.surfaceStrong,
+                            color: product.inStock ? AppColors.primary : AppColors.surfaceStrong,
                             borderRadius: BorderRadius.circular(AppRadius.sm),
                             boxShadow: [
                               BoxShadow(
-                                color: (product.inStock
-                                        ? AppColors.primary
-                                        : AppColors.surfaceStrong)
-                                    .withValues(alpha: .24),
+                                color: (product.inStock ? AppColors.primary : AppColors.surfaceStrong).withValues(alpha: .24),
                                 blurRadius: 14,
                                 offset: const Offset(0, 6),
                               ),
@@ -246,12 +233,8 @@ class _ProductCardState extends State<ProductCard> {
                           ),
                           alignment: Alignment.center,
                           child: Icon(
-                            product.inStock
-                                ? Icons.add_rounded
-                                : Icons.block_rounded,
-                            color: product.inStock
-                                ? Colors.white
-                                : AppColors.textTertiary,
+                            product.inStock ? Icons.add_rounded : Icons.block_rounded,
+                            color: product.inStock ? Colors.white : AppColors.textTertiary,
                             size: 21,
                           ),
                         ),

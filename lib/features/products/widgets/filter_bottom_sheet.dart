@@ -91,10 +91,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     Expanded(
                       child: Text(
                         'Filter products',
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                ),
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w900,
+                            ),
                       ),
                     ),
                     TextButton(onPressed: _reset, child: const Text('Reset')),
@@ -145,15 +144,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (rating != 0) ...[
-                            const Icon(Icons.star_rounded,
-                                size: 16, color: AppColors.star),
+                            const Icon(Icons.star_rounded, size: 16, color: AppColors.star),
                             const SizedBox(width: 4),
                           ],
                           Text(label),
                         ],
                       ),
-                      onSelected: (_) =>
-                          setState(() => _rating = rating.toDouble()),
+                      onSelected: (_) => setState(() => _rating = rating.toDouble()),
                     );
                   }).toList(),
                 ),
@@ -320,9 +317,7 @@ class _FilterSwitch extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w800)),
+                Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,

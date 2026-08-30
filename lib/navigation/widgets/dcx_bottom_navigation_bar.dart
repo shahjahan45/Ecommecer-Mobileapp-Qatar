@@ -34,8 +34,9 @@ class DcxBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final safePosition =
-        position.clamp(0.0, (items.length - 1).toDouble()).toDouble();
+    final safePosition = position
+        .clamp(0.0, (items.length - 1).toDouble())
+        .toDouble();
 
     return SafeArea(
       top: false,
@@ -74,8 +75,7 @@ class DcxBottomNavigationBar extends StatelessWidget {
                               color: AppColors.primarySoft,
                               borderRadius: BorderRadius.circular(19),
                               border: Border.all(
-                                color:
-                                    AppColors.primary.withValues(alpha: 0.08),
+                                color: AppColors.primary.withValues(alpha: 0.08),
                               ),
                             ),
                           ),
@@ -145,8 +145,7 @@ class _NavigationButton extends StatelessWidget {
                     return FadeTransition(
                       opacity: animation,
                       child: ScaleTransition(
-                        scale: Tween<double>(begin: 0.82, end: 1)
-                            .animate(animation),
+                        scale: Tween<double>(begin: 0.82, end: 1).animate(animation),
                         child: child,
                       ),
                     );
@@ -155,8 +154,7 @@ class _NavigationButton extends StatelessWidget {
                     selected ? item.selectedIcon : item.icon,
                     key: ValueKey('${item.label}-$selected'),
                     size: 22,
-                    color:
-                        selected ? AppColors.primary : AppColors.textSecondary,
+                    color: selected ? AppColors.primary : AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 3),
@@ -168,12 +166,9 @@ class _NavigationButton extends StatelessWidget {
                       duration: const Duration(milliseconds: 220),
                       curve: Curves.easeOutCubic,
                       style: TextStyle(
-                        color: selected
-                            ? AppColors.primary
-                            : AppColors.textSecondary,
+                        color: selected ? AppColors.primary : AppColors.textSecondary,
                         fontSize: 10.5,
-                        fontWeight:
-                            selected ? FontWeight.w800 : FontWeight.w600,
+                        fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                       ),
                       child: Text(
                         item.label,

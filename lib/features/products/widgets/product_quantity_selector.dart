@@ -40,8 +40,7 @@ class ProductQuantitySelector extends StatelessWidget {
                 '$value',
                 key: ValueKey(value),
                 textAlign: TextAlign.center,
-                style:
-                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
               ),
             ),
           ),

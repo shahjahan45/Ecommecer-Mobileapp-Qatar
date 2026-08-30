@@ -17,8 +17,7 @@ void main() {
   ];
 
   for (final size in sizes) {
-    testWidgets(
-        'product details stays responsive at ${size.width}x${size.height}',
+    testWidgets('product details stays responsive at ${size.width}x${size.height}',
         (tester) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;

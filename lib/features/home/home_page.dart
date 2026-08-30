@@ -29,8 +29,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final PageController _bannerController =
-      PageController(viewportFraction: .94);
+  final PageController _bannerController = PageController(viewportFraction: .94);
   Timer? _bannerTimer;
   int _bannerIndex = 0;
   int _selectedCategory = 0;
@@ -236,8 +235,7 @@ class _HomePageState extends State<HomePage> {
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.check_circle_rounded,
-                  color: Colors.white, size: 20),
+              const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
               const SizedBox(width: 10),
               Expanded(child: Text('${product.name} added to your cart.')),
             ],
@@ -260,8 +258,7 @@ class _HomePageState extends State<HomePage> {
         color: AppColors.primary,
         onRefresh: _refresh,
         child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
-              parent: ClampingScrollPhysics()),
+          physics: const AlwaysScrollableScrollPhysics(parent: ClampingScrollPhysics()),
           slivers: [
             SliverToBoxAdapter(
               child: FadeSlideIn(
@@ -303,8 +300,7 @@ class _HomePageState extends State<HomePage> {
                   subtitle: 'Find exactly what you need',
                   actionText: 'See all',
                   onAction: () {
-                    Navigator.of(context)
-                        .push(AppPageRoute(page: const CategoriesPage()));
+                    Navigator.of(context).push(AppPageRoute(page: const CategoriesPage()));
                   },
                 ),
               ),
@@ -319,9 +315,7 @@ class _HomePageState extends State<HomePage> {
                   actionText: 'View all',
                   onAction: () {
                     Navigator.of(context).push(
-                      AppPageRoute(
-                          page: const ProductListingPage(
-                              title: 'Trending products')),
+                      AppPageRoute(page: const ProductListingPage(title: 'Trending products')),
                     );
                   },
                 ),
@@ -343,9 +337,7 @@ class _HomePageState extends State<HomePage> {
                   actionText: 'View all',
                   onAction: () {
                     Navigator.of(context).push(
-                      AppPageRoute(
-                          page: const ProductListingPage(
-                              title: 'Recommended for you')),
+                      AppPageRoute(page: const ProductListingPage(title: 'Recommended for you')),
                     );
                   },
                 ),
@@ -406,8 +398,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               const Row(
                 children: [
-                  Icon(Icons.location_on_rounded,
-                      size: 16, color: AppColors.primary),
+                  Icon(Icons.location_on_rounded, size: 16, color: AppColors.primary),
                   SizedBox(width: 4),
                   Text(
                     'Delivering to',
@@ -426,10 +417,7 @@ class _HomePageState extends State<HomePage> {
                     child: Text(
                       'Doha, Qatar',
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(fontSize: 19),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 19),
                     ),
                   ),
                   const SizedBox(width: 3),
@@ -478,8 +466,7 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.search_rounded,
-                color: AppColors.textSecondary, size: 23),
+            const Icon(Icons.search_rounded, color: AppColors.textSecondary, size: 23),
             const SizedBox(width: 11),
             const Expanded(
               child: Text(
@@ -501,8 +488,7 @@ class _HomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               alignment: Alignment.center,
-              child: const Icon(Icons.tune_rounded,
-                  color: AppColors.primary, size: 19),
+              child: const Icon(Icons.tune_rounded, color: AppColors.primary, size: 19),
             ),
           ],
         ),
@@ -543,9 +529,7 @@ class _HomePageState extends State<HomePage> {
               width: index == _bannerIndex ? 24 : 7,
               height: 7,
               decoration: BoxDecoration(
-                color: index == _bannerIndex
-                    ? AppColors.primary
-                    : AppColors.border,
+                color: index == _bannerIndex ? AppColors.primary : AppColors.border,
                 borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
             ),
@@ -557,10 +541,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildQuickBenefits() {
     const benefits = [
-      _BenefitData(
-          Icons.local_shipping_outlined, 'Fast delivery', 'Across Qatar'),
-      _BenefitData(
-          Icons.verified_user_outlined, 'Secure checkout', 'Protected flow'),
+      _BenefitData(Icons.local_shipping_outlined, 'Fast delivery', 'Across Qatar'),
+      _BenefitData(Icons.verified_user_outlined, 'Secure checkout', 'Protected flow'),
       _BenefitData(Icons.support_agent_rounded, 'Easy support', 'We are here'),
     ];
 
@@ -615,13 +597,11 @@ class _HomePageState extends State<HomePage> {
               setState(() => _selectedCategory = index);
               if (index == 0) {
                 Navigator.of(context).push(
-                  AppPageRoute(
-                      page: const ProductListingPage(title: 'All products')),
+                  AppPageRoute(page: const ProductListingPage(title: 'All products')),
                 );
               } else {
                 final selected = categories[index];
-                final categoryName =
-                    selected.name == 'Phones' ? 'Electronics' : selected.name;
+                final categoryName = selected.name == 'Phones' ? 'Electronics' : selected.name;
                 final subcategory = selected.name == 'Phones' ? 'Phones' : null;
                 Navigator.of(context).push(
                   AppPageRoute(
@@ -718,8 +698,7 @@ class _HomePageState extends State<HomePage> {
             AppPressable(
               onTap: () => _showComingSoon('Deals'),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -782,6 +761,7 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+
 }
 
 class _PromoBanner extends StatelessWidget {
@@ -838,13 +818,11 @@ class _PromoBanner extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: .16),
                   borderRadius: BorderRadius.circular(AppRadius.pill),
-                  border:
-                      Border.all(color: Colors.white.withValues(alpha: .12)),
+                  border: Border.all(color: Colors.white.withValues(alpha: .12)),
                 ),
                 child: Text(
                   data.eyebrow,
@@ -876,15 +854,14 @@ class _PromoBanner extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: .82),
-                        fontSize: 11,
+                      color: Colors.white.withValues(alpha: .82),
+                      fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                   const SizedBox(width: 6),
-                  const Icon(Icons.arrow_forward_rounded,
-                      color: Colors.white, size: 16),
+                  const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 16),
                 ],
               ),
             ],
@@ -917,8 +894,7 @@ class _HomeLoadingState extends StatelessWidget {
           SizedBox(height: 18),
           AppSkeleton(width: double.infinity, height: 56, radius: AppRadius.lg),
           SizedBox(height: 20),
-          AppSkeleton(
-              width: double.infinity, height: 190, radius: AppRadius.xxl),
+          AppSkeleton(width: double.infinity, height: 190, radius: AppRadius.xxl),
           SizedBox(height: 26),
           AppSkeleton(width: 180, height: 24),
           SizedBox(height: 14),
@@ -926,31 +902,18 @@ class _HomeLoadingState extends StatelessWidget {
             height: 104,
             child: Row(
               children: [
-                Expanded(
-                    child: AppSkeleton(
-                        width: double.infinity,
-                        height: 104,
-                        radius: AppRadius.lg)),
+                Expanded(child: AppSkeleton(width: double.infinity, height: 104, radius: AppRadius.lg)),
                 SizedBox(width: 10),
-                Expanded(
-                    child: AppSkeleton(
-                        width: double.infinity,
-                        height: 104,
-                        radius: AppRadius.lg)),
+                Expanded(child: AppSkeleton(width: double.infinity, height: 104, radius: AppRadius.lg)),
                 SizedBox(width: 10),
-                Expanded(
-                    child: AppSkeleton(
-                        width: double.infinity,
-                        height: 104,
-                        radius: AppRadius.lg)),
+                Expanded(child: AppSkeleton(width: double.infinity, height: 104, radius: AppRadius.lg)),
               ],
             ),
           ),
           SizedBox(height: 26),
           AppSkeleton(width: 160, height: 24),
           SizedBox(height: 14),
-          AppSkeleton(
-              width: double.infinity, height: 250, radius: AppRadius.xl),
+          AppSkeleton(width: double.infinity, height: 250, radius: AppRadius.xl),
         ],
       ),
     );
