@@ -17,50 +17,65 @@ class ProductQuantitySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 44,
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _QuantityButton(
-            icon: Icons.remove_rounded,
-            enabled: value > 1,
-            onTap: () => onChanged(value - 1),
-          ),
-          SizedBox(
-            width: 38,
-            child: AnimatedSwitcher(
-              duration: AppMotion.fast,
-              child: Text(
-                '$value',
-                key: ValueKey(value),
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
+    return Semantics(
+      label: 'Quantity $value',
+      child: Container(
+        height: 46,
+        decoration: BoxDecoration(
+          color: AppColors.surfaceMuted.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _QuantityButton(
+              tooltip: 'Decrease quantity',
+              icon: Icons.remove_rounded,
+              enabled: value > 1,
+              onTap: () => onChanged(value - 1),
+            ),
+            SizedBox(
+              width: 42,
+              child: AnimatedSwitcher(
+                duration: AppMotion.fast,
+                transitionBuilder: (child, animation) => FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(scale: animation, child: child),
+                ),
+                child: Text(
+                  '$value',
+                  key: ValueKey(value),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ),
             ),
-          ),
-          _QuantityButton(
-            icon: Icons.add_rounded,
-            enabled: value < maxValue,
-            onTap: () => onChanged(value + 1),
-          ),
-        ],
+            _QuantityButton(
+              tooltip: 'Increase quantity',
+              icon: Icons.add_rounded,
+              enabled: value < maxValue,
+              onTap: () => onChanged(value + 1),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _QuantityButton extends StatelessWidget {
+  final String tooltip;
   final IconData icon;
   final bool enabled;
   final VoidCallback onTap;
 
   const _QuantityButton({
+    required this.tooltip,
     required this.icon,
     required this.enabled,
     required this.onTap,
@@ -69,13 +84,14 @@ class _QuantityButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      tooltip: tooltip,
       onPressed: enabled ? onTap : null,
-      constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+      constraints: const BoxConstraints.tightFor(width: 42, height: 42),
       padding: EdgeInsets.zero,
       splashRadius: 20,
       icon: Icon(
         icon,
-        size: 19,
+        size: 20,
         color: enabled ? AppColors.primary : AppColors.textTertiary,
       ),
     );

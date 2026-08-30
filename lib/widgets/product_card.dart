@@ -4,9 +4,10 @@ import '../core/constants/app_constants.dart';
 import '../core/design_system/app_tokens.dart';
 import '../core/theme/app_colors.dart';
 import '../core/widgets/app_pressable.dart';
+import '../features/wishlist/wishlist_controller.dart';
 import '../models/product.dart';
 
-class ProductCard extends StatefulWidget {
+class ProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback? onTap;
   final VoidCallback? onAdd;
@@ -21,24 +22,9 @@ class ProductCard extends StatefulWidget {
   });
 
   @override
-  State<ProductCard> createState() => _ProductCardState();
-}
-
-class _ProductCardState extends State<ProductCard> {
-  late bool _favorite;
-
-  @override
-  void initState() {
-    super.initState();
-    _favorite = widget.product.favorite;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final product = widget.product;
-
     return AppPressable(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
@@ -68,7 +54,7 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                     alignment: Alignment.center,
                     child: Hero(
-                      tag: widget.heroTag ?? 'product-icon-${product.id}',
+                      tag: heroTag ?? 'product-icon-${product.id}',
                       child: Material(
                         color: Colors.transparent,
                         child: Transform.rotate(
@@ -85,32 +71,53 @@ class _ProductCardState extends State<ProductCard> {
                   Positioned(
                     top: 10,
                     right: 10,
-                    child: AppPressable(
-                      onTap: () => setState(() => _favorite = !_favorite),
-                      child: AnimatedContainer(
-                        duration: AppMotion.fast,
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: AppColors.surface.withValues(alpha: 0.94),
-                          borderRadius: BorderRadius.circular(AppRadius.sm),
-                          boxShadow: AppShadows.soft,
-                        ),
-                        alignment: Alignment.center,
-                        child: AnimatedSwitcher(
-                          duration: AppMotion.fast,
-                          transitionBuilder: (child, animation) => ScaleTransition(
-                            scale: animation,
-                            child: child,
+                    child: AnimatedBuilder(
+                      animation: WishlistController.instance,
+                      builder: (context, child) {
+                        final favorite =
+                            WishlistController.instance.contains(product);
+                        return Semantics(
+                          button: true,
+                          label: favorite
+                              ? 'Remove ${product.name} from wishlist'
+                              : 'Add ${product.name} to wishlist',
+                          child: AppPressable(
+                            onTap: () {
+                              WishlistController.instance.toggle(product);
+                            },
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                            child: AnimatedContainer(
+                              duration: AppMotion.fast,
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color:
+                                    AppColors.surface.withValues(alpha: 0.94),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.sm),
+                                boxShadow: AppShadows.soft,
+                              ),
+                              alignment: Alignment.center,
+                              child: AnimatedSwitcher(
+                                duration: AppMotion.fast,
+                                transitionBuilder: (child, animation) =>
+                                    ScaleTransition(
+                                        scale: animation, child: child),
+                                child: Icon(
+                                  favorite
+                                      ? Icons.favorite_rounded
+                                      : Icons.favorite_border_rounded,
+                                  key: ValueKey(favorite),
+                                  size: 19,
+                                  color: favorite
+                                      ? AppColors.danger
+                                      : AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
                           ),
-                          child: Icon(
-                            _favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                            key: ValueKey(_favorite),
-                            size: 19,
-                            color: _favorite ? AppColors.danger : AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ),
                   if (product.badge.isNotEmpty || product.discountPercent > 0)
@@ -118,7 +125,10 @@ class _ProductCardState extends State<ProductCard> {
                       top: 10,
                       left: 10,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
                           color: product.discountPercent > 0
                               ? AppColors.danger
@@ -170,11 +180,15 @@ class _ProductCardState extends State<ProductCard> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded, color: AppColors.star, size: 17),
+                      const Icon(Icons.star_rounded,
+                          color: AppColors.star, size: 17),
                       const SizedBox(width: 3),
                       Text(
                         product.rating.toStringAsFixed(1),
-                        style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800),
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -206,36 +220,53 @@ class _ProductCardState extends State<ProductCard> {
                               Text(
                                 '${AppConstants.currency} ${product.oldPrice!.toStringAsFixed(0)}',
                                 style: const TextStyle(
-                                  decoration: TextDecoration.lineThrough,
                                   color: AppColors.textTertiary,
-                                  fontSize: 10.5,
+                                  decoration: TextDecoration.lineThrough,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                           ],
                         ),
                       ),
-                      AppPressable(
-                        onTap: widget.onAdd,
-                        child: Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(
-                            color: product.inStock ? AppColors.primary : AppColors.surfaceStrong,
-                            borderRadius: BorderRadius.circular(AppRadius.sm),
-                            boxShadow: [
-                              BoxShadow(
-                                color: (product.inStock ? AppColors.primary : AppColors.surfaceStrong).withValues(alpha: .24),
-                                blurRadius: 14,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
-                          ),
-                          alignment: Alignment.center,
-                          child: Icon(
-                            product.inStock ? Icons.add_rounded : Icons.block_rounded,
-                            color: product.inStock ? Colors.white : AppColors.textTertiary,
-                            size: 21,
+                      Semantics(
+                        button: true,
+                        enabled: product.inStock && onAdd != null,
+                        label: product.inStock
+                            ? 'Add ${product.name} to cart'
+                            : '${product.name} is out of stock',
+                        child: AppPressable(
+                          onTap: product.inStock ? onAdd : null,
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                          child: Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: product.inStock
+                                  ? AppColors.primary
+                                  : AppColors.surfaceStrong,
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (product.inStock
+                                          ? AppColors.primary
+                                          : AppColors.surfaceStrong)
+                                      .withValues(alpha: .24),
+                                  blurRadius: 14,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
+                            ),
+                            alignment: Alignment.center,
+                            child: Icon(
+                              product.inStock
+                                  ? Icons.add_rounded
+                                  : Icons.block_rounded,
+                              color: product.inStock
+                                  ? Colors.white
+                                  : AppColors.textTertiary,
+                              size: 21,
+                            ),
                           ),
                         ),
                       ),

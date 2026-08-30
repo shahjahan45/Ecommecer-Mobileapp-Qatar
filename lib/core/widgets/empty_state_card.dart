@@ -21,55 +21,73 @@ class EmptyStateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420),
-        child: Container(
-          margin: const EdgeInsets.all(AppSpacing.lg),
-          padding: const EdgeInsets.all(AppSpacing.xxl),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.xxl),
-            border: Border.all(color: AppColors.border),
-            boxShadow: AppShadows.soft,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 380;
+        final outerMargin = compact ? AppSpacing.sm : AppSpacing.lg;
+        final innerPadding = compact ? AppSpacing.xl : AppSpacing.xxl;
+        final iconSize = compact ? 68.0 : 82.0;
+
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Container(
+              width: double.infinity,
+              margin: EdgeInsets.all(outerMargin),
+              padding: EdgeInsets.all(innerPadding),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(AppRadius.xxl),
+                border: Border.all(color: AppColors.border),
+                boxShadow: AppShadows.soft,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: iconSize,
+                    height: iconSize,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primarySoft,
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(
+                      icon,
+                      size: compact ? 31 : 38,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  SizedBox(height: compact ? AppSpacing.md : AppSpacing.lg),
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: compact ? 18 : null,
+                        ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          height: 1.45,
+                        ),
+                  ),
+                  if (actionLabel != null) ...[
+                    SizedBox(height: compact ? AppSpacing.lg : AppSpacing.xl),
+                    FilledButton.icon(
+                      onPressed: onAction,
+                      icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+                      label: Text(actionLabel!),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 82,
-                height: 82,
-                decoration: const BoxDecoration(
-                  color: AppColors.primarySoft,
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: Icon(icon, size: 38, color: AppColors.primary),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.55),
-              ),
-              if (actionLabel != null) ...[
-                const SizedBox(height: AppSpacing.xl),
-                FilledButton.icon(
-                  onPressed: onAction,
-                  icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-                  label: Text(actionLabel!),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

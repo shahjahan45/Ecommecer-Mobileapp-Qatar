@@ -32,7 +32,8 @@ void main() {
     ),
   ];
 
-  testWidgets('bottom navigation stays bounded on common phone widths', (tester) async {
+  testWidgets('bottom navigation stays bounded on common phone widths',
+      (tester) async {
     final sizes = <Size>[
       const Size(320, 568),
       const Size(360, 640),

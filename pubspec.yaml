@@ -1,8 +1,8 @@
 name: ecommerce_mobile
-version: 1.4.6+9
+version: 1.6.2+12
 publish_to: 'none'
 
-description: Cumulative DCX Online Store Phase 4.6 with premium production login redesign, responsive authentication UI, production-safe bottom navigation, home, categories, search, filters, sorting, and product browsing.
+description: Cumulative DCX Online Store Phase 6.1.1 with premium Product Details UI, synchronized Wishlist, and responsive-safe short-screen fixes.
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -22,10 +22,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  assets:
-    - assets/icon/app_icon.png
-
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icon/app_icon.png"
+  image_path: assets/icon/app_icon.png
+  remove_alpha_ios: true

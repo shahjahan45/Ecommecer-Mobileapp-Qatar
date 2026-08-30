@@ -128,9 +128,7 @@ class _ModernTextFieldState extends State<ModernTextField> {
                 padding: const EdgeInsets.only(left: 6, right: 2),
                 child: Icon(
                   widget.icon,
-                  color: _focused
-                      ? AppColors.primary
-                      : AppColors.textSecondary,
+                  color: _focused ? AppColors.primary : AppColors.textSecondary,
                   size: 21,
                 ),
               ),

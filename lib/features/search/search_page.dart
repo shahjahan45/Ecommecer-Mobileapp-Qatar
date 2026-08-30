@@ -64,7 +64,8 @@ class _SearchPageState extends State<SearchPage> {
     if (value.isEmpty) return;
 
     setState(() {
-      _recentSearches.removeWhere((item) => item.toLowerCase() == value.toLowerCase());
+      _recentSearches
+          .removeWhere((item) => item.toLowerCase() == value.toLowerCase());
       _recentSearches.insert(0, value);
       if (_recentSearches.length > 5) _recentSearches.removeLast();
     });
@@ -129,7 +130,8 @@ class _SearchPageState extends State<SearchPage> {
                         recentSearches: _recentSearches,
                         onSearch: (value) {
                           _controller.text = value;
-                          _controller.selection = TextSelection.collapsed(offset: value.length);
+                          _controller.selection =
+                              TextSelection.collapsed(offset: value.length);
                           setState(() => _query = value);
                           _submit(value);
                         },
@@ -179,7 +181,8 @@ class _SearchDiscovery extends StatelessWidget {
           ),
           child: const Row(
             children: [
-              Icon(Icons.auto_awesome_rounded, color: Color(0xFFA796FF), size: 30),
+              Icon(Icons.auto_awesome_rounded,
+                  color: Color(0xFFA796FF), size: 30),
               SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -187,7 +190,10 @@ class _SearchDiscovery extends StatelessWidget {
                   children: [
                     Text(
                       'Find it faster',
-                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900),
                     ),
                     SizedBox(height: 4),
                     Text(
@@ -210,7 +216,9 @@ class _SearchDiscovery extends StatelessWidget {
           Row(
             children: [
               const Expanded(
-                child: Text('Recent searches', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
+                child: Text('Recent searches',
+                    style:
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
               ),
               TextButton(onPressed: onClearRecent, child: const Text('Clear')),
             ],
@@ -224,7 +232,8 @@ class _SearchDiscovery extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 24),
-        const Text('Popular right now', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
+        const Text('Popular right now',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
         const SizedBox(height: 12),
         Wrap(
           spacing: 8,
@@ -281,7 +290,8 @@ class _SearchSuggestions extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   alignment: Alignment.center,
-                  child: const Icon(Icons.search_rounded, color: AppColors.primary),
+                  child: const Icon(Icons.search_rounded,
+                      color: AppColors.primary),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -289,10 +299,12 @@ class _SearchSuggestions extends StatelessWidget {
                     'Search for “$query”',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900),
+                    style: const TextStyle(
+                        fontSize: 13.5, fontWeight: FontWeight.w900),
                   ),
                 ),
-                const Icon(Icons.arrow_forward_rounded, color: AppColors.primary),
+                const Icon(Icons.arrow_forward_rounded,
+                    color: AppColors.primary),
               ],
             ),
           ),
@@ -308,12 +320,15 @@ class _SearchSuggestions extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 30),
             child: Column(
               children: [
-                Icon(Icons.search_off_rounded, size: 54, color: AppColors.textTertiary),
+                Icon(Icons.search_off_rounded,
+                    size: 54, color: AppColors.textTertiary),
                 SizedBox(height: 12),
                 Text(
                   'Press search to check the full catalogue.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -340,7 +355,8 @@ class _SearchSuggestions extends StatelessWidget {
                         borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       alignment: Alignment.center,
-                      child: Icon(product.icon, color: product.accent, size: 25),
+                      child:
+                          Icon(product.icon, color: product.accent, size: 25),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -351,7 +367,8 @@ class _SearchSuggestions extends StatelessWidget {
                             product.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800),
+                            style: const TextStyle(
+                                fontSize: 12.5, fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(height: 3),
                           Text(
@@ -365,7 +382,8 @@ class _SearchSuggestions extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Icon(Icons.north_west_rounded, size: 17, color: AppColors.textTertiary),
+                    const Icon(Icons.north_west_rounded,
+                        size: 17, color: AppColors.textTertiary),
                   ],
                 ),
               ),
@@ -398,13 +416,17 @@ class _SearchHistoryTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               alignment: Alignment.center,
-              child: const Icon(Icons.history_rounded, size: 19, color: AppColors.textSecondary),
+              child: const Icon(Icons.history_rounded,
+                  size: 19, color: AppColors.textSecondary),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+              child: Text(label,
+                  style: const TextStyle(
+                      fontSize: 12.5, fontWeight: FontWeight.w700)),
             ),
-            const Icon(Icons.north_west_rounded, size: 16, color: AppColors.textTertiary),
+            const Icon(Icons.north_west_rounded,
+                size: 16, color: AppColors.textTertiary),
           ],
         ),
       ),

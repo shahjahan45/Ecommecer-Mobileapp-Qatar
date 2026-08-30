@@ -1,24 +1,41 @@
-# DCX Online Store Mobile — Cumulative Phase 4.5
+# DCX Online Store Mobile — Phase 6
 
-This package contains all work from Phases 1–4 plus the production bottom-navigation/root-constraint repair from Phase 4.5.
+Cumulative Flutter source for DCX Online Store through Phase 6.
 
-Key Phase 4.5 changes:
-- root cause fix for `BOTTOM OVERFLOWED BY 99978 PIXELS`
-- bounded, reusable animated bottom navigation
-- synchronized PageView/nav animation
-- `extendBody: false` so content is never hidden behind navigation
-- Profile page bottom-padding cleanup
-- clean scroll behavior lint
-- clean AndroidManifest template
-- responsive widget test for common phone widths
+## Current customer-facing modules
 
-See `PHASE_4_5_PRODUCTION_LAYOUT_FIX.md` for the detailed explanation.
+- Premium authentication and onboarding
+- Professional home shopping experience
+- Categories and subcategories
+- Search, suggestions, filters, sorting, grid/list browsing
+- Product Details with gallery, variants, quantity, reviews, specifications, and sticky purchase controls
+- Phase 6 synchronized professional Wishlist UI kit
+- Cart, Orders, Notifications, and Profile foundations
+- Production-safe responsive bottom navigation
 
-## Phase 4.6 — Premium Login
-The login screen has been redesigned for DCX Online Store with a responsive vector-painted lavender background, secure branding, premium auth card, focus animations, adaptive remember-me switch, gradient CTA, mock social sign-in, and injectable authentication service architecture.
+## Phase 6 highlight
 
-## Phase 5 — Premium Product Details
+Wishlist is now shared across product cards, product lists, Product Details, Home badge, and the Wishlist page. The page includes search, filters, grid/list layouts, savings summary, clear confirmation, undo, empty states, accessibility labels, and responsive tests.
 
-The cumulative project now includes a production-style product details experience with responsive gallery, Hero transitions, variant selection, quantity controls, specifications, rating summary, related products and a SafeArea purchase bar. Home and product listings now open the full product details page.
+## Local verification
 
-See `PHASE_5_PREMIUM_PRODUCT_DETAILS.md` for the learning notes.
+```powershell
+flutter clean
+flutter pub get
+dart format lib test
+flutter analyze
+flutter test
+```
+
+Then run on a connected Android device with `flutter run`.
+
+No backend API contract is changed in Phase 6. Wishlist persistence is currently in-memory and deliberately isolated behind `WishlistController` so it can be replaced by Laravel/API persistence later without redesigning the UI.
+
+## Phase 6.1 — Premium Product Details UI Redesign
+
+Phase 6.1 compacts and modernizes Product Details while preserving the existing product, wishlist, navigation and cart callback behavior. The size/variant selector is now a single horizontally scrollable row, quantity controls are compact, trust information uses reusable list cards, and checkout remains sticky and SafeArea-aware. See `PHASE_6_1_PREMIUM_PRODUCT_DETAILS_UI_REDESIGN.md`.
+
+
+## Phase 6.1.1 — Wishlist responsive test fix
+
+Fixes short-screen wishlist and empty-state RenderFlex overflows without changing business logic. See `PHASE_6_1_1_WISHLIST_RESPONSIVE_FIX.md`.
