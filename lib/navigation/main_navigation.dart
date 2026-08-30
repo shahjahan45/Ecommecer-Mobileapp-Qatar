@@ -16,7 +16,6 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
-
   late final PageController _pageController;
 
   static const _pages = <Widget>[
@@ -58,35 +57,24 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   void initState() {
     super.initState();
-
-    _pageController = PageController(
-      initialPage: _currentIndex,
-    );
+    _pageController = PageController(initialPage: _currentIndex);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-
     super.dispose();
   }
 
   void _selectTab(int index) {
-    if (!_pageController.hasClients) {
-      return;
-    }
+    if (!_pageController.hasClients) return;
 
     final page = _pageController.page ?? _currentIndex.toDouble();
-
-    if ((page - index).abs() < 0.001) {
-      return;
-    }
+    if ((page - index).abs() < 0.001) return;
 
     _pageController.animateToPage(
       index,
-      duration: const Duration(
-        milliseconds: 360,
-      ),
+      duration: const Duration(milliseconds: 360),
       curve: Curves.easeInOutCubic,
     );
   }
@@ -97,42 +85,29 @@ class _MainNavigationState extends State<MainNavigation> {
     }
 
     return (_pageController.page ?? _currentIndex.toDouble())
-        .clamp(
-          0.0,
-          (_items.length - 1).toDouble(),
-        )
+        .clamp(0.0, (_items.length - 1).toDouble())
         .toDouble();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // IMPORTANT:
-      // Do not allow page content to sit behind
-      // the bottom navigation.
       extendBody: false,
-
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         allowImplicitScrolling: true,
         onPageChanged: (index) {
           if (_currentIndex != index) {
-            setState(() {
-              _currentIndex = index;
-            });
+            setState(() => _currentIndex = index);
           }
         },
         children: _pages,
       ),
-
       bottomNavigationBar: AnimatedBuilder(
         animation: _pageController,
         builder: (context, child) {
           final position = _navigationPosition;
-
-          // Selection changes in sync with
-          // actual page movement.
           final visualIndex = position.round();
 
           return DcxBottomNavigationBar(

@@ -78,8 +78,7 @@ class _VerificationPageState extends State<VerificationPage> {
     return AuthScaffold(
       showBackButton: true,
       title: 'Verify your account',
-      subtitle:
-          'For Phase 2 this is a UI demonstration. Enter any six digits to continue.',
+      subtitle: 'Enter the six-digit verification code to continue securely.',
       child: Column(
         children: [
           Container(

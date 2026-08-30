@@ -10,12 +10,14 @@ class ProductListTile extends StatefulWidget {
   final Product product;
   final VoidCallback? onTap;
   final VoidCallback? onAdd;
+  final Object? heroTag;
 
   const ProductListTile({
     super.key,
     required this.product,
     this.onTap,
     this.onAdd,
+    this.heroTag,
   });
 
   @override
@@ -58,10 +60,16 @@ class _ProductListTileState extends State<ProductListTile> {
               child: Stack(
                 children: [
                   Center(
-                    child: Icon(
-                      product.icon,
-                      color: product.accent,
-                      size: 48,
+                    child: Hero(
+                      tag: widget.heroTag ?? 'product-icon-${product.id}',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Icon(
+                          product.icon,
+                          color: product.accent,
+                          size: 48,
+                        ),
+                      ),
                     ),
                   ),
                   if (product.discountPercent > 0)

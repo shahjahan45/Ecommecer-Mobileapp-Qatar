@@ -13,7 +13,7 @@ class CartPage extends StatelessWidget {
         icon: Icons.shopping_bag_outlined,
         title: 'Your cart is waiting',
         message:
-            'The full cart with quantity controls, coupon UI, totals and checkout preparation will be built in Phase 7.',
+            'Items you add while shopping will appear here, ready for review and checkout.',
       ),
     );
   }

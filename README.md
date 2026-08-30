@@ -13,3 +13,12 @@ Key Phase 4.5 changes:
 - responsive widget test for common phone widths
 
 See `PHASE_4_5_PRODUCTION_LAYOUT_FIX.md` for the detailed explanation.
+
+## Phase 4.6 — Premium Login
+The login screen has been redesigned for DCX Online Store with a responsive vector-painted lavender background, secure branding, premium auth card, focus animations, adaptive remember-me switch, gradient CTA, mock social sign-in, and injectable authentication service architecture.
+
+## Phase 5 — Premium Product Details
+
+The cumulative project now includes a production-style product details experience with responsive gallery, Hero transitions, variant selection, quantity controls, specifications, rating summary, related products and a SafeArea purchase bar. Home and product listings now open the full product details page.
+
+See `PHASE_5_PREMIUM_PRODUCT_DETAILS.md` for the learning notes.

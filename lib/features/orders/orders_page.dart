@@ -13,7 +13,7 @@ class OrdersPage extends StatelessWidget {
         icon: Icons.receipt_long_outlined,
         title: 'No orders yet',
         message:
-            'Order cards, status filters, order details and animated tracking will be added in Phase 9.',
+            'Your confirmed purchases and delivery progress will appear here.',
       ),
     );
   }

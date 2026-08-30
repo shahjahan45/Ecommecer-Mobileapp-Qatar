@@ -20,7 +20,7 @@ class NotificationsPage extends StatelessWidget {
       _NotificationItem(
         icon: Icons.inventory_2_rounded,
         title: 'Order updates will appear here',
-        message: 'Phase 9 will connect real order status notifications.',
+        message: 'Shipping, delivery and account updates will appear here.',
         time: 'Today',
         color: AppColors.primary,
         softColor: AppColors.primarySoft,

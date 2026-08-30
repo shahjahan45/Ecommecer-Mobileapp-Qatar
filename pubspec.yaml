@@ -1,8 +1,8 @@
 name: ecommerce_mobile
-version: 1.4.5+8
+version: 1.4.6+9
 publish_to: 'none'
 
-description: Cumulative DCX Online Store Phase 4.5 with production-safe responsive bottom navigation, real-device layout fixes, authentication, home, categories, search, filters, sorting, and product browsing.
+description: Cumulative DCX Online Store Phase 4.6 with premium production login redesign, responsive authentication UI, production-safe bottom navigation, home, categories, search, filters, sorting, and product browsing.
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

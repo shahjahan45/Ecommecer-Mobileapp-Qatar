@@ -4,24 +4,17 @@ import '../../core/design_system/app_tokens.dart';
 import '../../core/theme/app_colors.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({
-    super.key,
-  });
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
+      appBar: AppBar(title: const Text('Profile')),
       body: SafeArea(
         top: false,
         bottom: false,
         child: LayoutBuilder(
-          builder: (
-            context,
-            constraints,
-          ) {
+          builder: (context, constraints) {
             final horizontalPadding = constraints.maxWidth < 360 ? 16.0 : 20.0;
 
             return ListView(
@@ -37,33 +30,14 @@ class ProfilePage extends StatelessWidget {
               ),
               children: const [
                 _ProfileHeader(),
-                SizedBox(
-                  height: 18,
-                ),
+                SizedBox(height: 18),
                 _ProfileTile(
-                  Icons.person_outline_rounded,
-                  'Personal information',
-                ),
-                _ProfileTile(
-                  Icons.location_on_outlined,
-                  'Delivery addresses',
-                ),
-                _ProfileTile(
-                  Icons.favorite_border_rounded,
-                  'Wishlist',
-                ),
-                _ProfileTile(
-                  Icons.notifications_none_rounded,
-                  'Notifications',
-                ),
-                _ProfileTile(
-                  Icons.settings_outlined,
-                  'Settings',
-                ),
-                _ProfileTile(
-                  Icons.help_outline_rounded,
-                  'Help & support',
-                ),
+                    Icons.person_outline_rounded, 'Personal information'),
+                _ProfileTile(Icons.location_on_outlined, 'Delivery addresses'),
+                _ProfileTile(Icons.favorite_border_rounded, 'Wishlist'),
+                _ProfileTile(Icons.notifications_none_rounded, 'Notifications'),
+                _ProfileTile(Icons.settings_outlined, 'Settings'),
+                _ProfileTile(Icons.help_outline_rounded, 'Help & support'),
               ],
             );
           },
@@ -79,17 +53,11 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(
-        AppSpacing.lg,
-      ),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(
-          AppRadius.xl,
-        ),
-        border: Border.all(
-          color: AppColors.border,
-        ),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.border),
         boxShadow: AppShadows.soft,
       ),
       child: const Row(
@@ -103,9 +71,7 @@ class _ProfileHeader extends StatelessWidget {
               size: 32,
             ),
           ),
-          SizedBox(
-            width: 14,
-          ),
+          SizedBox(width: 14),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -121,9 +87,7 @@ class _ProfileHeader extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                SizedBox(
-                  height: 4,
-                ),
+                SizedBox(height: 4),
                 Text(
                   'Profile data will become real after API authentication.',
                   style: TextStyle(
@@ -145,46 +109,28 @@ class _ProfileTile extends StatelessWidget {
   final IconData icon;
   final String title;
 
-  const _ProfileTile(
-    this.icon,
-    this.title,
-  );
+  const _ProfileTile(this.icon, this.title);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(
-        bottom: 10,
-      ),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(
-          AppRadius.md,
-        ),
-        border: Border.all(
-          color: AppColors.border,
-        ),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.border),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 4,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
         leading: Container(
           width: 40,
           height: 40,
           decoration: BoxDecoration(
             color: AppColors.primarySoft,
-            borderRadius: BorderRadius.circular(
-              AppRadius.sm,
-            ),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           alignment: Alignment.center,
-          child: Icon(
-            icon,
-            color: AppColors.primary,
-            size: 20,
-          ),
+          child: Icon(icon, color: AppColors.primary, size: 20),
         ),
         title: Text(
           title,

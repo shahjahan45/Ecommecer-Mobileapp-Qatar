@@ -9,6 +9,7 @@ import '../../data/demo_catalog.dart';
 import '../../models/product.dart';
 import '../../widgets/product_card.dart';
 import '../search/search_page.dart';
+import 'product_details_page.dart';
 import 'product_filter.dart';
 import 'widgets/filter_bottom_sheet.dart';
 import 'widgets/product_list_tile.dart';
@@ -127,8 +128,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        SnackBar(
-            content: Text('${product.name} added for Phase 4 UI preview.')),
+        SnackBar(content: Text('${product.name} added to your cart.')),
       );
   }
 
@@ -296,7 +296,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         final product = products[index];
                         return ProductCard(
                           product: product,
-                          onTap: () => _showProductPreview(product),
+                          heroTag: 'listing-product-${product.id}',
+                          onTap: () => _openProductDetails(
+                            product,
+                            heroTag: 'listing-product-${product.id}',
+                          ),
                           onAdd: product.inStock ? () => _add(product) : null,
                         );
                       },
@@ -316,7 +320,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   final product = products[index];
                   return ProductListTile(
                     product: product,
-                    onTap: () => _showProductPreview(product),
+                    heroTag: 'listing-product-${product.id}',
+                    onTap: () => _openProductDetails(
+                      product,
+                      heroTag: 'listing-product-${product.id}',
+                    ),
                     onAdd: product.inStock ? () => _add(product) : null,
                   );
                 },
@@ -327,77 +335,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
     );
   }
 
-  void _showProductPreview(Product product) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-          ),
-          child: SafeArea(
-            top: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 44,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  width: double.infinity,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    color: product.softColor,
-                    borderRadius: BorderRadius.circular(AppRadius.xl),
-                  ),
-                  alignment: Alignment.center,
-                  child: Icon(product.icon, size: 78, color: product.accent),
-                ),
-                const SizedBox(height: 18),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    product.name,
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.w900),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Product details are intentionally reserved for Phase 5. Phase 4 focuses on professional discovery, search and filtering.',
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 12,
-                      height: 1.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Continue browsing'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+  void _openProductDetails(
+    Product product, {
+    required Object heroTag,
+  }) {
+    Navigator.of(context).push(
+      AppPageRoute(
+        page: ProductDetailsPage(
+          product: product,
+          heroTag: heroTag,
+        ),
+      ),
     );
   }
 }

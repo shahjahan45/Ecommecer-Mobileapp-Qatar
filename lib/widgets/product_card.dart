@@ -10,12 +10,14 @@ class ProductCard extends StatefulWidget {
   final Product product;
   final VoidCallback? onTap;
   final VoidCallback? onAdd;
+  final Object? heroTag;
 
   const ProductCard({
     super.key,
     required this.product,
     this.onTap,
     this.onAdd,
+    this.heroTag,
   });
 
   @override
@@ -66,7 +68,7 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                     alignment: Alignment.center,
                     child: Hero(
-                      tag: 'product-icon-${product.id}',
+                      tag: widget.heroTag ?? 'product-icon-${product.id}',
                       child: Material(
                         color: Colors.transparent,
                         child: Transform.rotate(

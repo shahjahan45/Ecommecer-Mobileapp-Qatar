@@ -15,6 +15,7 @@ import '../../widgets/category_card.dart';
 import '../../widgets/product_card.dart';
 import '../../widgets/section_header.dart';
 import '../categories/categories_page.dart';
+import '../products/product_details_page.dart';
 import '../products/product_listing_page.dart';
 import '../search/search_page.dart';
 import '../notifications/notifications_page.dart';
@@ -210,10 +211,22 @@ class _HomePageState extends State<HomePage> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        SnackBar(
-            content:
-                Text('$feature will be connected in its dedicated phase.')),
+        SnackBar(content: Text('$feature is currently unavailable.')),
       );
+  }
+
+  void _openProductDetails(
+    Product product, {
+    required Object heroTag,
+  }) {
+    Navigator.of(context).push(
+      AppPageRoute(
+        page: ProductDetailsPage(
+          product: product,
+          heroTag: heroTag,
+        ),
+      ),
+    );
   }
 
   void _showAdded(Product product) {
@@ -226,7 +239,7 @@ class _HomePageState extends State<HomePage> {
               const Icon(Icons.check_circle_rounded,
                   color: Colors.white, size: 20),
               const SizedBox(width: 10),
-              Expanded(child: Text('${product.name} added for UI preview.')),
+              Expanded(child: Text('${product.name} added to your cart.')),
             ],
           ),
         ),
@@ -364,7 +377,11 @@ class _HomePageState extends State<HomePage> {
                         final product = products[index];
                         return ProductCard(
                           product: product,
-                          onTap: () => _showComingSoon('Product details'),
+                          heroTag: 'home-recommended-${product.id}',
+                          onTap: () => _openProductDetails(
+                            product,
+                            heroTag: 'home-recommended-${product.id}',
+                          ),
                           onAdd: () => _showAdded(product),
                         );
                       },
@@ -638,7 +655,11 @@ class _HomePageState extends State<HomePage> {
             width: 188,
             child: ProductCard(
               product: product,
-              onTap: () => _showComingSoon('Product details'),
+              heroTag: 'home-trending-${product.id}',
+              onTap: () => _openProductDetails(
+                product,
+                heroTag: 'home-trending-${product.id}',
+              ),
               onAdd: () => _showAdded(product),
             ),
           );
