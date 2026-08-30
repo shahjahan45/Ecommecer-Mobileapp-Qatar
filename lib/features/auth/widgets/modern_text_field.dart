@@ -67,8 +67,17 @@ class _ModernTextFieldState extends State<ModernTextField> {
     }
   }
 
+  OutlineInputBorder _border(Color color, {double width = 1}) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide(color: color, width: width),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    const errorColor = Color(0xFFB05A63);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -77,32 +86,15 @@ class _ModernTextFieldState extends State<ModernTextField> {
           style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13.5,
+            height: 1.25,
             fontWeight: FontWeight.w800,
           ),
         ),
         const SizedBox(height: 9),
-        AnimatedContainer(
+        AnimatedSize(
           duration: AppMotion.fast,
           curve: AppMotion.standardCurve,
-          decoration: BoxDecoration(
-            color: _focused
-                ? Colors.white
-                : AppColors.surfaceMuted.withValues(alpha: 0.52),
-            borderRadius: BorderRadius.circular(17),
-            border: Border.all(
-              color: _focused ? AppColors.primary : AppColors.border,
-              width: _focused ? 1.4 : 1,
-            ),
-            boxShadow: _focused
-                ? [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.10),
-                      blurRadius: 18,
-                      offset: const Offset(0, 7),
-                    ),
-                  ]
-                : const [],
-          ),
+          alignment: Alignment.topCenter,
           child: TextFormField(
             controller: widget.controller,
             focusNode: widget.focusNode,
@@ -112,42 +104,55 @@ class _ModernTextFieldState extends State<ModernTextField> {
             validator: widget.validator,
             onFieldSubmitted: widget.onFieldSubmitted,
             autofillHints: widget.autofillHints,
+            cursorColor: AppColors.primary,
+            scrollPadding: const EdgeInsets.fromLTRB(20, 20, 20, 180),
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
             style: const TextStyle(
               color: AppColors.textPrimary,
               fontSize: 15,
+              height: 1.25,
               fontWeight: FontWeight.w600,
             ),
             decoration: InputDecoration(
               hintText: widget.hint,
-              filled: false,
+              hintStyle: const TextStyle(
+                color: AppColors.textTertiary,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+              filled: true,
+              fillColor: _focused
+                  ? Colors.white
+                  : AppColors.surfaceMuted.withValues(alpha: 0.54),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 17,
               ),
-              prefixIcon: Padding(
-                padding: const EdgeInsets.only(left: 6, right: 2),
-                child: Icon(
-                  widget.icon,
-                  color: _focused ? AppColors.primary : AppColors.textSecondary,
-                  size: 21,
-                ),
+              prefixIcon: Icon(
+                widget.icon,
+                color: _focused ? AppColors.primary : AppColors.textSecondary,
+                size: 21,
               ),
               prefixIconConstraints: const BoxConstraints(
-                minWidth: 48,
-                minHeight: 48,
+                minWidth: 52,
+                minHeight: 54,
               ),
               suffixIcon: widget.suffixIcon,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              focusedErrorBorder: InputBorder.none,
+              suffixIconConstraints: const BoxConstraints(
+                minWidth: 52,
+                minHeight: 54,
+              ),
+              enabledBorder: _border(AppColors.border),
+              focusedBorder: _border(AppColors.primary, width: 1.5),
+              errorBorder: _border(errorColor.withValues(alpha: 0.52)),
+              focusedErrorBorder: _border(errorColor, width: 1.35),
               errorStyle: const TextStyle(
-                color: Color(0xFFB44E59),
+                color: errorColor,
                 fontSize: 11.5,
-                height: 1.25,
+                height: 1.3,
                 fontWeight: FontWeight.w600,
               ),
+              errorMaxLines: 2,
             ),
           ),
         ),

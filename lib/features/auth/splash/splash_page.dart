@@ -83,6 +83,7 @@ class _SplashPageState extends State<SplashPage>
             Center(
               child: FadeTransition(
                 opacity: _fade,
+                alwaysIncludeSemantics: true,
                 child: ScaleTransition(
                   scale: _scale,
                   child: const Column(

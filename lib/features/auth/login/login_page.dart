@@ -14,7 +14,6 @@ import '../widgets/modern_text_field.dart';
 import '../widgets/premium_auth_background.dart';
 import '../widgets/premium_brand_header.dart';
 import '../widgets/primary_button.dart';
-import '../widgets/security_message.dart';
 import '../widgets/social_login_button.dart';
 
 class LoginPage extends StatefulWidget {
@@ -35,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
+  final _scrollController = ScrollController(keepScrollOffset: false);
 
   bool _obscurePassword = true;
   bool _rememberMe = true;
@@ -47,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
     _passwordController.dispose();
     _emailFocus.dispose();
     _passwordFocus.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -112,27 +113,56 @@ class _LoginPageState extends State<LoginPage> {
       );
   }
 
+  void _showSocialUnavailable(String provider) {
+    if (_loading || _socialLoadingProvider != null) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    HapticFeedback.selectionClick();
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text('$provider sign in is not enabled yet.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+  }
+
+  void _openRegister() {
+    Navigator.push(
+      context,
+      AppPageRoute(page: const RegisterPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final keyboardInset = mediaQuery.viewInsets.bottom;
+    final safeBottom = mediaQuery.padding.bottom;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: PremiumAuthBackground(
         child: SafeArea(
+          bottom: false,
           child: LayoutBuilder(
             builder: (context, constraints) {
               final width = constraints.maxWidth;
-              final compact = width < 360;
+              final compact = width < 390;
+              final veryCompact = width < 340;
               final tablet = width >= 700;
               final horizontalPadding = tablet
-                  ? 36.0
-                  : compact
-                      ? 14.0
-                      : 20.0;
+                  ? 40.0
+                  : veryCompact
+                      ? 12.0
+                      : compact
+                          ? 16.0
+                          : 20.0;
 
               return SingleChildScrollView(
+                controller: _scrollController,
+                primary: false,
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
                 physics: const ClampingScrollPhysics(
@@ -140,9 +170,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 padding: EdgeInsets.fromLTRB(
                   horizontalPadding,
-                  compact ? 12 : 18,
+                  compact ? 12 : 16,
                   horizontalPadding,
-                  24 + keyboardInset,
+                  24 + safeBottom + keyboardInset,
                 ),
                 child: Center(
                   child: ConstrainedBox(
@@ -156,34 +186,16 @@ class _LoginPageState extends State<LoginPage> {
                             const FadeSlideIn(
                               child: PremiumBrandHeader(),
                             ),
-                            SizedBox(height: compact ? 28 : 40),
+                            SizedBox(height: compact ? 22 : 28),
                             FadeSlideIn(
                               delayMilliseconds: 40,
                               child: _HeroCopy(compact: compact),
                             ),
-                            SizedBox(height: compact ? 22 : 30),
+                            SizedBox(height: compact ? 22 : 28),
                             FadeSlideIn(
                               delayMilliseconds: 90,
                               child: _buildLoginCard(context, compact),
                             ),
-                            const SizedBox(height: 18),
-                            FadeSlideIn(
-                              delayMilliseconds: 130,
-                              child: _CreateAccountBar(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    AppPageRoute(page: const RegisterPage()),
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 22),
-                            const FadeSlideIn(
-                              delayMilliseconds: 160,
-                              child: SecurityMessage(),
-                            ),
-                            const SizedBox(height: 8),
                           ],
                         ),
                       ),
@@ -201,32 +213,32 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildLoginCard(BuildContext context, bool compact) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.96),
-        borderRadius: BorderRadius.circular(28),
+        color: Colors.white.withValues(alpha: 0.975),
+        borderRadius: BorderRadius.circular(compact ? 24 : 28),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.92),
+          color: const Color(0xFFE9E7F1).withValues(alpha: 0.82),
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2C224F).withValues(alpha: 0.10),
-            blurRadius: 38,
-            spreadRadius: -8,
-            offset: const Offset(0, 22),
-          ),
-          BoxShadow(
-            color: Colors.white.withValues(alpha: 0.82),
-            blurRadius: 2,
-            offset: const Offset(0, -1),
+            color: const Color(0xFF2C224F).withValues(alpha: 0.07),
+            blurRadius: 30,
+            spreadRadius: -10,
+            offset: const Offset(0, 18),
           ),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 18 : 22),
+        padding: EdgeInsets.fromLTRB(
+          compact ? 17 : 22,
+          compact ? 20 : 24,
+          compact ? 17 : 22,
+          compact ? 18 : 21,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const _AccountHeader(),
-            SizedBox(height: compact ? 22 : 26),
+            _AccountHeader(compact: compact),
+            SizedBox(height: compact ? 21 : 25),
             ModernTextField(
               controller: _emailController,
               focusNode: _emailFocus,
@@ -241,7 +253,7 @@ class _LoginPageState extends State<LoginPage> {
                 _passwordFocus.requestFocus();
               },
             ),
-            const SizedBox(height: 18),
+            SizedBox(height: compact ? 15 : 17),
             ModernTextField(
               controller: _passwordController,
               focusNode: _passwordFocus,
@@ -271,7 +283,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             _RememberAndForgotRow(
               value: _rememberMe,
               onChanged: (value) {
@@ -291,59 +303,125 @@ class _LoginPageState extends State<LoginPage> {
               loading: _loading,
               onPressed: _socialLoadingProvider == null ? _login : null,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: compact ? 20 : 23),
             const _SocialDivider(),
-            const SizedBox(height: 18),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final stackButtons = constraints.maxWidth < 330;
-                final googleButton = SocialLoginButton(
-                  label: 'Google',
-                  icon: const GoogleMark(),
-                  loading: _socialLoadingProvider == AuthProvider.google,
-                  onPressed: _loading ||
-                          (_socialLoadingProvider != null &&
-                              _socialLoadingProvider != AuthProvider.google)
-                      ? null
-                      : () => _socialLogin(AuthProvider.google),
-                );
-                final appleButton = SocialLoginButton(
-                  label: 'Apple',
-                  icon: const Icon(
-                    Icons.apple,
-                    color: Colors.black,
-                    size: 24,
-                  ),
-                  loading: _socialLoadingProvider == AuthProvider.apple,
-                  onPressed: _loading ||
-                          (_socialLoadingProvider != null &&
-                              _socialLoadingProvider != AuthProvider.apple)
-                      ? null
-                      : () => _socialLogin(AuthProvider.apple),
-                );
-
-                if (stackButtons) {
-                  return Column(
-                    children: [
-                      googleButton,
-                      const SizedBox(height: 10),
-                      appleButton,
-                    ],
-                  );
-                }
-
-                return Row(
-                  children: [
-                    Expanded(child: googleButton),
-                    const SizedBox(width: 12),
-                    Expanded(child: appleButton),
-                  ],
-                );
-              },
-            ),
+            const SizedBox(height: 15),
+            _buildSocialIconRow(),
+            SizedBox(height: compact ? 17 : 21),
+            _SignUpPrompt(onPressed: _openRegister),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSocialIconRow() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const gap = 8.0;
+        const minFitSize = 46.0;
+        const maxSize = 54.0;
+        const scrollSize = 50.0;
+        const buttonCount = 5;
+
+        final calculatedSize =
+            (constraints.maxWidth - (gap * (buttonCount - 1))) / buttonCount;
+        final fits = calculatedSize >= minFitSize;
+        final buttonSize = fits
+            ? calculatedSize.clamp(minFitSize, maxSize).toDouble()
+            : scrollSize;
+
+        Widget socialButton({
+          required String label,
+          required Widget icon,
+          required VoidCallback? onPressed,
+          bool loading = false,
+        }) {
+          return SocialIconButton(
+            label: label,
+            icon: icon,
+            loading: loading,
+            size: buttonSize,
+            onPressed: onPressed,
+          );
+        }
+
+        final buttons = <Widget>[
+          socialButton(
+            label: 'Google',
+            icon: const GoogleMark(),
+            loading: _socialLoadingProvider == AuthProvider.google,
+            onPressed: _loading ||
+                    (_socialLoadingProvider != null &&
+                        _socialLoadingProvider != AuthProvider.google)
+                ? null
+                : () => _socialLogin(AuthProvider.google),
+          ),
+          socialButton(
+            label: 'Apple',
+            icon: const Icon(
+              Icons.apple,
+              color: Colors.black,
+              size: 28,
+            ),
+            loading: _socialLoadingProvider == AuthProvider.apple,
+            onPressed: _loading ||
+                    (_socialLoadingProvider != null &&
+                        _socialLoadingProvider != AuthProvider.apple)
+                ? null
+                : () => _socialLogin(AuthProvider.apple),
+          ),
+          socialButton(
+            label: 'Facebook',
+            icon: const FacebookMark(),
+            onPressed: _loading || _socialLoadingProvider != null
+                ? null
+                : () => _showSocialUnavailable('Facebook'),
+          ),
+          socialButton(
+            label: 'X',
+            icon: const XMark(),
+            onPressed: _loading || _socialLoadingProvider != null
+                ? null
+                : () => _showSocialUnavailable('X'),
+          ),
+          socialButton(
+            label: 'Microsoft',
+            icon: const MicrosoftMark(),
+            onPressed: _loading || _socialLoadingProvider != null
+                ? null
+                : () => _showSocialUnavailable('Microsoft'),
+          ),
+        ];
+
+        if (fits) {
+          return Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: gap,
+            runSpacing: gap,
+            children: buttons,
+          );
+        }
+
+        return SizedBox(
+          height: scrollSize,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 1),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var index = 0; index < buttons.length; index++) ...[
+                  buttons[index],
+                  if (index != buttons.length - 1) const SizedBox(width: gap),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -355,53 +433,85 @@ class _HeroCopy extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Welcome back',
-          style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                fontSize: compact ? 32 : 38,
-                height: 1.02,
-                letterSpacing: -1.35,
-                color: const Color(0xFF161421),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final fontSize = constraints.maxWidth < 330
+            ? 31.0
+            : compact
+                ? 34.0
+                : 40.0;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text.rich(
+              TextSpan(
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      fontSize: fontSize,
+                      height: 1.08,
+                      letterSpacing: -1.2,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textPrimary,
+                    ),
+                children: const [
+                  TextSpan(text: 'Welcome '),
+                  TextSpan(
+                    text: 'back',
+                    style: TextStyle(color: AppColors.primary),
+                  ),
+                ],
               ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'Sign in to continue shopping, manage your cart and follow your orders.',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppColors.textSecondary,
-                fontSize: compact ? 14 : 15.5,
-                height: 1.55,
+              textHeightBehavior: const TextHeightBehavior(
+                applyHeightToFirstAscent: true,
+                applyHeightToLastDescent: true,
               ),
-        ),
-      ],
+            ),
+            const SizedBox(height: 11),
+            Text(
+              'Sign in to continue shopping, manage your cart and follow your orders.',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: compact ? 14 : 15.5,
+                    height: 1.46,
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
 
 class _AccountHeader extends StatelessWidget {
-  const _AccountHeader();
+  final bool compact;
+
+  const _AccountHeader({required this.compact});
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = compact ? 46.0 : 50.0;
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width: 48,
-          height: 48,
-          decoration: const BoxDecoration(
+          width: iconSize,
+          height: iconSize,
+          decoration: BoxDecoration(
             color: AppColors.primarySoft,
             shape: BoxShape.circle,
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.08),
+            ),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.person_rounded,
             color: AppColors.primary,
-            size: 24,
+            size: compact ? 23 : 25,
           ),
         ),
-        const SizedBox(width: 13),
+        SizedBox(width: compact ? 12 : 14),
         const Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -409,20 +519,22 @@ class _AccountHeader extends StatelessWidget {
             children: [
               Text(
                 'Sign in to your account',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
                 style: TextStyle(
                   color: AppColors.textPrimary,
-                  fontSize: 16,
+                  fontSize: 16.5,
+                  height: 1.2,
                   fontWeight: FontWeight.w900,
                 ),
               ),
-              SizedBox(height: 3),
+              SizedBox(height: 4),
               Text(
                 'Enter your details below',
+                maxLines: 2,
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12.5,
+                  height: 1.3,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -455,15 +567,19 @@ class _RememberAndForgotRow extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Transform.scale(
-              scale: 0.82,
-              child: Switch.adaptive(
-                value: value,
-                activeTrackColor: AppColors.primary,
-                onChanged: onChanged,
+            SizedBox(
+              width: 46,
+              height: 34,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: Switch.adaptive(
+                  value: value,
+                  activeTrackColor: AppColors.primary,
+                  onChanged: onChanged,
+                ),
               ),
             ),
-            const SizedBox(width: 2),
+            const SizedBox(width: 5),
             const Text(
               'Remember me',
               style: TextStyle(
@@ -480,18 +596,16 @@ class _RememberAndForgotRow extends StatelessWidget {
     final forgot = TextButton(
       onPressed: onForgotPassword,
       style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        minimumSize: const Size(44, 44),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       ),
       child: const Text(
         'Forgot password?',
+        maxLines: 1,
         style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800),
       ),
     );
 
-    // Wrap is intentionally used instead of a width breakpoint.
-    // It keeps both controls on one line when they fit and naturally
-    // moves the second control to the next line when device/font metrics
-    // require more space. This removes the 412px breakpoint edge case.
     return Wrap(
       alignment: WrapAlignment.spaceBetween,
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -514,13 +628,13 @@ class _SocialDivider extends StatelessWidget {
       children: [
         Expanded(child: Divider()),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 10),
           child: Text(
             'OR CONTINUE WITH',
             style: TextStyle(
               color: AppColors.textTertiary,
               fontSize: 9.5,
-              letterSpacing: 1.35,
+              letterSpacing: 1.25,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -531,72 +645,43 @@ class _SocialDivider extends StatelessWidget {
   }
 }
 
-class _CreateAccountBar extends StatelessWidget {
+class _SignUpPrompt extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const _CreateAccountBar({required this.onPressed});
+  const _SignUpPrompt({required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.52),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.11),
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 3,
+      runSpacing: 0,
+      children: [
+        const Text(
+          'Don’t have an account?',
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12.5,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final compact = constraints.maxWidth < 330;
-          const prompt = Text(
-            'New to DCX Online Store?',
+        TextButton(
+          onPressed: onPressed,
+          style: TextButton.styleFrom(
+            minimumSize: const Size(44, 44),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          ),
+          child: const Text(
+            'Sign up',
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: AppColors.primary,
               fontSize: 12.5,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w900,
             ),
-          );
-          final action = TextButton(
-            onPressed: onPressed,
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Create account',
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                SizedBox(width: 6),
-                Icon(Icons.arrow_forward_ios_rounded, size: 13),
-              ],
-            ),
-          );
-
-          if (compact) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                prompt,
-                Align(alignment: Alignment.centerRight, child: action),
-              ],
-            );
-          }
-
-          return Row(
-            children: [
-              const Expanded(child: prompt),
-              action,
-            ],
-          );
-        },
-      ),
+          ),
+        ),
+      ],
     );
   }
 }

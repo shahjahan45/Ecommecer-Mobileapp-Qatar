@@ -39,3 +39,12 @@ Phase 6.1 compacts and modernizes Product Details while preserving the existing 
 ## Phase 6.1.1 — Wishlist responsive test fix
 
 Fixes short-screen wishlist and empty-state RenderFlex overflows without changing business logic. See `PHASE_6_1_1_WISHLIST_RESPONSIVE_FIX.md`.
+
+
+## Phase 6.2 — Premium Login + App Logo
+
+The login screen now follows the latest premium reference direction and uses `assets/icon/app_icon.png` directly in the DCX Online Store brand header. Existing login validation, navigation, mock authentication, Product Details, Wishlist, and shopping logic remain unchanged. See `PHASE_6_2_PREMIUM_LOGIN_APP_LOGO_REDESIGN.md`.
+
+## OFFICIAL BRANDING
+
+The official DCX Online Store logo/app-icon source is `assets/icon/app_icon.png`. See `OFFICIAL_BRANDING_LOCK.md`. Do not replace or redesign this asset unless explicitly requested by the user.

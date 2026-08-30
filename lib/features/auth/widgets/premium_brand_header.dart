@@ -5,79 +5,45 @@ import '../../../core/theme/app_colors.dart';
 class PremiumBrandHeader extends StatelessWidget {
   const PremiumBrandHeader({super.key});
 
+  static const String _logoAsset = 'assets/icon/app_icon.png';
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 350;
+        final compact = constraints.maxWidth < 340;
+        final logoHeight = compact ? 48.0 : 56.0;
 
         return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              width: compact ? 48 : 54,
-              height: compact ? 48 : 54,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF6847F5), Color(0xFF8C6BFF)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(17),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.24),
-                    blurRadius: 24,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.shopping_bag_rounded,
-                color: Colors.white,
-                size: 28,
-              ),
-            ),
-            SizedBox(width: compact ? 11 : 14),
             Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'DCX',
-                    maxLines: 1,
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: compact ? 22 : 25,
-                      height: 1,
-                      letterSpacing: -0.7,
-                      fontWeight: FontWeight.w900,
-                    ),
+              child: Semantics(
+                image: true,
+                label: 'DCX Online Store logo',
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Image.asset(
+                    _logoAsset,
+                    height: logoHeight,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.centerLeft,
+                    filterQuality: FilterQuality.high,
+                    isAntiAlias: true,
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    'ONLINE STORE',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontSize: compact ? 9.5 : 10.5,
-                      letterSpacing: 2.0,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: compact ? 8 : 12),
             Container(
+              constraints: const BoxConstraints(minHeight: 40),
               padding: EdgeInsets.symmetric(
-                horizontal: compact ? 9 : 12,
-                vertical: 8,
+                horizontal: compact ? 10 : 13,
+                vertical: compact ? 8 : 9,
               ),
               decoration: BoxDecoration(
-                color: AppColors.successSoft.withValues(alpha: 0.92),
-                borderRadius: BorderRadius.circular(14),
+                color: const Color(0xFFEAF9F1),
+                borderRadius: BorderRadius.circular(18),
                 border: Border.all(
                   color: AppColors.success.withValues(alpha: 0.18),
                 ),
@@ -86,16 +52,16 @@ class PremiumBrandHeader extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    Icons.shield_rounded,
-                    size: 15,
+                    Icons.verified_user_rounded,
+                    size: 16,
                     color: AppColors.success,
                   ),
-                  SizedBox(width: 5),
+                  SizedBox(width: 6),
                   Text(
                     'Secure',
                     style: TextStyle(
                       color: AppColors.success,
-                      fontSize: 11,
+                      fontSize: 11.5,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
