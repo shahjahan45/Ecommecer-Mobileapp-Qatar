@@ -6,6 +6,8 @@ import '../../core/theme/app_colors.dart';
 import '../../data/demo_catalog.dart';
 import '../../models/product.dart';
 import '../../widgets/product_card.dart';
+import '../cart/cart_controller.dart';
+import '../checkout/checkout_page.dart';
 import '../wishlist/wishlist_controller.dart';
 import 'widgets/product_gallery.dart';
 import 'widgets/product_info_card.dart';
@@ -68,6 +70,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   void _showAddedFeedback({required bool buyNow}) {
     FocusManager.instance.primaryFocus?.unfocus();
+    final selectedVariant =
+        _variants.isEmpty ? null : _variants[_selectedVariant];
+    CartController.instance.add(
+      product,
+      quantity: _quantity,
+      variant: selectedVariant,
+    );
+
+    if (buyNow) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => const CheckoutPage()),
+      );
+      return;
+    }
+
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -80,9 +97,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  buyNow
-                      ? 'Your item is ready to continue to checkout.'
-                      : '$_quantity × ${product.name} added to your cart.',
+                  '$_quantity × ${product.name} added to your cart.',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -523,6 +538,7 @@ class _ProductDetailsContent extends StatelessWidget {
                     onTap: () => onRelatedProductTap(related),
                     onAdd: related.inStock
                         ? () {
+                            CartController.instance.add(related);
                             ScaffoldMessenger.of(context)
                               ..hideCurrentSnackBar()
                               ..showSnackBar(

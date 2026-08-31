@@ -14,6 +14,7 @@ import '../../models/product.dart';
 import '../../widgets/category_card.dart';
 import '../../widgets/product_card.dart';
 import '../../widgets/section_header.dart';
+import '../cart/cart_controller.dart';
 import '../categories/categories_page.dart';
 import '../products/product_details_page.dart';
 import '../products/product_listing_page.dart';
@@ -231,16 +232,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showAdded(Product product) {
+    final quantity = CartController.instance.add(product);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
+          behavior: SnackBarBehavior.floating,
           content: Row(
             children: [
               const Icon(Icons.check_circle_rounded,
                   color: Colors.white, size: 20),
               const SizedBox(width: 10),
-              Expanded(child: Text('${product.name} added to your cart.')),
+              Expanded(
+                child: Text(
+                  quantity >= product.stockQuantity
+                      ? '${product.name} is at the available stock limit in your cart.'
+                      : '${product.name} added to your cart.',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),

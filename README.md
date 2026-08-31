@@ -1,3 +1,9 @@
+# DCX Online Store — Phase 7 Cumulative Build
+
+This cumulative build adds the professional synchronized cart and checkout foundation while preserving every previous UI, responsive fix, official-branding lock and test guard.
+
+See `PHASE_7_PROFESSIONAL_CART_CHECKOUT.md` for the Phase 7 implementation summary.
+
 # DCX Online Store Mobile — Phase 6
 
 Cumulative Flutter source for DCX Online Store through Phase 6.

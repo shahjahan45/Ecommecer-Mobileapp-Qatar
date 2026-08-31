@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/empty_state_card.dart';
 import '../../models/product.dart';
 import '../../widgets/product_card.dart';
+import '../cart/cart_controller.dart';
 import '../products/product_details_page.dart';
 import '../products/widgets/product_list_tile.dart';
 import 'widgets/wishlist_hero_card.dart';
@@ -278,6 +279,7 @@ class _WishlistPageState extends State<WishlistPage> {
   }
 
   void _addToCart(Product product) {
+    CartController.instance.add(product);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(

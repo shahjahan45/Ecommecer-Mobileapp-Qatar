@@ -63,6 +63,7 @@ void main() {
               currentIndex: 2,
               position: 2,
               items: items,
+              badgeCounts: const <int, int>{2: 125},
               onSelected: (_) {},
             ),
           ),

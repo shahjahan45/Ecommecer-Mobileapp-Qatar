@@ -1,8 +1,8 @@
 name: ecommerce_mobile
-version: 1.6.6+16
+version: 1.7.1+18
 publish_to: 'none'
 
-description: Cumulative DCX Online Store v1.6.6 with the official user-supplied DCX logo locked, responsive login fixes, and first-frame branding semantics preserved.
+description: Cumulative DCX Online Store Phase 7 with professional synchronized cart, responsive cart UI, secure checkout foundation, wishlist, product details, authentication, and official branding.
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

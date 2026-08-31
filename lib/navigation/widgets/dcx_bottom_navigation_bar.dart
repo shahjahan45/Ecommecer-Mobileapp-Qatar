@@ -22,6 +22,7 @@ class DcxBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
   final double position;
   final List<DcxNavigationItem> items;
+  final Map<int, int> badgeCounts;
   final ValueChanged<int> onSelected;
 
   const DcxBottomNavigationBar({
@@ -29,6 +30,7 @@ class DcxBottomNavigationBar extends StatelessWidget {
     required this.currentIndex,
     required this.position,
     required this.items,
+    this.badgeCounts = const <int, int>{},
     required this.onSelected,
   }) : assert(items.length > 1);
 
@@ -90,6 +92,7 @@ class DcxBottomNavigationBar extends StatelessWidget {
                                 key: ValueKey('bottom-nav-$index'),
                                 item: items[index],
                                 selected: index == currentIndex,
+                                badgeCount: badgeCounts[index] ?? 0,
                                 onTap: () => onSelected(index),
                               ),
                             );
@@ -111,12 +114,14 @@ class DcxBottomNavigationBar extends StatelessWidget {
 class _NavigationButton extends StatelessWidget {
   final DcxNavigationItem item;
   final bool selected;
+  final int badgeCount;
   final VoidCallback onTap;
 
   const _NavigationButton({
     super.key,
     required this.item,
     required this.selected,
+    required this.badgeCount,
     required this.onTap,
   });
 
@@ -137,27 +142,59 @@ class _NavigationButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  switchInCurve: Curves.easeOutBack,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: ScaleTransition(
-                        scale: Tween<double>(begin: 0.82, end: 1)
-                            .animate(animation),
-                        child: child,
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 220),
+                      switchInCurve: Curves.easeOutBack,
+                      switchOutCurve: Curves.easeInCubic,
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: ScaleTransition(
+                            scale: Tween<double>(begin: 0.82, end: 1)
+                                .animate(animation),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: Icon(
+                        selected ? item.selectedIcon : item.icon,
+                        key: ValueKey('${item.label}-$selected'),
+                        size: 22,
+                        color: selected
+                            ? AppColors.primary
+                            : AppColors.textSecondary,
                       ),
-                    );
-                  },
-                  child: Icon(
-                    selected ? item.selectedIcon : item.icon,
-                    key: ValueKey('${item.label}-$selected'),
-                    size: 22,
-                    color:
-                        selected ? AppColors.primary : AppColors.textSecondary,
-                  ),
+                    ),
+                    if (badgeCount > 0)
+                      Positioned(
+                        right: -10,
+                        top: -8,
+                        child: Container(
+                          constraints:
+                              const BoxConstraints(minWidth: 17, minHeight: 17),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.danger,
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                            border: Border.all(
+                                color: AppColors.surface, width: 1.5),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            badgeCount > 99 ? '99+' : '$badgeCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              height: 1,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 3),
                 ConstrainedBox(

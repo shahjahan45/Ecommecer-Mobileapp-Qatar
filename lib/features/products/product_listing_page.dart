@@ -8,6 +8,7 @@ import '../../core/widgets/empty_state_card.dart';
 import '../../data/demo_catalog.dart';
 import '../../models/product.dart';
 import '../../widgets/product_card.dart';
+import '../cart/cart_controller.dart';
 import '../search/search_page.dart';
 import 'product_details_page.dart';
 import 'product_filter.dart';
@@ -125,10 +126,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
   }
 
   void _add(Product product) {
+    CartController.instance.add(product);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        SnackBar(content: Text('${product.name} added to your cart.')),
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text('${product.name} added to your cart.'),
+        ),
       );
   }
 

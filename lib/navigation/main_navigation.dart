@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../features/cart/cart_controller.dart';
 import '../features/cart/cart_page.dart';
 import '../features/categories/categories_page.dart';
 import '../features/home/home_page.dart';
@@ -110,11 +111,20 @@ class _MainNavigationState extends State<MainNavigation> {
           final position = _navigationPosition;
           final visualIndex = position.round();
 
-          return DcxBottomNavigationBar(
-            currentIndex: visualIndex,
-            position: position,
-            items: _items,
-            onSelected: _selectTab,
+          return AnimatedBuilder(
+            animation: CartController.instance,
+            builder: (context, child) {
+              return DcxBottomNavigationBar(
+                currentIndex: visualIndex,
+                position: position,
+                items: _items,
+                badgeCounts: <int, int>{
+                  if (CartController.instance.totalQuantity > 0)
+                    2: CartController.instance.totalQuantity,
+                },
+                onSelected: _selectTab,
+              );
+            },
           );
         },
       ),
