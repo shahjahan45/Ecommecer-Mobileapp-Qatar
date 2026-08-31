@@ -22,8 +22,7 @@ class FadeSlideIn extends StatelessWidget {
         final delayedValue = delayMilliseconds == 0
             ? value
             : ((value * (420 + delayMilliseconds) - delayMilliseconds) / 420)
-                .clamp(0.0, 1.0)
-                .toDouble();
+                .clamp(0.0, 1.0).toDouble();
 
         return Opacity(
           opacity: delayedValue,

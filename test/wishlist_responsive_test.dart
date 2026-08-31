@@ -73,8 +73,7 @@ void main() {
     );
   }
 
-  testWidgets('wishlist no-results state can scroll on a short phone',
-      (tester) async {
+  testWidgets('wishlist no-results state can scroll on a short phone', (tester) async {
     WishlistController.instance.resetToDemoDefaults();
     tester.view.physicalSize = const Size(360, 640);
     tester.view.devicePixelRatio = 1;
@@ -100,4 +99,5 @@ void main() {
     expect(find.text('Reset filters'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
 }

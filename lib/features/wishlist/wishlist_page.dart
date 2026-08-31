@@ -177,6 +177,7 @@ class _WishlistPageState extends State<WishlistPage> {
     );
   }
 
+
   Widget _buildEmptySliver({
     required double contentWidth,
     required Widget child,
@@ -287,8 +288,7 @@ class _WishlistPageState extends State<WishlistPage> {
           behavior: SnackBarBehavior.floating,
           content: Row(
             children: [
-              const Icon(Icons.check_circle_rounded,
-                  color: Colors.white, size: 20),
+              const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(

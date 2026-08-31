@@ -27,8 +27,7 @@ class CartSummaryCard extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.receipt_long_rounded,
-                  color: AppColors.primary, size: 20),
+              Icon(Icons.receipt_long_rounded, color: AppColors.primary, size: 20),
               SizedBox(width: 8),
               Text(
                 'Order summary',
@@ -152,9 +151,7 @@ class _DeliveryProgress extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                complete
-                    ? Icons.local_shipping_rounded
-                    : Icons.inventory_2_outlined,
+                complete ? Icons.local_shipping_rounded : Icons.inventory_2_outlined,
                 color: complete ? AppColors.success : AppColors.primary,
                 size: 18,
               ),

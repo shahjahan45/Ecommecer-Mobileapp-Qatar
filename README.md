@@ -1,8 +1,12 @@
-# DCX Online Store — Phase 7 Cumulative Build
+# DCX Online Store — Phase 8 Cumulative Build
 
-This cumulative build adds the professional synchronized cart and checkout foundation while preserving every previous UI, responsive fix, official-branding lock and test guard.
+This cumulative build adds the professional Orders and integrated Order Tracking experience while preserving every previous cart, checkout, wishlist, product-details, authentication, responsive fix, official-branding lock and test guard.
 
-See `PHASE_7_PROFESSIONAL_CART_CHECKOUT.md` for the Phase 7 implementation summary.
+See `PHASE_8_PROFESSIONAL_ORDERS_TRACKING.md` for the Phase 8 implementation summary and `PHASE_8_VERIFICATION_REPORT.md` for packaging preflight details.
+
+## Phase 8 highlight
+
+The Orders tab is now a mobile-first post-purchase hub with search, status filters, compact order cards, Buy Again, professional Order Details, expected delivery information, visual order progress, carrier/tracking data, detailed shipping history, inline package contents and responsive tests across phones, tablets and landscape.
 
 # DCX Online Store Mobile — Phase 6
 
@@ -16,7 +20,9 @@ Cumulative Flutter source for DCX Online Store through Phase 6.
 - Search, suggestions, filters, sorting, grid/list browsing
 - Product Details with gallery, variants, quantity, reviews, specifications, and sticky purchase controls
 - Phase 6 synchronized professional Wishlist UI kit
-- Cart, Orders, Notifications, and Profile foundations
+- Professional synchronized Cart and Checkout foundation
+- Professional Orders history and integrated Order Tracking
+- Notifications and Profile foundations
 - Production-safe responsive bottom navigation
 
 ## Phase 6 highlight
@@ -54,3 +60,13 @@ The login screen now follows the latest premium reference direction and uses `as
 ## OFFICIAL BRANDING
 
 The official DCX Online Store logo/app-icon source is `assets/icon/app_icon.png`. See `OFFICIAL_BRANDING_LOCK.md`. Do not replace or redesign this asset unless explicitly requested by the user.
+
+## Phase 8.1 update
+
+Phase 8.1 hardens Product Details route lifecycle behavior and replaces textual color variant chips with professional real-color swatches. See `PHASE_8_1_PRODUCT_DETAILS_STABILITY_COLOR_SWATCH_FIX.md`.
+
+Project version: `1.8.1+20`.
+
+
+## Phase 8.4
+Stable accessibility semantics for product variant controls. Official branding remains unchanged.

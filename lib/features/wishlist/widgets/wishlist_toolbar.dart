@@ -75,9 +75,7 @@ class WishlistToolbar extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                visibleCount == 1
-                    ? '1 saved product'
-                    : '$visibleCount saved products',
+                visibleCount == 1 ? '1 saved product' : '$visibleCount saved products',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(

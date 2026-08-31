@@ -17,6 +17,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   final CartController _cart = CartController.instance;
   String _delivery = 'Standard delivery';
   String _payment = 'Cash on delivery';
+  _DeliveryAddressData? _deliveryAddress;
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +54,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   physics: const ClampingScrollPhysics(),
                   slivers: [
                     SliverPadding(
-                      padding:
-                          EdgeInsets.fromLTRB(horizontal, 12, horizontal, 28),
+                      padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 28),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -67,9 +67,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 _CheckoutOptionCard(
                                   icon: Icons.location_on_outlined,
                                   title: 'Delivery address',
-                                  subtitle:
-                                      'Add or confirm your delivery address',
-                                  actionLabel: 'Add address',
+                                  subtitle: _deliveryAddress == null
+                                      ? 'Add or confirm your delivery address'
+                                      : '${_deliveryAddress!.fullName} • ${_deliveryAddress!.address}',
+                                  actionLabel: _deliveryAddress == null ? 'Add address' : 'Edit',
                                   onTap: _showAddressSheet,
                                 ),
                                 const SizedBox(height: 12),
@@ -119,90 +120,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _showAddressSheet() async {
-    final nameController = TextEditingController();
-    final mobileController = TextEditingController();
-    final addressController = TextEditingController();
+    FocusManager.instance.primaryFocus?.unfocus();
 
-    await showModalBottomSheet<void>(
+    final result = await showModalBottomSheet<_DeliveryAddressData>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       showDragHandle: true,
       backgroundColor: AppColors.surface,
-      builder: (sheetContext) {
-        final bottomInset = MediaQuery.viewInsetsOf(sheetContext).bottom;
-        return SafeArea(
-          top: false,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + bottomInset),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  'Delivery address',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Enter the details for this order.',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: nameController,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Full name',
-                    prefixIcon: Icon(Icons.person_outline_rounded),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: mobileController,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Mobile number',
-                    prefixIcon: Icon(Icons.phone_outlined),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: addressController,
-                  minLines: 2,
-                  maxLines: 4,
-                  decoration: const InputDecoration(
-                    labelText: 'Delivery address',
-                    alignLabelWithHint: true,
-                    prefixIcon: Icon(Icons.location_on_outlined),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 52,
-                  child: FilledButton(
-                    onPressed: () => Navigator.pop(sheetContext),
-                    child: const Text('Save address'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+      builder: (sheetContext) => _DeliveryAddressSheet(
+        initialValue: _deliveryAddress,
+      ),
     );
 
-    nameController.dispose();
-    mobileController.dispose();
-    addressController.dispose();
+    if (!mounted || result == null) return;
+    setState(() => _deliveryAddress = result);
   }
 
   Future<void> _showDeliverySheet() async {
@@ -493,8 +425,177 @@ class _CheckoutOptionCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 2),
-              const Icon(Icons.chevron_right_rounded,
-                  size: 18, color: AppColors.primary),
+              const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.primary),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class _DeliveryAddressData {
+  final String fullName;
+  final String mobile;
+  final String address;
+
+  const _DeliveryAddressData({
+    required this.fullName,
+    required this.mobile,
+    required this.address,
+  });
+}
+
+class _DeliveryAddressSheet extends StatefulWidget {
+  final _DeliveryAddressData? initialValue;
+
+  const _DeliveryAddressSheet({this.initialValue});
+
+  @override
+  State<_DeliveryAddressSheet> createState() => _DeliveryAddressSheetState();
+}
+
+class _DeliveryAddressSheetState extends State<_DeliveryAddressSheet> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _mobileController;
+  late final TextEditingController _addressController;
+  final FocusNode _nameFocus = FocusNode();
+  final FocusNode _mobileFocus = FocusNode();
+  final FocusNode _addressFocus = FocusNode();
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.initialValue?.fullName ?? '');
+    _mobileController = TextEditingController(text: widget.initialValue?.mobile ?? '');
+    _addressController = TextEditingController(text: widget.initialValue?.address ?? '');
+  }
+
+  @override
+  void dispose() {
+    _nameFocus.dispose();
+    _mobileFocus.dispose();
+    _addressFocus.dispose();
+    _nameController.dispose();
+    _mobileController.dispose();
+    _addressController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveAddress() async {
+    if (_saving) return;
+    setState(() => _saving = true);
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+
+    final result = _DeliveryAddressData(
+      fullName: _nameController.text.trim(),
+      mobile: _mobileController.text.trim(),
+      address: _addressController.text.trim(),
+    );
+
+    Navigator.of(context).pop(result);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final horizontal = MediaQuery.sizeOf(context).width < 360 ? 16.0 : 20.0;
+
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      padding: EdgeInsets.only(bottom: bottomInset),
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Delivery address',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Enter the details for this order.',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                key: const Key('checkout-address-name'),
+                controller: _nameController,
+                focusNode: _nameFocus,
+                textInputAction: TextInputAction.next,
+                onSubmitted: (_) => _mobileFocus.requestFocus(),
+                scrollPadding: const EdgeInsets.only(bottom: 140),
+                decoration: const InputDecoration(
+                  labelText: 'Full name',
+                  prefixIcon: Icon(Icons.person_outline_rounded),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                key: const Key('checkout-address-mobile'),
+                controller: _mobileController,
+                focusNode: _mobileFocus,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.next,
+                onSubmitted: (_) => _addressFocus.requestFocus(),
+                scrollPadding: const EdgeInsets.only(bottom: 140),
+                decoration: const InputDecoration(
+                  labelText: 'Mobile number',
+                  prefixIcon: Icon(Icons.phone_outlined),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                key: const Key('checkout-address-line'),
+                controller: _addressController,
+                focusNode: _addressFocus,
+                minLines: 2,
+                maxLines: 4,
+                textInputAction: TextInputAction.newline,
+                scrollPadding: const EdgeInsets.only(bottom: 180),
+                decoration: const InputDecoration(
+                  labelText: 'Delivery address',
+                  alignLabelWithHint: true,
+                  prefixIcon: Icon(Icons.location_on_outlined),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 52,
+                child: FilledButton(
+                  key: const Key('checkout-save-address'),
+                  onPressed: _saving ? null : _saveAddress,
+                  child: _saving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Save address'),
+                ),
+              ),
             ],
           ),
         ),
@@ -552,8 +653,7 @@ class _CheckoutTrustCard extends StatelessWidget {
     return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.lock_outline_rounded,
-            size: 15, color: AppColors.textTertiary),
+        Icon(Icons.lock_outline_rounded, size: 15, color: AppColors.textTertiary),
         SizedBox(width: 6),
         Flexible(
           child: Text(

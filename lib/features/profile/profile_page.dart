@@ -31,8 +31,7 @@ class ProfilePage extends StatelessWidget {
               children: const [
                 _ProfileHeader(),
                 SizedBox(height: 18),
-                _ProfileTile(
-                    Icons.person_outline_rounded, 'Personal information'),
+                _ProfileTile(Icons.person_outline_rounded, 'Personal information'),
                 _ProfileTile(Icons.location_on_outlined, 'Delivery addresses'),
                 _ProfileTile(Icons.favorite_border_rounded, 'Wishlist'),
                 _ProfileTile(Icons.notifications_none_rounded, 'Notifications'),
