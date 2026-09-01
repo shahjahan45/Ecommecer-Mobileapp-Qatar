@@ -33,7 +33,8 @@ class OrderItemTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: product.softColor,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.border.withValues(alpha: 0.8)),
+                  border: Border.all(
+                      color: AppColors.border.withValues(alpha: 0.8)),
                 ),
                 alignment: Alignment.center,
                 child: Icon(product.icon, color: product.accent, size: 26),
@@ -67,7 +68,8 @@ class OrderItemTile extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        if (item.variant != null && item.variant!.trim().isNotEmpty)
+                        if (item.variant != null &&
+                            item.variant!.trim().isNotEmpty)
                           Text(
                             'Size ${item.variant}',
                             style: const TextStyle(

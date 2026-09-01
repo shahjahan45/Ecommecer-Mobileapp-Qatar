@@ -69,7 +69,8 @@ void main() {
     );
   }
 
-  testWidgets('empty cart remains scrollable and overflow free', (tester) async {
+  testWidgets('empty cart remains scrollable and overflow free',
+      (tester) async {
     CartController.instance.resetForTesting();
     tester.view.physicalSize = const Size(320, 568);
     tester.view.devicePixelRatio = 1;

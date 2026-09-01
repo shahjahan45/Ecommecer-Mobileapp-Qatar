@@ -57,16 +57,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   List<Product> get _visibleProducts {
     var items = DemoCatalog.products.where((product) {
-      if (widget.categoryName != null && product.category != widget.categoryName) {
+      if (widget.categoryName != null &&
+          product.category != widget.categoryName) {
         return false;
       }
-      if (_subcategory != null && _subcategory!.isNotEmpty && product.subcategory != _subcategory) {
+      if (_subcategory != null &&
+          _subcategory!.isNotEmpty &&
+          product.subcategory != _subcategory) {
         return false;
       }
-      if (_query.isNotEmpty && !product.searchableText.contains(_query.toLowerCase())) {
+      if (_query.isNotEmpty &&
+          !product.searchableText.contains(_query.toLowerCase())) {
         return false;
       }
-      if (product.price < _filter.minPrice || product.price > _filter.maxPrice) {
+      if (product.price < _filter.minPrice ||
+          product.price > _filter.maxPrice) {
         return false;
       }
       if (product.rating < _filter.minRating) return false;
@@ -137,7 +142,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
     final products = _visibleProducts;
     final category = widget.categoryName == null
         ? null
-        : DemoCatalog.categories.where((item) => item.name == widget.categoryName).firstOrNull;
+        : DemoCatalog.categories
+            .where((item) => item.name == widget.categoryName)
+            .firstOrNull;
 
     return Scaffold(
       appBar: AppBar(
@@ -170,14 +177,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     resultCount: products.length,
                     onTap: () async {
                       final query = await Navigator.of(context).push<String>(
-                        AppPageRoute(page: SearchPage(initialQuery: _query, returnQuery: true)),
+                        AppPageRoute(
+                            page: SearchPage(
+                                initialQuery: _query, returnQuery: true)),
                       );
                       if (query != null && mounted) {
                         setState(() => _query = query);
                       }
                     },
                   ),
-                  if (category != null && category.subcategories.isNotEmpty) ...[
+                  if (category != null &&
+                      category.subcategories.isNotEmpty) ...[
                     const SizedBox(height: 18),
                     SizedBox(
                       height: 40,
@@ -187,13 +197,18 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         itemCount: category.subcategories.length + 1,
                         separatorBuilder: (_, __) => const SizedBox(width: 8),
                         itemBuilder: (context, index) {
-                          final label = index == 0 ? 'All' : category.subcategories[index - 1];
-                          final selected = index == 0 ? _subcategory == null : _subcategory == label;
+                          final label = index == 0
+                              ? 'All'
+                              : category.subcategories[index - 1];
+                          final selected = index == 0
+                              ? _subcategory == null
+                              : _subcategory == label;
                           return ChoiceChip(
                             selected: selected,
                             label: Text(label),
                             onSelected: (_) {
-                              setState(() => _subcategory = index == 0 ? null : label);
+                              setState(() =>
+                                  _subcategory = index == 0 ? null : label);
                             },
                           );
                         },
@@ -256,7 +271,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
               child: EmptyStateCard(
                 icon: Icons.search_off_rounded,
                 title: 'No matching products',
-                message: 'Try a broader search or reset one of your active filters.',
+                message:
+                    'Try a broader search or reset one of your active filters.',
               ),
             )
           else if (_gridView)
@@ -337,7 +353,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
       ),
     );
   }
-
 }
 
 class _SearchSummary extends StatelessWidget {
@@ -393,7 +408,8 @@ class _SearchSummary extends StatelessWidget {
                             : 'Explore $category',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900),
+                    style: const TextStyle(
+                        fontSize: 13.5, fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(height: 3),
                   Text(
@@ -407,7 +423,8 @@ class _SearchSummary extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.primary),
+            const Icon(Icons.arrow_forward_ios_rounded,
+                size: 15, color: AppColors.primary),
           ],
         ),
       ),
@@ -438,12 +455,15 @@ class _ControlButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: active ? AppColors.primarySoft : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: active ? const Color(0xFFD8CFFF) : AppColors.border),
+          border: Border.all(
+              color: active ? const Color(0xFFD8CFFF) : AppColors.border),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 17, color: active ? AppColors.primary : AppColors.textPrimary),
+            Icon(icon,
+                size: 17,
+                color: active ? AppColors.primary : AppColors.textPrimary),
             const SizedBox(width: 6),
             Flexible(
               child: Text(
@@ -469,7 +489,8 @@ class _ViewButton extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _ViewButton({required this.icon, required this.selected, required this.onTap});
+  const _ViewButton(
+      {required this.icon, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -515,66 +536,80 @@ class _SortSheet extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-            Container(
-              width: 44,
-              height: 5,
-              decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(AppRadius.pill),
+              Container(
+                width: 44,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
               ),
-            ),
-            const SizedBox(height: 18),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Sort products', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
-            ),
-            const SizedBox(height: 12),
-            ...ProductSort.values.map((sort) {
-              final isSelected = sort == selected;
-              return AppPressable(
-                onTap: () => Navigator.of(context).pop(sort),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primarySoft : AppColors.background,
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(
-                      color: isSelected ? const Color(0xFFD8CFFF) : AppColors.border,
+              const SizedBox(height: 18),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Sort products',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+              ),
+              const SizedBox(height: 12),
+              ...ProductSort.values.map((sort) {
+                final isSelected = sort == selected;
+                return AppPressable(
+                  onTap: () => Navigator.of(context).pop(sort),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 13),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.primarySoft
+                          : AppColors.background,
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xFFD8CFFF)
+                            : AppColors.border,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _sortLabel(sort),
+                            style: TextStyle(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.textPrimary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: AppMotion.fast,
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.primary
+                                : Colors.transparent,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.textTertiary,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: isSelected
+                              ? const Icon(Icons.check_rounded,
+                                  color: Colors.white, size: 14)
+                              : null,
+                        ),
+                      ],
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _sortLabel(sort),
-                          style: TextStyle(
-                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                      AnimatedContainer(
-                        duration: AppMotion.fast,
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          color: isSelected ? AppColors.primary : Colors.transparent,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isSelected ? AppColors.primary : AppColors.textTertiary,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: isSelected
-                            ? const Icon(Icons.check_rounded, color: Colors.white, size: 14)
-                            : null,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }),
+                );
+              }),
             ],
           ),
         ),

@@ -91,15 +91,18 @@ class ProductCard extends StatelessWidget {
                               width: 38,
                               height: 38,
                               decoration: BoxDecoration(
-                                color: AppColors.surface.withValues(alpha: 0.94),
-                                borderRadius: BorderRadius.circular(AppRadius.sm),
+                                color:
+                                    AppColors.surface.withValues(alpha: 0.94),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.sm),
                                 boxShadow: AppShadows.soft,
                               ),
                               alignment: Alignment.center,
                               child: AnimatedSwitcher(
                                 duration: AppMotion.fast,
                                 transitionBuilder: (child, animation) =>
-                                    ScaleTransition(scale: animation, child: child),
+                                    ScaleTransition(
+                                        scale: animation, child: child),
                                 child: Icon(
                                   favorite
                                       ? Icons.favorite_rounded
@@ -177,7 +180,8 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded, color: AppColors.star, size: 17),
+                      const Icon(Icons.star_rounded,
+                          color: AppColors.star, size: 17),
                       const SizedBox(width: 3),
                       Text(
                         product.rating.toStringAsFixed(1),

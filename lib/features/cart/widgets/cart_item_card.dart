@@ -91,7 +91,8 @@ class CartItemCard extends StatelessWidget {
                               label: 'Remove ${product.name} from cart',
                               child: AppPressable(
                                 onTap: onRemove,
-                                borderRadius: BorderRadius.circular(AppRadius.pill),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.pill),
                                 child: const Padding(
                                   padding: EdgeInsets.all(4),
                                   child: Icon(
@@ -108,7 +109,8 @@ class CartItemCard extends StatelessWidget {
                         Text(
                           [
                             if (product.brand.isNotEmpty) product.brand,
-                            if (item.variant != null && item.variant!.isNotEmpty)
+                            if (item.variant != null &&
+                                item.variant!.isNotEmpty)
                               item.variant!,
                           ].join(' • '),
                           maxLines: 1,
@@ -189,7 +191,8 @@ class CartItemCard extends StatelessWidget {
                           minimumSize: const Size(44, 40),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        icon: const Icon(Icons.favorite_border_rounded, size: 17),
+                        icon:
+                            const Icon(Icons.favorite_border_rounded, size: 17),
                         label: Text(
                           compact ? 'Save' : 'Save for later',
                           maxLines: 1,
@@ -264,7 +267,9 @@ class _CartQuantityStepper extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _StepperButton(
-            icon: quantity > 1 ? Icons.remove_rounded : Icons.delete_outline_rounded,
+            icon: quantity > 1
+                ? Icons.remove_rounded
+                : Icons.delete_outline_rounded,
             label: quantity > 1 ? 'Decrease quantity' : 'Remove item',
             onTap: onDecrement,
           ),

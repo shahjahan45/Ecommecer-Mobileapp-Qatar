@@ -82,7 +82,8 @@ class CartPage extends StatelessWidget {
                   physics: const ClampingScrollPhysics(),
                   slivers: [
                     SliverPadding(
-                      padding: EdgeInsets.fromLTRB(horizontal, 10, horizontal, 0),
+                      padding:
+                          EdgeInsets.fromLTRB(horizontal, 10, horizontal, 0),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -93,10 +94,12 @@ class CartPage extends StatelessWidget {
                       ),
                     ),
                     SliverPadding(
-                      padding: EdgeInsets.fromLTRB(horizontal, 14, horizontal, 0),
+                      padding:
+                          EdgeInsets.fromLTRB(horizontal, 14, horizontal, 0),
                       sliver: SliverList.separated(
                         itemCount: items.length,
-                        separatorBuilder: (context, index) => const SizedBox(height: 12),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 12),
                         itemBuilder: (context, index) {
                           final item = items[index];
                           return Center(
@@ -114,7 +117,8 @@ class CartPage extends StatelessWidget {
                                   }
                                 },
                                 onRemove: () => _removeWithUndo(context, item),
-                                onMoveToWishlist: () => _moveToWishlist(context, item),
+                                onMoveToWishlist: () =>
+                                    _moveToWishlist(context, item),
                               ),
                             ),
                           );
@@ -122,7 +126,8 @@ class CartPage extends StatelessWidget {
                       ),
                     ),
                     SliverPadding(
-                      padding: EdgeInsets.fromLTRB(horizontal, 16, horizontal, 32),
+                      padding:
+                          EdgeInsets.fromLTRB(horizontal, 16, horizontal, 32),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -279,7 +284,9 @@ class _CartStatusStrip extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: Icon(
-              freeDelivery ? Icons.local_shipping_rounded : Icons.shopping_bag_rounded,
+              freeDelivery
+                  ? Icons.local_shipping_rounded
+                  : Icons.shopping_bag_rounded,
               color: freeDelivery ? AppColors.success : AppColors.primary,
               size: 20,
             ),

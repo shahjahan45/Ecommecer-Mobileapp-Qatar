@@ -1,8 +1,8 @@
 name: ecommerce_mobile
-version: 1.8.6+25
+version: 1.9.1+27
 publish_to: 'none'
 
-description: Cumulative DCX Online Store Phase 8.1 with stable product-detail navigation, professional color swatches, orders and tracking, synchronized cart and checkout, wishlist, authentication, and official branding.
+description: Cumulative DCX Online Store Phase 9 with a premium mobile-first account center, address book, payment preferences, security and support, plus professional orders, checkout, cart, wishlist, product discovery, authentication, and official branding.
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

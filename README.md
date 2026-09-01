@@ -70,3 +70,7 @@ Project version: `1.8.1+20`.
 
 ## Phase 8.4
 Stable accessibility semantics for product variant controls. Official branding remains unchanged.
+
+## Phase 9 — Premium Account Center
+
+The Profile tab is now a professional mobile-first customer account hub with direct access to orders, wishlist, delivery addresses, payment preferences, security information, notifications, and help. The official DCX logo remains the single branding source at `assets/icon/app_icon.png`.
