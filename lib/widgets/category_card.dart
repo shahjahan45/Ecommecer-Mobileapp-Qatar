@@ -30,9 +30,7 @@ class CategoryCard extends StatelessWidget {
           color: selected ? category.softColor : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
           border: Border.all(
-            color: selected
-                ? category.accent.withValues(alpha: 0.28)
-                : AppColors.border,
+            color: selected ? category.accent.withValues(alpha: 0.28) : AppColors.border,
           ),
           boxShadow: selected ? AppShadows.soft : const [],
         ),

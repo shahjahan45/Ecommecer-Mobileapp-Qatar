@@ -54,8 +54,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   physics: const ClampingScrollPhysics(),
                   slivers: [
                     SliverPadding(
-                      padding:
-                          EdgeInsets.fromLTRB(horizontal, 12, horizontal, 28),
+                      padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 28),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -71,9 +70,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   subtitle: _deliveryAddress == null
                                       ? 'Add or confirm your delivery address'
                                       : '${_deliveryAddress!.fullName} • ${_deliveryAddress!.address}',
-                                  actionLabel: _deliveryAddress == null
-                                      ? 'Add address'
-                                      : 'Edit',
+                                  actionLabel: _deliveryAddress == null ? 'Add address' : 'Edit',
                                   onTap: _showAddressSheet,
                                 ),
                                 const SizedBox(height: 12),
@@ -428,8 +425,7 @@ class _CheckoutOptionCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 2),
-              const Icon(Icons.chevron_right_rounded,
-                  size: 18, color: AppColors.primary),
+              const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.primary),
             ],
           ),
         ),
@@ -437,6 +433,7 @@ class _CheckoutOptionCard extends StatelessWidget {
     );
   }
 }
+
 
 class _DeliveryAddressData {
   final String fullName;
@@ -471,12 +468,9 @@ class _DeliveryAddressSheetState extends State<_DeliveryAddressSheet> {
   @override
   void initState() {
     super.initState();
-    _nameController =
-        TextEditingController(text: widget.initialValue?.fullName ?? '');
-    _mobileController =
-        TextEditingController(text: widget.initialValue?.mobile ?? '');
-    _addressController =
-        TextEditingController(text: widget.initialValue?.address ?? '');
+    _nameController = TextEditingController(text: widget.initialValue?.fullName ?? '');
+    _mobileController = TextEditingController(text: widget.initialValue?.mobile ?? '');
+    _addressController = TextEditingController(text: widget.initialValue?.address ?? '');
   }
 
   @override
@@ -659,8 +653,7 @@ class _CheckoutTrustCard extends StatelessWidget {
     return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.lock_outline_rounded,
-            size: 15, color: AppColors.textTertiary),
+        Icon(Icons.lock_outline_rounded, size: 15, color: AppColors.textTertiary),
         SizedBox(width: 6),
         Flexible(
           child: Text(

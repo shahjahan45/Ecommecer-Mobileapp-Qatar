@@ -2,32 +2,38 @@ import 'package:flutter/material.dart';
 
 class BrandMark extends StatelessWidget {
   final bool compact;
+  final double? height;
+  final double? maxWidth;
+  final AlignmentGeometry alignment;
 
   const BrandMark({
     super.key,
     this.compact = false,
+    this.height,
+    this.maxWidth,
+    this.alignment = Alignment.centerLeft,
   });
 
   static const String _logoAsset = 'assets/icon/app_icon.png';
 
   @override
   Widget build(BuildContext context) {
-    final height = compact ? 48.0 : 138.0;
-    final maxWidth = compact ? 58.0 : 154.0;
+    final resolvedHeight = height ?? (compact ? 48.0 : 138.0);
+    final resolvedMaxWidth = maxWidth ?? (compact ? 58.0 : 154.0);
 
     return Semantics(
       image: true,
       label: 'DCX Online Store official logo',
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: maxWidth,
-          maxHeight: height,
+          maxWidth: resolvedMaxWidth,
+          maxHeight: resolvedHeight,
         ),
         child: Image.asset(
           _logoAsset,
-          height: height,
+          height: resolvedHeight,
           fit: BoxFit.contain,
-          alignment: Alignment.centerLeft,
+          alignment: alignment,
           filterQuality: FilterQuality.high,
           isAntiAlias: true,
           gaplessPlayback: true,

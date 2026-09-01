@@ -1,33 +1,45 @@
-# DCX Online Store — Phase 8 Cumulative Build
+# DCX Online Store — Phase 10 Cumulative Build
 
-This cumulative build adds the professional Orders and integrated Order Tracking experience while preserving every previous cart, checkout, wishlist, product-details, authentication, responsive fix, official-branding lock and test guard.
+Version: `1.10.5+33`
 
-See `PHASE_8_PROFESSIONAL_ORDERS_TRACKING.md` for the Phase 8 implementation summary and `PHASE_8_VERIFICATION_REPORT.md` for packaging preflight details.
+This cumulative Flutter build preserves all previous authentication, shopping, Product Details, Wishlist, Cart, Checkout, Orders/Tracking, Profile/Account Center, responsive fixes, test guards and the official branding lock, then adds the Phase 10 premium native-aware launch experience and modern motion/accessibility foundation.
 
-## Phase 8 highlight
+## Phase 10 highlight
 
-The Orders tab is now a mobile-first post-purchase hub with search, status filters, compact order cards, Buy Again, professional Order Details, expected delivery information, visual order progress, carrier/tracking data, detailed shipping history, inline package contents and responsive tests across phones, tablets and landscape.
+- Native-aware Android launch resources with Android 12+ splash attributes.
+- Standards-aligned iOS `LaunchScreen.storyboard` surface for an existing iOS Flutter scaffold.
+- Short premium DCX logo reveal using the exact official asset.
+- Responsive layered launch background and a slim progress accent instead of a blocking spinner.
+- Reduced-motion support across launch, routes, onboarding, press feedback, skeletons and bottom navigation.
+- Edge-to-edge system-bar foundation with existing SafeArea/inset protection preserved.
+- New launch regression tests for small phones, normal phones and tablets.
 
-# DCX Online Store Mobile — Phase 6
-
-Cumulative Flutter source for DCX Online Store through Phase 6.
+See `PHASE_10_PREMIUM_LAUNCH_EXPERIENCE.md`, `PHASE_10_CODE_INDEX.md`, and `PHASE_10_VERIFICATION_REPORT.md`.
 
 ## Current customer-facing modules
 
-- Premium authentication and onboarding
-- Professional home shopping experience
+- Premium launch, onboarding and authentication
+- Home shopping experience
 - Categories and subcategories
-- Search, suggestions, filters, sorting, grid/list browsing
-- Product Details with gallery, variants, quantity, reviews, specifications, and sticky purchase controls
-- Phase 6 synchronized professional Wishlist UI kit
-- Professional synchronized Cart and Checkout foundation
-- Professional Orders history and integrated Order Tracking
-- Notifications and Profile foundations
+- Search, suggestions, filters, sorting and product browsing
+- Premium Product Details with gallery, real color swatches, text/size variants, quantity, reviews and sticky purchase controls
+- Synchronized Wishlist
+- Synchronized Cart and Checkout foundation
+- Orders history and integrated Order Tracking
+- Notifications
+- Premium Profile / Account Center
+- Delivery Address Book
+- Payment preferences
+- Security and support areas
 - Production-safe responsive bottom navigation
 
-## Phase 6 highlight
+## Official branding
 
-Wishlist is now shared across product cards, product lists, Product Details, Home badge, and the Wishlist page. The page includes search, filters, grid/list layouts, savings summary, clear confirmation, undo, empty states, accessibility labels, and responsive tests.
+The only official DCX Online Store logo/app-icon source is:
+
+`assets/icon/app_icon.png`
+
+Do not replace, recolor, regenerate, crop or redesign this asset unless the user explicitly requests a logo change. See `OFFICIAL_BRANDING_LOCK.md`.
 
 ## Local verification
 
@@ -39,38 +51,49 @@ flutter analyze
 flutter test
 ```
 
-Then run on a connected Android device with `flutter run`.
+Then run on a connected device:
 
-No backend API contract is changed in Phase 6. Wishlist persistence is currently in-memory and deliberately isolated behind `WishlistController` so it can be replaced by Laravel/API persistence later without redesigning the UI.
+```powershell
+flutter run
+```
 
-## Phase 6.1 — Premium Product Details UI Redesign
+If Windows Application Control blocks `flutter_tester.exe`, that is an operating-system security-policy issue rather than a Flutter source error; allow the Flutter SDK test executable through the applicable policy before rerunning `flutter test`.
 
-Phase 6.1 compacts and modernizes Product Details while preserving the existing product, wishlist, navigation and cart callback behavior. The size/variant selector is now a single horizontally scrollable row, quantity controls are compact, trust information uses reusable list cards, and checkout remains sticky and SafeArea-aware. See `PHASE_6_1_PREMIUM_PRODUCT_DETAILS_UI_REDESIGN.md`.
+## Phase 10.1 — Profile compact-width responsive fix
 
-
-## Phase 6.1.1 — Wishlist responsive test fix
-
-Fixes short-screen wishlist and empty-state RenderFlex overflows without changing business logic. See `PHASE_6_1_1_WISHLIST_RESPONSIVE_FIX.md`.
-
-
-## Phase 6.2 — Premium Login + App Logo
-
-The login screen now follows the latest premium reference direction and uses `assets/icon/app_icon.png` directly in the DCX Online Store brand header. Existing login validation, navigation, mock authentication, Product Details, Wishlist, and shopping logic remain unchanged. See `PHASE_6_2_PREMIUM_LOGIN_APP_LOGO_REDESIGN.md`.
-
-## OFFICIAL BRANDING
-
-The official DCX Online Store logo/app-icon source is `assets/icon/app_icon.png`. See `OFFICIAL_BRANDING_LOCK.md`. Do not replace or redesign this asset unless explicitly requested by the user.
-
-## Phase 8.1 update
-
-Phase 8.1 hardens Product Details route lifecycle behavior and replaces textual color variant chips with professional real-color swatches. See `PHASE_8_1_PRODUCT_DETAILS_STABILITY_COLOR_SWATCH_FIX.md`.
-
-Project version: `1.8.1+20`.
+- Fixes the Profile Account Center horizontal RenderFlex overflow at 320x568 and 360x640.
+- Compact phones use a gesture-friendly horizontal Quick Access rail instead of cramped two-column cards.
+- 390px+ keeps the two-column layout and tablets keep four columns.
+- No account navigation/business logic changes.
 
 
-## Phase 8.4
-Stable accessibility semantics for product variant controls. Official branding remains unchanged.
+## Phase 10.2
+Profile hero compact-width overflow fix: the secure-account status element is now width-bounded and responsive on 320/360 px phone layouts.
 
-## Phase 9 — Premium Account Center
+## Phase 10.3 — Premium Same-Logo Launch Experience
+The app launch now uses the same official DCX logo in a premium animated light-to-navy scene with spatial wave reveal, orange accent, responsive Smart Shopping copy, custom progress motion, reduced-motion support, and an Android 12+ native splash drawable designed to prevent launcher-icon cropping during the system handoff.
 
-The Profile tab is now a professional mobile-first customer account hub with direct access to orders, wishlist, delivery addresses, payment preferences, security information, notifications, and help. The official DCX logo remains the single branding source at `assets/icon/app_icon.png`.
+
+## Phase 10.4 — Launch Semantics Regression Fix
+
+The premium launch progress layer now keeps its accessibility semantics in the tree while its fade animation starts at zero opacity. This fixes the launch regression test that expects `Opening DCX Online Store` immediately after the first frame, without changing launch visuals, timing, motion, or branding.
+
+
+## Phase 10.5 — Seamless Splash → Onboarding transition
+
+- Replaces the abrupt first-screen switch with a coordinated 520 ms fade-through handoff.
+- Splash gently fades, lifts and scales while onboarding fades/settles in above it.
+- Launch and onboarding surfaces share the same base background to prevent flashes.
+- Reduced Motion uses an immediate zero-duration handoff.
+- Existing official DCX image/logo and launch artwork remain unchanged.
+
+## Phase 10.6 — First-Frame Cinematic Launch
+
+The Android 12+ system splash is now visually neutral (matching background + transparent icon), preventing a cropped native logo from appearing before Flutter. The premium DCX Flutter launch is the first branded screen and uses a staged ~3.8 second launch-to-onboarding choreography with reduced-motion support.
+
+## Phase 10.7 — Seamless native first frame
+
+- Replaces the intentionally transparent Android 12+ system splash icon with a safe-area padded copy of the existing official DCX logo.
+- Keeps the Android system splash background aligned with the Flutter launch surface (`#F7F7FC`) so there is no perceived blank white page before branding.
+- Starts the Flutter logo at 94% opacity on its first real frame, preventing the native mark from disappearing during engine handoff.
+- Preserves the official source logo byte-for-byte at `assets/icon/app_icon.png`; only the Android native splash derivative contains transparent safety padding for Android's system mask.

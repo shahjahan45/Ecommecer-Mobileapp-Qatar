@@ -35,8 +35,7 @@ class AccountSecurityPage extends StatelessWidget {
                         _SecurityInfoCard(
                           icon: Icons.lock_outline_rounded,
                           title: 'Sign-in protection',
-                          description:
-                              'Your account access is separated from shopping data and protected by the sign-in flow.',
+                          description: 'Your account access is separated from shopping data and protected by the sign-in flow.',
                           color: AppColors.primary,
                           softColor: AppColors.primarySoft,
                         ),
@@ -44,8 +43,7 @@ class AccountSecurityPage extends StatelessWidget {
                         _SecurityInfoCard(
                           icon: Icons.verified_user_outlined,
                           title: 'Protected checkout',
-                          description:
-                              'Checkout keeps delivery and payment choices inside the secured shopping flow.',
+                          description: 'Checkout keeps delivery and payment choices inside the secured shopping flow.',
                           color: AppColors.success,
                           softColor: AppColors.successSoft,
                         ),
@@ -53,8 +51,7 @@ class AccountSecurityPage extends StatelessWidget {
                         _SecurityInfoCard(
                           icon: Icons.visibility_outlined,
                           title: 'Privacy-aware account center',
-                          description:
-                              'Sensitive payment details are not displayed in full inside account summaries.',
+                          description: 'Sensitive payment details are not displayed in full inside account summaries.',
                           color: AppColors.info,
                           softColor: AppColors.infoSoft,
                         ),

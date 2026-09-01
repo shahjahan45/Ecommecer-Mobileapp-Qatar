@@ -32,60 +32,73 @@ class AccountQuickAction extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppRadius.md),
-          child: Container(
-            constraints: const BoxConstraints(minHeight: 112),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < 170;
+              final padding = compact ? 12.0 : 14.0;
+              final iconBox = compact ? 36.0 : 38.0;
+
+              return Container(
+                constraints: const BoxConstraints(minHeight: 112),
+                padding: EdgeInsets.all(padding),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: softColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      alignment: Alignment.center,
-                      child: Icon(icon, color: color, size: 20),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: iconBox,
+                          height: iconBox,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: softColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              icon,
+                              color: color,
+                              size: compact ? 19 : 20,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        Icon(
+                          Icons.arrow_outward_rounded,
+                          color: AppColors.textTertiary,
+                          size: compact ? 16 : 18,
+                        ),
+                      ],
                     ),
-                    const Spacer(),
-                    const Icon(
-                      Icons.arrow_outward_rounded,
-                      color: AppColors.textTertiary,
-                      size: 18,
+                    SizedBox(height: compact ? 10 : 12),
+                    Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: compact ? 12.5 : 13,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      supportingText,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: compact ? 10 : 10.5,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  supportingText,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),

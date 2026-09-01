@@ -13,9 +13,7 @@ void main() {
     Size(800, 1100),
     Size(1100, 800),
   ]) {
-    testWidgets(
-        'account center stays responsive at ${size.width}x${size.height}',
-        (tester) async {
+    testWidgets('account center stays responsive at ${size.width}x${size.height}', (tester) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
@@ -30,6 +28,15 @@ void main() {
       expect(find.text('Quick access'), findsOneWidget);
       expect(find.text('Orders'), findsWidgets);
       expect(find.text('Wishlist'), findsWidgets);
+      expect(find.text('Secure account center'), findsOneWidget);
+
+      if (size.width <= 360) {
+        expect(
+          find.byKey(const Key('account-quick-actions-scroll')),
+          findsOneWidget,
+        );
+      }
+
       expect(tester.takeException(), isNull);
 
       await tester.dragUntilVisible(

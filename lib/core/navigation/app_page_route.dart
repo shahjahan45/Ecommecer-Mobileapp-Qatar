@@ -4,8 +4,8 @@ class AppPageRoute<T> extends PageRouteBuilder<T> {
   AppPageRoute({
     required Widget page,
   }) : super(
-          transitionDuration: const Duration(milliseconds: 320),
-          reverseTransitionDuration: const Duration(milliseconds: 260),
+          transitionDuration: const Duration(milliseconds: 300),
+          reverseTransitionDuration: const Duration(milliseconds: 240),
           pageBuilder: (context, animation, secondaryAnimation) => page,
           transitionsBuilder: (
             context,
@@ -13,6 +13,10 @@ class AppPageRoute<T> extends PageRouteBuilder<T> {
             secondaryAnimation,
             child,
           ) {
+            if (MediaQuery.disableAnimationsOf(context)) {
+              return child;
+            }
+
             final curvedAnimation = CurvedAnimation(
               parent: animation,
               curve: Curves.easeOutCubic,
@@ -23,7 +27,7 @@ class AppPageRoute<T> extends PageRouteBuilder<T> {
               opacity: curvedAnimation,
               child: SlideTransition(
                 position: Tween<Offset>(
-                  begin: const Offset(0.04, 0),
+                  begin: const Offset(0.035, 0),
                   end: Offset.zero,
                 ).animate(curvedAnimation),
                 child: child,

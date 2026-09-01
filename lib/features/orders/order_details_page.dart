@@ -29,8 +29,7 @@ class OrderDetailsPage extends StatelessWidget {
         actions: [
           IconButton(
             tooltip: 'Copy order number',
-            onPressed: () =>
-                _copyText(context, order.id, 'Order number copied.'),
+            onPressed: () => _copyText(context, order.id, 'Order number copied.'),
             icon: const Icon(Icons.copy_rounded),
           ),
           const SizedBox(width: 4),
@@ -47,8 +46,7 @@ class OrderDetailsPage extends StatelessWidget {
               physics: const ClampingScrollPhysics(),
               slivers: [
                 SliverPadding(
-                  padding:
-                      EdgeInsets.fromLTRB(horizontal, 8, horizontal, bottom),
+                  padding: EdgeInsets.fromLTRB(horizontal, 8, horizontal, bottom),
                   sliver: SliverToBoxAdapter(
                     child: Center(
                       child: ConstrainedBox(
@@ -63,8 +61,7 @@ class OrderDetailsPage extends StatelessWidget {
                               subtitle: order.isCancelled
                                   ? 'This order stopped before fulfillment.'
                                   : 'Live package progress at a glance.',
-                              child:
-                                  OrderTrackingProgress(status: order.status),
+                              child: OrderTrackingProgress(status: order.status),
                             ),
                             const SizedBox(height: 12),
                             _TrackingInfoCard(
@@ -79,8 +76,7 @@ class OrderDetailsPage extends StatelessWidget {
                             _SectionCard(
                               title: 'Shipping updates',
                               subtitle: 'The latest events for this package.',
-                              child: ShippingHistoryTimeline(
-                                  events: order.shippingHistory),
+                              child: ShippingHistoryTimeline(events: order.shippingHistory),
                             ),
                             const SizedBox(height: 12),
                             _SectionCard(
@@ -89,17 +85,14 @@ class OrderDetailsPage extends StatelessWidget {
                                   '${order.totalQuantity} ${order.totalQuantity == 1 ? 'item' : 'items'} in this order',
                               child: Column(
                                 children: [
-                                  for (var index = 0;
-                                      index < order.items.length;
-                                      index++) ...[
+                                  for (var index = 0; index < order.items.length; index++) ...[
                                     OrderItemTile(
                                       item: order.items[index],
                                       onTap: () => Navigator.of(context).push(
                                         AppPageRoute(
                                           page: ProductDetailsPage(
                                             product: order.items[index].product,
-                                            heroTag:
-                                                'order-${order.id}-${order.items[index].product.id}-$index',
+                                            heroTag: 'order-${order.id}-${order.items[index].product.id}-$index',
                                           ),
                                         ),
                                       ),
@@ -202,8 +195,7 @@ class OrderDetailsPage extends StatelessWidget {
                   height: 50,
                   child: FilledButton.icon(
                     onPressed: () => Navigator.pop(sheetContext),
-                    icon:
-                        const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
                     label: const Text('Done'),
                   ),
                 ),
@@ -215,8 +207,7 @@ class OrderDetailsPage extends StatelessWidget {
     );
   }
 
-  Future<void> _copyText(
-      BuildContext context, String text, String message) async {
+  Future<void> _copyText(BuildContext context, String text, String message) async {
     if (text == 'Not available') return;
     await Clipboard.setData(ClipboardData(text: text));
     if (!context.mounted) return;
@@ -447,8 +438,7 @@ class _TrackingInfoCard extends StatelessWidget {
                 ? AppColors.textSecondary
                 : AppColors.primary,
             underlined: order.trackingNumber != 'Not available',
-            onTap:
-                order.trackingNumber == 'Not available' ? null : onCopyTracking,
+            onTap: order.trackingNumber == 'Not available' ? null : onCopyTracking,
           ),
           const Divider(height: 22),
           _InfoRow(
@@ -528,8 +518,7 @@ class _InfoRow extends StatelessWidget {
                   onTap: onTap,
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
                     child: valueWidget,
                   ),
                 ),
@@ -589,12 +578,10 @@ class _OrderPaymentSummary extends StatelessWidget {
           _MoneyRow(label: 'Subtotal', value: order.subtotal),
           if (order.discount > 0) ...[
             const SizedBox(height: 8),
-            _MoneyRow(
-                label: 'Discount', value: -order.discount, positive: true),
+            _MoneyRow(label: 'Discount', value: -order.discount, positive: true),
           ],
           const SizedBox(height: 8),
-          _MoneyRow(
-              label: 'Delivery', value: order.deliveryFee, freeLabel: true),
+          _MoneyRow(label: 'Delivery', value: order.deliveryFee, freeLabel: true),
           const Divider(height: 24),
           _MoneyRow(label: 'Order total', value: order.total, total: true),
         ],

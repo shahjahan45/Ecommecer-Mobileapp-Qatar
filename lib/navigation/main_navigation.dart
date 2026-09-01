@@ -73,11 +73,15 @@ class _MainNavigationState extends State<MainNavigation> {
     final page = _pageController.page ?? _currentIndex.toDouble();
     if ((page - index).abs() < 0.001) return;
 
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 360),
-      curve: Curves.easeInOutCubic,
-    );
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _pageController.jumpToPage(index);
+    } else {
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeInOutCubic,
+      );
+    }
   }
 
   double get _navigationPosition {

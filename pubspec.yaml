@@ -1,8 +1,8 @@
 name: ecommerce_mobile
-version: 1.9.1+27
+version: 1.10.7+35
 publish_to: 'none'
 
-description: Cumulative DCX Online Store Phase 9 with a premium mobile-first account center, address book, payment preferences, security and support, plus professional orders, checkout, cart, wishlist, product discovery, authentication, and official branding.
+description: Cumulative DCX Online Store Phase 10.7 with a seamless branded Android native first frame, safe padded DCX splash mark, no blank launch flash, continuous Flutter logo handoff, 3-4 second cinematic motion sequence, reduced-motion accessibility, account center, orders, checkout, cart, wishlist, product discovery, authentication, and official branding.
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

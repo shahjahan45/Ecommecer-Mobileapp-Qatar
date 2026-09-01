@@ -11,23 +11,19 @@ class HelpSupportPage extends StatelessWidget {
     const faqs = <_FaqItem>[
       _FaqItem(
         question: 'Where can I track my order?',
-        answer:
-            'Open My orders, select the order, and use the integrated tracking timeline for the latest delivery progress.',
+        answer: 'Open My orders, select the order, and use the integrated tracking timeline for the latest delivery progress.',
       ),
       _FaqItem(
         question: 'How do I change a delivery address?',
-        answer:
-            'Use Delivery addresses in your account to add, edit, remove, or choose a default address.',
+        answer: 'Use Delivery addresses in your account to add, edit, remove, or choose a default address.',
       ),
       _FaqItem(
         question: 'How do I reorder an item?',
-        answer:
-            'Open a previous order and use Buy again to place the products back into your cart.',
+        answer: 'Open a previous order and use Buy again to place the products back into your cart.',
       ),
       _FaqItem(
         question: 'Where are my saved products?',
-        answer:
-            'Your Wishlist keeps the products you saved from Home, Product listings, and Product details.',
+        answer: 'Your Wishlist keeps the products you saved from Home, Product listings, and Product details.',
       ),
     ];
 
@@ -77,10 +73,8 @@ class HelpSupportPage extends StatelessWidget {
                               return Column(
                                 children: [
                                   ExpansionTile(
-                                    tilePadding: const EdgeInsets.symmetric(
-                                        horizontal: 14),
-                                    childrenPadding: const EdgeInsets.fromLTRB(
-                                        14, 0, 14, 14),
+                                    tilePadding: const EdgeInsets.symmetric(horizontal: 14),
+                                    childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
                                     title: Text(
                                       faq.question,
                                       style: const TextStyle(

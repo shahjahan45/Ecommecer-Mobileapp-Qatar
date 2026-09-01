@@ -55,10 +55,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   void _continue() {
     if (_currentPage < _items.length - 1) {
-      _controller.nextPage(
-        duration: const Duration(milliseconds: 380),
-        curve: Curves.easeInOutCubic,
-      );
+      if (MediaQuery.disableAnimationsOf(context)) {
+        _controller.jumpToPage(_currentPage + 1);
+      } else {
+        _controller.nextPage(
+          duration: const Duration(milliseconds: 380),
+          curve: Curves.easeInOutCubic,
+        );
+      }
       return;
     }
     _openLogin();
@@ -72,7 +76,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+
     return Scaffold(
+      key: const Key('onboarding-page'),
+      backgroundColor: const Color(0xFFF7F7FC),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -101,6 +109,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       return _OnboardingSlide(
                         item: _items[index],
                         compact: compactHeight || compactWidth,
+                        reduceMotion: reduceMotion,
                       );
                     },
                   ),
@@ -131,7 +140,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         children: List.generate(
                           _items.length,
                           (index) => AnimatedContainer(
-                            duration: const Duration(milliseconds: 260),
+                            duration: reduceMotion
+                                ? Duration.zero
+                                : const Duration(milliseconds: 260),
                             curve: Curves.easeOutCubic,
                             margin: const EdgeInsets.symmetric(horizontal: 4),
                             width: index == _currentPage ? 24 : 8,
@@ -168,10 +179,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
 class _OnboardingSlide extends StatelessWidget {
   final _OnboardingItem item;
   final bool compact;
+  final bool reduceMotion;
 
   const _OnboardingSlide({
     required this.item,
     required this.compact,
+    required this.reduceMotion,
   });
 
   @override
@@ -195,7 +208,9 @@ class _OnboardingSlide extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           AnimatedContainer(
-            duration: const Duration(milliseconds: 360),
+            duration: reduceMotion
+                ? Duration.zero
+                : const Duration(milliseconds: 360),
             curve: Curves.easeOutCubic,
             width: illustrationSize,
             height: illustrationSize,

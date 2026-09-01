@@ -45,8 +45,7 @@ class ProfilePage extends StatelessWidget {
         child: AnimatedBuilder(
           animation: wishlist,
           builder: (context, child) {
-            final activeOrders =
-                DemoOrders.orders.where((order) => order.isActive).length;
+            final activeOrders = DemoOrders.orders.where((order) => order.isActive).length;
             return LayoutBuilder(
               builder: (context, constraints) {
                 final horizontal = constraints.maxWidth < 380 ? 16.0 : 20.0;
@@ -59,8 +58,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                   slivers: [
                     SliverPadding(
-                      padding: EdgeInsets.fromLTRB(
-                          horizontal, 8, horizontal, bottom),
+                      padding: EdgeInsets.fromLTRB(horizontal, 8, horizontal, bottom),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -86,14 +84,10 @@ class ProfilePage extends StatelessWidget {
                                 _QuickAccessGrid(
                                   wishlistCount: wishlist.count,
                                   activeOrders: activeOrders,
-                                  onOrders: () =>
-                                      _open(context, const OrdersPage()),
-                                  onWishlist: () =>
-                                      _open(context, const WishlistPage()),
-                                  onAddresses: () =>
-                                      _open(context, const AddressBookPage()),
-                                  onPayments: () => _open(
-                                      context, const PaymentMethodsPage()),
+                                  onOrders: () => _open(context, const OrdersPage()),
+                                  onWishlist: () => _open(context, const WishlistPage()),
+                                  onAddresses: () => _open(context, const AddressBookPage()),
+                                  onPayments: () => _open(context, const PaymentMethodsPage()),
                                 ),
                                 const SizedBox(height: 22),
                                 AccountMenuSection(
@@ -107,10 +101,8 @@ class ProfilePage extends StatelessWidget {
                                           : '$activeOrders active ${activeOrders == 1 ? 'order' : 'orders'} to follow',
                                       color: AppColors.primary,
                                       softColor: AppColors.primarySoft,
-                                      trailingLabel:
-                                          '${DemoOrders.orders.length}',
-                                      onTap: () =>
-                                          _open(context, const OrdersPage()),
+                                      trailingLabel: '${DemoOrders.orders.length}',
+                                      onTap: () => _open(context, const OrdersPage()),
                                     ),
                                     AccountMenuItem(
                                       icon: Icons.favorite_border_rounded,
@@ -119,18 +111,15 @@ class ProfilePage extends StatelessWidget {
                                       color: AppColors.danger,
                                       softColor: AppColors.dangerSoft,
                                       trailingLabel: '${wishlist.count}',
-                                      onTap: () =>
-                                          _open(context, const WishlistPage()),
+                                      onTap: () => _open(context, const WishlistPage()),
                                     ),
                                     AccountMenuItem(
                                       icon: Icons.notifications_none_rounded,
                                       title: 'Notifications',
-                                      subtitle:
-                                          'Offers, delivery and account updates',
+                                      subtitle: 'Offers, delivery and account updates',
                                       color: AppColors.secondary,
                                       softColor: AppColors.secondarySoft,
-                                      onTap: () => _open(
-                                          context, const NotificationsPage()),
+                                      onTap: () => _open(context, const NotificationsPage()),
                                     ),
                                   ],
                                 ),
@@ -141,32 +130,26 @@ class ProfilePage extends StatelessWidget {
                                     AccountMenuItem(
                                       icon: Icons.location_on_outlined,
                                       title: 'Delivery addresses',
-                                      subtitle:
-                                          'Manage addresses used for checkout',
+                                      subtitle: 'Manage addresses used for checkout',
                                       color: AppColors.success,
                                       softColor: AppColors.successSoft,
-                                      onTap: () => _open(
-                                          context, const AddressBookPage()),
+                                      onTap: () => _open(context, const AddressBookPage()),
                                     ),
                                     AccountMenuItem(
                                       icon: Icons.credit_card_rounded,
                                       title: 'Payment methods',
-                                      subtitle:
-                                          'Choose your preferred payment option',
+                                      subtitle: 'Choose your preferred payment option',
                                       color: AppColors.info,
                                       softColor: AppColors.infoSoft,
-                                      onTap: () => _open(
-                                          context, const PaymentMethodsPage()),
+                                      onTap: () => _open(context, const PaymentMethodsPage()),
                                     ),
                                     AccountMenuItem(
                                       icon: Icons.shield_outlined,
                                       title: 'Security & privacy',
-                                      subtitle:
-                                          'Review how your account is protected',
+                                      subtitle: 'Review how your account is protected',
                                       color: AppColors.primary,
                                       softColor: AppColors.primarySoft,
-                                      onTap: () => _open(
-                                          context, const AccountSecurityPage()),
+                                      onTap: () => _open(context, const AccountSecurityPage()),
                                     ),
                                   ],
                                 ),
@@ -177,12 +160,10 @@ class ProfilePage extends StatelessWidget {
                                     AccountMenuItem(
                                       icon: Icons.support_agent_rounded,
                                       title: 'Help & support',
-                                      subtitle:
-                                          'Quick answers for shopping and account questions',
+                                      subtitle: 'Quick answers for shopping and account questions',
                                       color: AppColors.warning,
                                       softColor: AppColors.warningSoft,
-                                      onTap: () => _open(
-                                          context, const HelpSupportPage()),
+                                      onTap: () => _open(context, const HelpSupportPage()),
                                     ),
                                   ],
                                 ),
@@ -224,16 +205,12 @@ class _QuickAccessGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 700 ? 4 : 2;
         const gap = 10.0;
-        final itemWidth =
-            (constraints.maxWidth - (gap * (columns - 1))) / columns;
         final items = <Widget>[
           AccountQuickAction(
             icon: Icons.local_shipping_outlined,
             label: 'Orders',
-            supportingText:
-                activeOrders == 0 ? 'Order history' : '$activeOrders active',
+            supportingText: activeOrders == 0 ? 'Order history' : '$activeOrders active',
             color: AppColors.primary,
             softColor: AppColors.primarySoft,
             onTap: onOrders,
@@ -263,6 +240,31 @@ class _QuickAccessGrid extends StatelessWidget {
             onTap: onPayments,
           ),
         ];
+
+        // On compact phones a fixed two-column grid makes each action card
+        // unnecessarily narrow. A horizontal rail keeps touch targets and text
+        // comfortable while also giving users a natural swipe affordance.
+        if (constraints.maxWidth < 350) {
+          final cardWidth =
+              (constraints.maxWidth * 0.58).clamp(172.0, 196.0).toDouble();
+          return SingleChildScrollView(
+            key: const Key('account-quick-actions-scroll'),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: [
+                for (var index = 0; index < items.length; index++) ...[
+                  SizedBox(width: cardWidth, child: items[index]),
+                  if (index != items.length - 1) const SizedBox(width: gap),
+                ],
+              ],
+            ),
+          );
+        }
+
+        final columns = constraints.maxWidth >= 700 ? 4 : 2;
+        final itemWidth =
+            (constraints.maxWidth - (gap * (columns - 1))) / columns;
 
         return Wrap(
           spacing: gap,

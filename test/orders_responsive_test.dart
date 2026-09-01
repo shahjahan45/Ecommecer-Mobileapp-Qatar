@@ -36,8 +36,7 @@ void main() {
         expect(find.text('My orders'), findsOneWidget);
         expect(find.text('Orders at a glance'), findsOneWidget);
         expect(find.text('All'), findsOneWidget);
-        expect(tester.takeException(), isNull,
-            reason: 'Initial orders layout failed at $size');
+        expect(tester.takeException(), isNull, reason: 'Initial orders layout failed at $size');
 
         final scrollable = find.byType(CustomScrollView);
         await tester.dragUntilVisible(
@@ -49,14 +48,12 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('DCX-260829-1048'), findsOneWidget);
-        expect(tester.takeException(), isNull,
-            reason: 'Scrolled orders layout failed at $size');
+        expect(tester.takeException(), isNull, reason: 'Scrolled orders layout failed at $size');
       },
     );
   }
 
-  testWidgets('order search can show a compact no-results state',
-      (tester) async {
+  testWidgets('order search can show a compact no-results state', (tester) async {
     tester.view.physicalSize = const Size(320, 568);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);

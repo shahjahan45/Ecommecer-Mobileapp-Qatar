@@ -30,6 +30,21 @@ class _AppPressableState extends State<AppPressable> {
 
   @override
   Widget build(BuildContext context) {
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+
+    final gesture = GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: widget.onTap,
+      onTapDown: reduceMotion ? null : (_) => _setPressed(true),
+      onTapUp: reduceMotion ? null : (_) => _setPressed(false),
+      onTapCancel: reduceMotion ? null : () => _setPressed(false),
+      child: widget.child,
+    );
+
+    if (reduceMotion) {
+      return gesture;
+    }
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: widget.onTap,

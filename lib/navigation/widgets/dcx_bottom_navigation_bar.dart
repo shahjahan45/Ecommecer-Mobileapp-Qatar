@@ -36,8 +36,9 @@ class DcxBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final safePosition =
-        position.clamp(0.0, (items.length - 1).toDouble()).toDouble();
+    final safePosition = position
+        .clamp(0.0, (items.length - 1).toDouble())
+        .toDouble();
 
     return SafeArea(
       top: false,
@@ -76,8 +77,7 @@ class DcxBottomNavigationBar extends StatelessWidget {
                               color: AppColors.primarySoft,
                               borderRadius: BorderRadius.circular(19),
                               border: Border.all(
-                                color:
-                                    AppColors.primary.withValues(alpha: 0.08),
+                                color: AppColors.primary.withValues(alpha: 0.08),
                               ),
                             ),
                           ),
@@ -127,6 +127,11 @@ class _NavigationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final transitionDuration = reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 220);
+
     return AppPressable(
       onTap: onTap,
       pressedScale: 0.96,
@@ -146,15 +151,14 @@ class _NavigationButton extends StatelessWidget {
                   clipBehavior: Clip.none,
                   children: [
                     AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 220),
+                      duration: transitionDuration,
                       switchInCurve: Curves.easeOutBack,
                       switchOutCurve: Curves.easeInCubic,
                       transitionBuilder: (child, animation) {
                         return FadeTransition(
                           opacity: animation,
                           child: ScaleTransition(
-                            scale: Tween<double>(begin: 0.82, end: 1)
-                                .animate(animation),
+                            scale: Tween<double>(begin: 0.82, end: 1).animate(animation),
                             child: child,
                           ),
                         );
@@ -163,9 +167,7 @@ class _NavigationButton extends StatelessWidget {
                         selected ? item.selectedIcon : item.icon,
                         key: ValueKey('${item.label}-$selected'),
                         size: 22,
-                        color: selected
-                            ? AppColors.primary
-                            : AppColors.textSecondary,
+                        color: selected ? AppColors.primary : AppColors.textSecondary,
                       ),
                     ),
                     if (badgeCount > 0)
@@ -173,14 +175,12 @@ class _NavigationButton extends StatelessWidget {
                         right: -10,
                         top: -8,
                         child: Container(
-                          constraints:
-                              const BoxConstraints(minWidth: 17, minHeight: 17),
+                          constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             color: AppColors.danger,
                             borderRadius: BorderRadius.circular(AppRadius.pill),
-                            border: Border.all(
-                                color: AppColors.surface, width: 1.5),
+                            border: Border.all(color: AppColors.surface, width: 1.5),
                           ),
                           alignment: Alignment.center,
                           child: Text(
@@ -202,15 +202,12 @@ class _NavigationButton extends StatelessWidget {
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 220),
+                      duration: transitionDuration,
                       curve: Curves.easeOutCubic,
                       style: TextStyle(
-                        color: selected
-                            ? AppColors.primary
-                            : AppColors.textSecondary,
+                        color: selected ? AppColors.primary : AppColors.textSecondary,
                         fontSize: 10.5,
-                        fontWeight:
-                            selected ? FontWeight.w800 : FontWeight.w600,
+                        fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                       ),
                       child: Text(
                         item.label,

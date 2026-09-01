@@ -87,8 +87,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   List<Product> get _relatedProducts => DemoCatalog.products
-      .where(
-          (item) => item.category == product.category && item.id != product.id)
+      .where((item) => item.category == product.category && item.id != product.id)
       .take(4)
       .toList();
 
@@ -202,9 +201,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     child: child,
                   ),
                   child: Icon(
-                    favorite
-                        ? Icons.favorite_rounded
-                        : Icons.favorite_border_rounded,
+                    favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                     key: ValueKey(favorite),
                     color: favorite ? AppColors.danger : AppColors.textPrimary,
                   ),
@@ -306,10 +303,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       bottomNavigationBar: StickyCheckoutBar(
         product: product,
         quantity: _quantity,
-        onAddToCart:
-            product.inStock ? () => _showAddedFeedback(buyNow: false) : null,
-        onBuyNow:
-            product.inStock ? () => _showAddedFeedback(buyNow: true) : null,
+        onAddToCart: product.inStock ? () => _showAddedFeedback(buyNow: false) : null,
+        onBuyNow: product.inStock ? () => _showAddedFeedback(buyNow: true) : null,
       ),
     );
   }
@@ -423,8 +418,7 @@ class _ProductDetailsContent extends StatelessWidget {
     required this.onSizeGuideTap,
   });
 
-  bool get _isSizeProduct =>
-      product.category == 'Fashion' || product.category == 'Sports';
+  bool get _isSizeProduct => product.category == 'Fashion' || product.category == 'Sports';
 
   @override
   Widget build(BuildContext context) {
@@ -443,16 +437,10 @@ class _ProductDetailsContent extends StatelessWidget {
               background: AppColors.primarySoft,
             ),
             _Pill(
-              icon: product.inStock
-                  ? Icons.check_circle_rounded
-                  : Icons.cancel_rounded,
-              label: product.inStock
-                  ? '${product.stockQuantity} in stock'
-                  : 'Out of stock',
+              icon: product.inStock ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              label: product.inStock ? '${product.stockQuantity} in stock' : 'Out of stock',
               color: product.inStock ? AppColors.success : AppColors.danger,
-              background: product.inStock
-                  ? AppColors.successSoft
-                  : AppColors.dangerSoft,
+              background: product.inStock ? AppColors.successSoft : AppColors.dangerSoft,
             ),
             if (product.isNew)
               const _Pill(
@@ -507,9 +495,7 @@ class _ProductDetailsContent extends StatelessWidget {
         ProductInfoCard(
           icon: Icons.inventory_2_outlined,
           title: product.inStock ? 'Ready to ship' : 'Unavailable',
-          subtitle: product.inStock
-              ? '${product.stockQuantity} available'
-              : 'Check again soon',
+          subtitle: product.inStock ? '${product.stockQuantity} available' : 'Check again soon',
           showChevron: true,
         ),
         const SizedBox(height: 9),
@@ -540,14 +526,10 @@ class _ProductDetailsContent extends StatelessWidget {
           icon: Icons.tune_rounded,
           child: Column(
             children: [
-              _SpecificationRow(
-                  label: 'Brand',
-                  value: product.brand.isEmpty ? 'DCX' : product.brand),
+              _SpecificationRow(label: 'Brand', value: product.brand.isEmpty ? 'DCX' : product.brand),
               _SpecificationRow(label: 'Category', value: product.category),
               _SpecificationRow(label: 'Type', value: product.subcategory),
-              _SpecificationRow(
-                  label: 'SKU',
-                  value: 'DCX-${product.id.toString().padLeft(5, '0')}'),
+              _SpecificationRow(label: 'SKU', value: 'DCX-${product.id.toString().padLeft(5, '0')}'),
               _SpecificationRow(
                 label: 'Availability',
                 value: product.inStock ? 'Ready to order' : 'Unavailable',
@@ -671,8 +653,7 @@ class _ProductMetaRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 2),
-          const Icon(Icons.chevron_right_rounded,
-              color: AppColors.textTertiary, size: 18),
+          const Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary, size: 18),
           if (product.subcategory.isNotEmpty) ...[
             Text(
               product.subcategory,
@@ -822,8 +803,7 @@ class _Pill extends StatelessWidget {
           const SizedBox(width: 5),
           Text(
             label,
-            style: TextStyle(
-                color: color, fontSize: 9.5, fontWeight: FontWeight.w900),
+            style: TextStyle(color: color, fontSize: 9.5, fontWeight: FontWeight.w900),
           ),
         ],
       ),
@@ -884,8 +864,7 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
-                      fontSize: 14.5, fontWeight: FontWeight.w900),
+                  style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w900),
                 ),
               ),
             ],
@@ -967,8 +946,7 @@ class _RatingCard extends StatelessWidget {
             children: [
               Text(
                 product.rating.toStringAsFixed(1),
-                style:
-                    const TextStyle(fontSize: 34, fontWeight: FontWeight.w900),
+                style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 3),
               Row(
@@ -978,9 +956,7 @@ class _RatingCard extends StatelessWidget {
                   (index) => Icon(
                     Icons.star_rounded,
                     size: 16,
-                    color: index < product.rating.round()
-                        ? AppColors.star
-                        : AppColors.border,
+                    color: index < product.rating.round() ? AppColors.star : AppColors.border,
                   ),
                 ),
               ),
@@ -1003,8 +979,7 @@ class _RatingCard extends StatelessWidget {
                   label: '5',
                   value: (product.rating / 5).clamp(0.72, 0.96).toDouble(),
                 ),
-                _RatingBar(
-                    label: '4', value: (1 - (product.rating / 5)) * 0.9 + 0.12),
+                _RatingBar(label: '4', value: (1 - (product.rating / 5)) * 0.9 + 0.12),
                 const _RatingBar(label: '3', value: 0.08),
                 const _RatingBar(label: '2', value: 0.04),
                 const _RatingBar(label: '1', value: 0.02),
@@ -1034,8 +1009,7 @@ class _RatingBar extends StatelessWidget {
             width: 12,
             child: Text(
               label,
-              style:
-                  const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800),
+              style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800),
             ),
           ),
           const SizedBox(width: 5),
@@ -1055,3 +1029,4 @@ class _RatingBar extends StatelessWidget {
     );
   }
 }
+

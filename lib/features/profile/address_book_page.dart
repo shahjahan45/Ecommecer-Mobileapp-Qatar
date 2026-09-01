@@ -301,8 +301,7 @@ class _AddressCard extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: AppColors.successSoft,
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.pill),
+                              borderRadius: BorderRadius.circular(AppRadius.pill),
                             ),
                             child: const Text(
                               'Default',
@@ -370,8 +369,7 @@ class _EmptyAddressState extends StatelessWidget {
       ),
       child: const Column(
         children: [
-          Icon(Icons.location_off_outlined,
-              color: AppColors.textTertiary, size: 36),
+          Icon(Icons.location_off_outlined, color: AppColors.textTertiary, size: 36),
           SizedBox(height: 10),
           Text(
             'No saved addresses yet',
@@ -457,10 +455,8 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
           ? ''
           : widget.initialValue?.fullName ?? '',
     );
-    _mobileController =
-        TextEditingController(text: widget.initialValue?.mobile ?? '');
-    _addressController =
-        TextEditingController(text: widget.initialValue?.address ?? '');
+    _mobileController = TextEditingController(text: widget.initialValue?.mobile ?? '');
+    _addressController = TextEditingController(text: widget.initialValue?.address ?? '');
   }
 
   @override
@@ -484,8 +480,7 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
 
     Navigator.of(context).pop(
       _SavedAddress(
-        id: widget.initialValue?.id ??
-            DateTime.now().microsecondsSinceEpoch.toString(),
+        id: widget.initialValue?.id ?? DateTime.now().microsecondsSinceEpoch.toString(),
         label: _labelController.text.trim(),
         fullName: _nameController.text.trim(),
         mobile: _mobileController.text.trim(),
@@ -528,9 +523,7 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    widget.initialValue == null
-                        ? 'Add delivery address'
-                        : 'Edit delivery address',
+                    widget.initialValue == null ? 'Add delivery address' : 'Edit delivery address',
                     style: const TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 20,
@@ -587,10 +580,9 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
                       labelText: 'Mobile number',
                       prefixIcon: Icon(Icons.phone_outlined),
                     ),
-                    validator: (value) =>
-                        value == null || value.trim().length < 7
-                            ? 'Enter a valid mobile number'
-                            : null,
+                    validator: (value) => value == null || value.trim().length < 7
+                        ? 'Enter a valid mobile number'
+                        : null,
                     onFieldSubmitted: (_) => _addressFocus.requestFocus(),
                   ),
                   const SizedBox(height: 14),
@@ -607,10 +599,9 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
                       alignLabelWithHint: true,
                       prefixIcon: Icon(Icons.location_on_outlined),
                     ),
-                    validator: (value) =>
-                        value == null || value.trim().length < 4
-                            ? 'Enter a complete delivery address'
-                            : null,
+                    validator: (value) => value == null || value.trim().length < 4
+                        ? 'Enter a complete delivery address'
+                        : null,
                     onFieldSubmitted: (_) => _save(),
                   ),
                   const SizedBox(height: 18),

@@ -22,6 +22,7 @@ class AppSkeleton extends StatefulWidget {
 class _AppSkeletonState extends State<AppSkeleton>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  bool _reduceMotion = false;
 
   @override
   void initState() {
@@ -29,7 +30,23 @@ class _AppSkeletonState extends State<AppSkeleton>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
-    )..repeat();
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    if (_reduceMotion == reduceMotion && _controller.isAnimating) return;
+
+    _reduceMotion = reduceMotion;
+    if (_reduceMotion) {
+      _controller
+        ..stop()
+        ..value = 0.5;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -40,6 +57,19 @@ class _AppSkeletonState extends State<AppSkeleton>
 
   @override
   Widget build(BuildContext context) {
+    final skeleton = Container(
+      width: widget.width,
+      height: widget.height,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceMuted,
+        borderRadius: BorderRadius.circular(widget.radius),
+      ),
+    );
+
+    if (_reduceMotion) {
+      return skeleton;
+    }
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -60,14 +90,7 @@ class _AppSkeletonState extends State<AppSkeleton>
           child: child,
         );
       },
-      child: Container(
-        width: widget.width,
-        height: widget.height,
-        decoration: BoxDecoration(
-          color: AppColors.surfaceMuted,
-          borderRadius: BorderRadius.circular(widget.radius),
-        ),
-      ),
+      child: skeleton,
     );
   }
 }

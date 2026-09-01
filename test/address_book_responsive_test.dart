@@ -21,8 +21,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('adding an address closes safely without framework errors',
-      (tester) async {
+  testWidgets('adding an address closes safely without framework errors', (tester) async {
     tester.view.physicalSize = const Size(412, 915);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -38,12 +37,9 @@ void main() {
 
     expect(find.byKey(const Key('address-editor-sheet')), findsOneWidget);
 
-    await tester.enterText(
-        find.byKey(const Key('address-label-field')), 'Office');
-    await tester.enterText(
-        find.byKey(const Key('address-name-field')), 'DCX Customer');
-    await tester.enterText(
-        find.byKey(const Key('address-mobile-field')), '55555555');
+    await tester.enterText(find.byKey(const Key('address-label-field')), 'Office');
+    await tester.enterText(find.byKey(const Key('address-name-field')), 'DCX Customer');
+    await tester.enterText(find.byKey(const Key('address-mobile-field')), '55555555');
     await tester.enterText(
       find.byKey(const Key('address-location-field')),
       'West Bay, Doha, Qatar',

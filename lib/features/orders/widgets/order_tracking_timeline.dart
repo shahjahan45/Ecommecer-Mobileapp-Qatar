@@ -39,13 +39,7 @@ class OrderTrackingProgress extends StatelessWidget {
       );
     }
 
-    const labels = <String>[
-      'Ordered',
-      'Packed',
-      'Shipped',
-      'On the way',
-      'Delivered'
-    ];
+    const labels = <String>['Ordered', 'Packed', 'Shipped', 'On the way', 'Delivered'];
     final current = status.progressIndex;
 
     return Semantics(
@@ -64,22 +58,17 @@ class OrderTrackingProgress extends StatelessWidget {
                       width: isCurrent ? 22 : 18,
                       height: isCurrent ? 22 : 18,
                       decoration: BoxDecoration(
-                        color: complete
-                            ? AppColors.primary
-                            : AppColors.surfaceStrong,
+                        color: complete ? AppColors.primary : AppColors.surfaceStrong,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color:
-                              complete ? AppColors.primary : AppColors.border,
+                          color: complete ? AppColors.primary : AppColors.border,
                           width: 1.5,
                         ),
                       ),
                       alignment: Alignment.center,
                       child: complete
                           ? Icon(
-                              index < current
-                                  ? Icons.check_rounded
-                                  : Icons.circle,
+                              index < current ? Icons.check_rounded : Icons.circle,
                               color: Colors.white,
                               size: index < current ? 12 : 7,
                             )
@@ -117,12 +106,9 @@ class OrderTrackingProgress extends StatelessWidget {
                           ? TextAlign.right
                           : TextAlign.center,
                   style: TextStyle(
-                    color: index <= current
-                        ? AppColors.textPrimary
-                        : AppColors.textTertiary,
+                    color: index <= current ? AppColors.textPrimary : AppColors.textTertiary,
                     fontSize: 8.5,
-                    fontWeight:
-                        index == current ? FontWeight.w900 : FontWeight.w700,
+                    fontWeight: index == current ? FontWeight.w900 : FontWeight.w700,
                   ),
                 ),
               );
@@ -177,9 +163,7 @@ class ShippingHistoryTimeline extends StatelessWidget {
                       right: highlight ? 0 : 2,
                     ),
                     decoration: BoxDecoration(
-                      color: highlight
-                          ? AppColors.primary
-                          : AppColors.surfaceStrong,
+                      color: highlight ? AppColors.primary : AppColors.surfaceStrong,
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: highlight ? AppColors.primary : AppColors.border,
@@ -201,9 +185,7 @@ class ShippingHistoryTimeline extends StatelessWidget {
                                 style: TextStyle(
                                   color: AppColors.textPrimary,
                                   fontSize: 12.5,
-                                  fontWeight: highlight
-                                      ? FontWeight.w900
-                                      : FontWeight.w800,
+                                  fontWeight: highlight ? FontWeight.w900 : FontWeight.w800,
                                 ),
                               ),
                             ),
