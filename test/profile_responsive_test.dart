@@ -13,7 +13,9 @@ void main() {
     Size(800, 1100),
     Size(1100, 800),
   ]) {
-    testWidgets('account center stays responsive at ${size.width}x${size.height}', (tester) async {
+    testWidgets(
+        'account center stays responsive at ${size.width}x${size.height}',
+        (tester) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
@@ -43,7 +45,7 @@ void main() {
         find.text('Help & support'),
         find.byKey(const PageStorageKey<String>('profile-account-scroll')),
         const Offset(0, -180),
-        maxIteration: 15,
+        maxIteration: 18,
       );
       await tester.pumpAndSettle();
 

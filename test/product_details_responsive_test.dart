@@ -112,8 +112,6 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-
-
   testWidgets(
     'color variants use real swatches and buy-now navigation stays stable',
     (tester) async {

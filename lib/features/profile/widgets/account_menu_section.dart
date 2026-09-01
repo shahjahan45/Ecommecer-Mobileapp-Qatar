@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/design_system/app_tokens.dart';
-import '../../../core/theme/app_colors.dart';
 
 class AccountMenuSection extends StatelessWidget {
   final String title;
@@ -15,6 +14,7 @@ class AccountMenuSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -22,8 +22,8 @@ class AccountMenuSection extends StatelessWidget {
           padding: const EdgeInsets.only(left: 2, bottom: 9),
           child: Text(
             title,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
+            style: TextStyle(
+              color: scheme.onSurface,
               fontSize: 14.5,
               fontWeight: FontWeight.w900,
             ),
@@ -31,9 +31,9 @@ class AccountMenuSection extends StatelessWidget {
         ),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: scheme.surface,
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: scheme.outlineVariant),
           ),
           clipBehavior: Clip.antiAlias,
           child: Column(
@@ -55,6 +55,7 @@ class AccountMenuSection extends StatelessWidget {
 }
 
 class AccountMenuItem {
+  final Key? actionKey;
   final IconData icon;
   final String title;
   final String subtitle;
@@ -64,6 +65,7 @@ class AccountMenuItem {
   final VoidCallback onTap;
 
   const AccountMenuItem({
+    this.actionKey,
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -81,7 +83,15 @@ class _AccountMenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final iconSurface = dark
+        ? Color.alphaBlend(
+            item.color.withValues(alpha: .16), scheme.surfaceContainer)
+        : item.softColor;
+
     return Semantics(
+      key: item.actionKey,
       button: true,
       label: item.title,
       child: InkWell(
@@ -94,7 +104,7 @@ class _AccountMenuTile extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: item.softColor,
+                  color: iconSurface,
                   borderRadius: BorderRadius.circular(13),
                 ),
                 alignment: Alignment.center,
@@ -109,8 +119,8 @@ class _AccountMenuTile extends StatelessWidget {
                       item.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
+                      style: TextStyle(
+                        color: scheme.onSurface,
                         fontSize: 13.5,
                         fontWeight: FontWeight.w800,
                       ),
@@ -120,8 +130,8 @@ class _AccountMenuTile extends StatelessWidget {
                       item.subtitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: scheme.onSurfaceVariant,
                         fontSize: 11,
                         height: 1.35,
                         fontWeight: FontWeight.w600,
@@ -133,15 +143,16 @@ class _AccountMenuTile extends StatelessWidget {
               if (item.trailingLabel != null) ...[
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                   decoration: BoxDecoration(
-                    color: AppColors.primarySoft,
+                    color: scheme.primaryContainer,
                     borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                   child: Text(
                     item.trailingLabel!,
-                    style: const TextStyle(
-                      color: AppColors.primary,
+                    style: TextStyle(
+                      color: scheme.onPrimaryContainer,
                       fontSize: 9.5,
                       fontWeight: FontWeight.w900,
                     ),
@@ -149,9 +160,9 @@ class _AccountMenuTile extends StatelessWidget {
                 ),
               ],
               const SizedBox(width: 5),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
-                color: AppColors.textTertiary,
+                color: scheme.onSurfaceVariant.withValues(alpha: .62),
                 size: 22,
               ),
             ],

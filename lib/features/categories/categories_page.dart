@@ -79,9 +79,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       children: [
                         Text(
                           'Shop by department',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w900,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         const Text(
@@ -98,7 +99,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                        AppPageRoute(page: const ProductListingPage(title: 'All products')),
+                        AppPageRoute(
+                            page: const ProductListingPage(
+                                title: 'All products')),
                       );
                     },
                     child: const Text('View all'),
@@ -206,7 +209,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 9, vertical: 5),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: .16),
                         borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -254,7 +258,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   borderRadius: BorderRadius.circular(AppRadius.xl),
                 ),
                 alignment: Alignment.center,
-                child: const Icon(Icons.grid_view_rounded, color: Colors.white, size: 38),
+                child: const Icon(Icons.grid_view_rounded,
+                    color: Colors.white, size: 38),
               ),
             ],
           ),
@@ -289,7 +294,9 @@ class _CategoryDepartmentCard extends StatelessWidget {
           color: selected ? category.softColor : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
           border: Border.all(
-            color: selected ? category.accent.withValues(alpha: .35) : AppColors.border,
+            color: selected
+                ? category.accent.withValues(alpha: .35)
+                : AppColors.border,
             width: selected ? 1.4 : 1,
           ),
           boxShadow: selected ? AppShadows.soft : null,
@@ -317,14 +324,16 @@ class _CategoryDepartmentCard extends StatelessWidget {
                     width: 32,
                     height: 32,
                     decoration: BoxDecoration(
-                      color: selected ? AppColors.surface : AppColors.surfaceMuted,
+                      color:
+                          selected ? AppColors.surface : AppColors.surfaceMuted,
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.arrow_outward_rounded,
                       size: 17,
-                      color: selected ? category.accent : AppColors.textSecondary,
+                      color:
+                          selected ? category.accent : AppColors.textSecondary,
                     ),
                   ),
                 ),
@@ -335,7 +344,8 @@ class _CategoryDepartmentCard extends StatelessWidget {
               category.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900),
+              style:
+                  const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 3),
             Text(
@@ -397,7 +407,8 @@ class _SubcategoryPanel extends StatelessWidget {
                   children: [
                     Text(
                       category.name,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w900),
                     ),
                     const SizedBox(height: 3),
                     Text(
@@ -411,7 +422,8 @@ class _SubcategoryPanel extends StatelessWidget {
                   ],
                 ),
               ),
-              TextButton(onPressed: onOpenCategory, child: const Text('View all')),
+              TextButton(
+                  onPressed: onOpenCategory, child: const Text('View all')),
             ],
           ),
           const SizedBox(height: 18),
@@ -421,7 +433,8 @@ class _SubcategoryPanel extends StatelessWidget {
             children: category.subcategories
                 .map(
                   (item) => ActionChip(
-                    avatar: Icon(category.icon, size: 16, color: category.accent),
+                    avatar:
+                        Icon(category.icon, size: 16, color: category.accent),
                     label: Text(item),
                     onPressed: () => onOpenSubcategory(item),
                   ),

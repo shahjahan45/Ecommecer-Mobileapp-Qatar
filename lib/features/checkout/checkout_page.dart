@@ -5,6 +5,7 @@ import '../../core/design_system/app_tokens.dart';
 import '../../core/theme/app_colors.dart';
 import '../cart/cart_controller.dart';
 import '../cart/widgets/cart_summary_card.dart';
+import '../cart/widgets/promotion_code_card.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -22,7 +23,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Checkout'),
       ),
@@ -54,7 +54,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   physics: const ClampingScrollPhysics(),
                   slivers: [
                     SliverPadding(
-                      padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 28),
+                      padding:
+                          EdgeInsets.fromLTRB(horizontal, 12, horizontal, 28),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -70,7 +71,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   subtitle: _deliveryAddress == null
                                       ? 'Add or confirm your delivery address'
                                       : '${_deliveryAddress!.fullName} • ${_deliveryAddress!.address}',
-                                  actionLabel: _deliveryAddress == null ? 'Add address' : 'Edit',
+                                  actionLabel: _deliveryAddress == null
+                                      ? 'Add address'
+                                      : 'Edit',
                                   onTap: _showAddressSheet,
                                 ),
                                 const SizedBox(height: 12),
@@ -90,6 +93,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   onTap: _showPaymentSheet,
                                 ),
                                 const SizedBox(height: 18),
+                                PromotionCodeCard(cart: _cart),
+                                const SizedBox(height: 12),
                                 CartSummaryCard(cart: _cart),
                                 const SizedBox(height: 14),
                                 const _CheckoutTrustCard(),
@@ -425,7 +430,8 @@ class _CheckoutOptionCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 2),
-              const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.primary),
+              const Icon(Icons.chevron_right_rounded,
+                  size: 18, color: AppColors.primary),
             ],
           ),
         ),
@@ -433,7 +439,6 @@ class _CheckoutOptionCard extends StatelessWidget {
     );
   }
 }
-
 
 class _DeliveryAddressData {
   final String fullName;
@@ -468,9 +473,12 @@ class _DeliveryAddressSheetState extends State<_DeliveryAddressSheet> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.initialValue?.fullName ?? '');
-    _mobileController = TextEditingController(text: widget.initialValue?.mobile ?? '');
-    _addressController = TextEditingController(text: widget.initialValue?.address ?? '');
+    _nameController =
+        TextEditingController(text: widget.initialValue?.fullName ?? '');
+    _mobileController =
+        TextEditingController(text: widget.initialValue?.mobile ?? '');
+    _addressController =
+        TextEditingController(text: widget.initialValue?.address ?? '');
   }
 
   @override
@@ -653,7 +661,8 @@ class _CheckoutTrustCard extends StatelessWidget {
     return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.lock_outline_rounded, size: 15, color: AppColors.textTertiary),
+        Icon(Icons.lock_outline_rounded,
+            size: 15, color: AppColors.textTertiary),
         SizedBox(width: 6),
         Flexible(
           child: Text(

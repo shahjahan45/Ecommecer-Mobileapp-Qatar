@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 
 import '../../data/demo_catalog.dart';
+import '../../data/demo_promotions.dart';
 import '../../models/cart_item.dart';
 import '../../models/product.dart';
+import '../../models/promotion.dart';
 
 class CartController extends ChangeNotifier {
   CartController._();
@@ -13,6 +15,7 @@ class CartController extends ChangeNotifier {
   static const double standardDeliveryFee = 15;
 
   final Map<String, CartItem> _items = <String, CartItem>{};
+  Promotion? _appliedPromotion;
 
   List<CartItem> get items => List<CartItem>.unmodifiable(_items.values);
 
@@ -35,15 +38,53 @@ class CartController extends ChangeNotifier {
         (total, item) => total + item.lineSavings,
       );
 
-  double get deliveryFee {
+  Promotion? get appliedPromotion => _appliedPromotion;
+
+  bool get hasPromotion => _appliedPromotion != null;
+
+  double get promotionDiscount {
+    final promotion = _appliedPromotion;
+    if (promotion == null || promotion.type == PromotionType.freeDelivery) {
+      return 0;
+    }
+    return promotion.discountFor(subtotal);
+  }
+
+  double get baseDeliveryFee {
     if (isEmpty || subtotal >= freeDeliveryThreshold) return 0;
     return standardDeliveryFee;
   }
 
-  double get total => subtotal + deliveryFee;
+  bool get _promotionUnlocksDelivery {
+    final promotion = _appliedPromotion;
+    return promotion != null &&
+        promotion.type == PromotionType.freeDelivery &&
+        promotion.isEligible(subtotal);
+  }
+
+  double get deliveryFee {
+    if (_promotionUnlocksDelivery) return 0;
+    return baseDeliveryFee;
+  }
+
+  double get promotionDeliverySaving {
+    if (!_promotionUnlocksDelivery) return 0;
+    return baseDeliveryFee;
+  }
+
+  double get promotionSavings => promotionDiscount + promotionDeliverySaving;
+
+  double get total {
+    final value = subtotal - promotionDiscount + deliveryFee;
+    return value < 0 ? 0 : value;
+  }
 
   double get amountToFreeDelivery {
-    if (isEmpty || subtotal >= freeDeliveryThreshold) return 0;
+    if (isEmpty ||
+        subtotal >= freeDeliveryThreshold ||
+        _promotionUnlocksDelivery) {
+      return 0;
+    }
     return freeDeliveryThreshold - subtotal;
   }
 
@@ -81,6 +122,7 @@ class CartController extends ChangeNotifier {
       quantity: next,
       variant: variant,
     );
+    _reconcilePromotion();
     notifyListeners();
     return next;
   }
@@ -94,13 +136,13 @@ class CartController extends ChangeNotifier {
       return;
     }
 
-    final maxQuantity = item.product.stockQuantity > 0
-        ? item.product.stockQuantity
-        : 1;
+    final maxQuantity =
+        item.product.stockQuantity > 0 ? item.product.stockQuantity : 1;
     final next = quantity.clamp(1, maxQuantity).toInt();
     if (next == item.quantity) return;
 
     _items[key] = item.copyWith(quantity: next);
+    _reconcilePromotion();
     notifyListeners();
   }
 
@@ -118,15 +160,20 @@ class CartController extends ChangeNotifier {
 
   CartItem? remove(String key) {
     final removed = _items.remove(key);
-    if (removed != null) notifyListeners();
+    if (removed != null) {
+      _reconcilePromotion();
+      notifyListeners();
+    }
     return removed;
   }
 
   void restore(CartItem item) {
     final safeQuantity = item.quantity
-        .clamp(1, item.product.stockQuantity > 0 ? item.product.stockQuantity : 1)
+        .clamp(
+            1, item.product.stockQuantity > 0 ? item.product.stockQuantity : 1)
         .toInt();
     _items[item.key] = item.copyWith(quantity: safeQuantity);
+    _reconcilePromotion();
     notifyListeners();
   }
 
@@ -134,6 +181,7 @@ class CartController extends ChangeNotifier {
     final previous = items;
     if (_items.isEmpty) return previous;
     _items.clear();
+    _appliedPromotion = null;
     notifyListeners();
     return previous;
   }
@@ -141,19 +189,76 @@ class CartController extends ChangeNotifier {
   void restoreAll(Iterable<CartItem> items) {
     _items.clear();
     for (final item in items) {
-      final maxQuantity = item.product.stockQuantity > 0
-          ? item.product.stockQuantity
-          : 1;
+      final maxQuantity =
+          item.product.stockQuantity > 0 ? item.product.stockQuantity : 1;
       _items[item.key] = item.copyWith(
         quantity: item.quantity.clamp(1, maxQuantity).toInt(),
       );
     }
+    _reconcilePromotion();
     notifyListeners();
+  }
+
+  PromotionApplicationResult applyPromotion(String rawCode) {
+    if (isEmpty) {
+      return const PromotionApplicationResult(
+        applied: false,
+        message: 'Add items to your cart before applying a promo code.',
+      );
+    }
+
+    final normalized = rawCode.trim().toUpperCase();
+    if (normalized.isEmpty) {
+      return const PromotionApplicationResult(
+        applied: false,
+        message: 'Enter a promo code to continue.',
+      );
+    }
+
+    final promotion = DemoPromotions.findByCode(normalized);
+    if (promotion == null) {
+      return const PromotionApplicationResult(
+        applied: false,
+        message: 'That promo code is not available.',
+      );
+    }
+
+    if (!promotion.isEligible(subtotal)) {
+      return PromotionApplicationResult(
+        applied: false,
+        message:
+            'Spend QAR ${promotion.minimumSubtotal.toStringAsFixed(0)} to use ${promotion.code}.',
+        promotion: promotion,
+      );
+    }
+
+    _appliedPromotion = promotion;
+    notifyListeners();
+    return PromotionApplicationResult(
+      applied: true,
+      message: '${promotion.code} applied successfully.',
+      promotion: promotion,
+    );
+  }
+
+  void removePromotion() {
+    if (_appliedPromotion == null) return;
+    _appliedPromotion = null;
+    notifyListeners();
+  }
+
+  void _reconcilePromotion() {
+    final promotion = _appliedPromotion;
+    if (promotion == null) return;
+    if (isEmpty || !promotion.isEligible(subtotal)) {
+      _appliedPromotion = null;
+    }
   }
 
   @visibleForTesting
   void resetForTesting({bool withDemoItems = false}) {
     _items.clear();
+    _appliedPromotion = null;
     if (withDemoItems) {
       final first = DemoCatalog.products[0];
       final second = DemoCatalog.products[2];

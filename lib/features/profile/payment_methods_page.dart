@@ -18,14 +18,14 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
   @override
   void initState() {
     super.initState();
-    _methods = DemoOrders.orders.map((order) => order.paymentMethod).toSet().toList();
+    _methods =
+        DemoOrders.orders.map((order) => order.paymentMethod).toSet().toList();
     _selected = _methods.isEmpty ? 'Cash on delivery' : _methods.first;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(title: const Text('Payment methods')),
       body: SafeArea(
         top: false,

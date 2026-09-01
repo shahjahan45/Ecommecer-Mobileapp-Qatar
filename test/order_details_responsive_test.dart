@@ -36,7 +36,8 @@ void main() {
         expect(find.text('Order details'), findsOneWidget);
         expect(find.text('Arriving today'), findsOneWidget);
         expect(find.text('Delivery progress'), findsOneWidget);
-        expect(tester.takeException(), isNull, reason: 'Initial order detail failed at $size');
+        expect(tester.takeException(), isNull,
+            reason: 'Initial order detail failed at $size');
 
         final scrollable = find.byType(CustomScrollView);
         await tester.dragUntilVisible(
@@ -47,7 +48,8 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.text('Tracking information'), findsOneWidget);
-        expect(tester.takeException(), isNull, reason: 'Tracking card failed at $size');
+        expect(tester.takeException(), isNull,
+            reason: 'Tracking card failed at $size');
 
         await tester.dragUntilVisible(
           find.text('Package contents'),
@@ -57,12 +59,14 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.text('Package contents'), findsOneWidget);
-        expect(tester.takeException(), isNull, reason: 'Package contents failed at $size');
+        expect(tester.takeException(), isNull,
+            reason: 'Package contents failed at $size');
       },
     );
   }
 
-  testWidgets('cancelled order status remains compact on a small phone', (tester) async {
+  testWidgets('cancelled order status remains compact on a small phone',
+      (tester) async {
     tester.view.physicalSize = const Size(320, 568);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);

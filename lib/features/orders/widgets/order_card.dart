@@ -151,12 +151,15 @@ class OrderCard extends StatelessWidget {
             LayoutBuilder(
               builder: (context, constraints) {
                 final stacked = constraints.maxWidth < 300;
-                final primaryLabel = order.isActive ? 'Track order' : 'View details';
+                final primaryLabel =
+                    order.isActive ? 'Track order' : 'View details';
 
                 final primary = FilledButton.icon(
                   onPressed: onOpen,
                   icon: Icon(
-                    order.isActive ? Icons.local_shipping_outlined : Icons.receipt_long_outlined,
+                    order.isActive
+                        ? Icons.local_shipping_outlined
+                        : Icons.receipt_long_outlined,
                     size: 17,
                   ),
                   label: Text(primaryLabel),
@@ -195,8 +198,18 @@ class OrderCard extends StatelessWidget {
 
   String _formatDate(DateTime value) {
     const months = <String>[
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[value.month - 1]} ${value.day}, ${value.year}';
   }
@@ -214,7 +227,8 @@ class _PackagePreview extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 36.0 + ((visibleItems.length - 1).clamp(0, 2).toDouble() * 25.0),
+          width:
+              36.0 + ((visibleItems.length - 1).clamp(0, 2).toDouble() * 25.0),
           height: 40,
           child: Stack(
             children: List.generate(visibleItems.length, (index) {

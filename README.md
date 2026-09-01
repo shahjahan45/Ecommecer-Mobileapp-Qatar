@@ -1,8 +1,18 @@
-# DCX Online Store — Phase 10 Cumulative Build
+# DCX Online Store — Phase 12 Cumulative Build
 
-Version: `1.10.5+33`
+Version: `1.12.0+42`
 
-This cumulative Flutter build preserves all previous authentication, shopping, Product Details, Wishlist, Cart, Checkout, Orders/Tracking, Profile/Account Center, responsive fixes, test guards and the official branding lock, then adds the Phase 10 premium native-aware launch experience and modern motion/accessibility foundation.
+This cumulative Flutter build preserves every previous launch, authentication, shopping, Product Details, Wishlist, Cart, Checkout, Orders/Tracking, Profile/Account Center, responsive, accessibility and adaptive-theme improvement, then adds a professional promotions and savings engine shared by Cart and Checkout.
+
+## Phase 12 highlight
+
+- Validated promo codes with percentage, fixed-amount and free-delivery offer types.
+- Professional responsive promo-code UI in both Cart and Checkout.
+- Live promotion savings reflected in order summaries and final totals.
+- Automatic eligibility reconciliation when cart contents or quantities change.
+- Replaceable demo promotion catalog structured for future backend/API authority.
+- Light/dark theme-aware surfaces and accessible promo actions.
+- New promotion calculation and responsive regression tests.
 
 ## Phase 10 highlight
 
@@ -25,6 +35,7 @@ See `PHASE_10_PREMIUM_LAUNCH_EXPERIENCE.md`, `PHASE_10_CODE_INDEX.md`, and `PHAS
 - Premium Product Details with gallery, real color swatches, text/size variants, quantity, reviews and sticky purchase controls
 - Synchronized Wishlist
 - Synchronized Cart and Checkout foundation
+- Promotions, promo codes and savings engine
 - Orders history and integrated Order Tracking
 - Notifications
 - Premium Profile / Account Center
@@ -97,3 +108,45 @@ The Android 12+ system splash is now visually neutral (matching background + tra
 - Keeps the Android system splash background aligned with the Flutter launch surface (`#F7F7FC`) so there is no perceived blank white page before branding.
 - Starts the Flutter logo at 94% opacity on its first real frame, preventing the native mark from disappearing during engine handoff.
 - Preserves the official source logo byte-for-byte at `assets/icon/app_icon.png`; only the Android native splash derivative contains transparent safety padding for Android's system mask.
+
+## Phase 11 — Adaptive Dark Mode & Design System
+
+Phase 11 adds persistent System/Light/Dark appearance modes, a Material 3 dark palette, theme-aware system bars, a responsive Appearance settings screen, and dark-aware shared Account/Home/navigation/product surfaces. The Phase 10.7 branded native-to-Flutter launch sequence and official DCX logo remain unchanged.
+
+Run after extracting:
+
+```powershell
+flutter clean
+flutter pub get
+dart format lib test
+flutter analyze
+flutter test
+flutter run
+```
+
+
+## Phase 11.3 — Lazy Theme Storage Fix
+ThemeController no longer constructs SharedPreferencesAsync until a real load/persist operation is requested. This keeps persist:false theme switching test-safe while preserving production persistence.
+
+
+## Phase 11.4
+Global Material 3 typography is now offline-safe and uses each platform's native system font family while preserving DCX sizing/weight hierarchy. This removes runtime Google Fonts HTTP requests and makes theme tests deterministic.
+
+## Phase 11.5 — Appearance Responsive Test Fix
+
+Phase 11.5 hardens the Appearance settings regression coverage for Flutter `ListView` lazy building. Theme cards now have deterministic semantic keys, the settings list has a stable scroll key, and compact-device tests scroll the Dark option into view before validating and selecting it. No visual design or theme behavior was changed.
+
+
+## Phase 12 — Professional Promotions & Savings Engine
+
+- Adds validated promo-code application in both Cart and Checkout.
+- Adds percentage, fixed-amount and free-delivery promotion types.
+- Adds responsive compact-phone promo entry and accessible applied-offer state.
+- Order summary now reflects promotion savings and final payable total.
+- Promotion eligibility is automatically reconciled after cart quantity/line changes.
+- Demo promotion rules are isolated in `DemoPromotions` so a future backend/API can replace the source cleanly.
+- New controller and responsive widget regression tests cover the promotion flow.
+
+Demo QA codes: `WELCOME10`, `DCX25`, `FREESHIP`.
+
+See `PHASE_12_PROMOTIONS_SAVINGS_ENGINE.md`, `PHASE_12_CODE_INDEX.md`, and `PHASE_12_VERIFICATION_REPORT.md`.

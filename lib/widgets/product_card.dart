@@ -23,14 +23,21 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final visualSoft = dark
+        ? Color.alphaBlend(
+            product.accent.withValues(alpha: .13), scheme.surfaceContainer)
+        : product.softColor;
+
     return AppPressable(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.xl),
-          border: Border.all(color: AppColors.border),
-          boxShadow: AppShadows.soft,
+          border: Border.all(color: scheme.outlineVariant),
+          boxShadow: dark ? null : AppShadows.soft,
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -42,11 +49,11 @@ class ProductCard extends StatelessWidget {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: product.softColor,
+                      color: visualSoft,
                       gradient: LinearGradient(
                         colors: [
-                          product.softColor,
-                          product.accent.withValues(alpha: 0.10),
+                          visualSoft,
+                          product.accent.withValues(alpha: dark ? 0.16 : 0.10),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -59,11 +66,8 @@ class ProductCard extends StatelessWidget {
                         color: Colors.transparent,
                         child: Transform.rotate(
                           angle: -0.08,
-                          child: Icon(
-                            product.icon,
-                            size: 68,
-                            color: product.accent,
-                          ),
+                          child: Icon(product.icon,
+                              size: 68, color: product.accent),
                         ),
                       ),
                     ),
@@ -82,24 +86,25 @@ class ProductCard extends StatelessWidget {
                               ? 'Remove ${product.name} from wishlist'
                               : 'Add ${product.name} to wishlist',
                           child: AppPressable(
-                            onTap: () {
-                              WishlistController.instance.toggle(product);
-                            },
+                            onTap: () =>
+                                WishlistController.instance.toggle(product),
                             borderRadius: BorderRadius.circular(AppRadius.sm),
                             child: AnimatedContainer(
                               duration: AppMotion.fast,
                               width: 38,
                               height: 38,
                               decoration: BoxDecoration(
-                                color: AppColors.surface.withValues(alpha: 0.94),
-                                borderRadius: BorderRadius.circular(AppRadius.sm),
-                                boxShadow: AppShadows.soft,
+                                color: scheme.surface.withValues(alpha: 0.94),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.sm),
+                                boxShadow: dark ? null : AppShadows.soft,
                               ),
                               alignment: Alignment.center,
                               child: AnimatedSwitcher(
                                 duration: AppMotion.fast,
                                 transitionBuilder: (child, animation) =>
-                                    ScaleTransition(scale: animation, child: child),
+                                    ScaleTransition(
+                                        scale: animation, child: child),
                                 child: Icon(
                                   favorite
                                       ? Icons.favorite_rounded
@@ -108,7 +113,7 @@ class ProductCard extends StatelessWidget {
                                   size: 19,
                                   color: favorite
                                       ? AppColors.danger
-                                      : AppColors.textPrimary,
+                                      : scheme.onSurface,
                                 ),
                               ),
                             ),
@@ -123,21 +128,21 @@ class ProductCard extends StatelessWidget {
                       left: 10,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 9,
-                          vertical: 5,
-                        ),
+                            horizontal: 9, vertical: 5),
                         decoration: BoxDecoration(
                           color: product.discountPercent > 0
                               ? AppColors.danger
-                              : AppColors.textPrimary,
+                              : scheme.inverseSurface,
                           borderRadius: BorderRadius.circular(AppRadius.pill),
                         ),
                         child: Text(
                           product.discountPercent > 0
                               ? '-${product.discountPercent}%'
                               : product.badge.toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: product.discountPercent > 0
+                                ? Colors.white
+                                : scheme.onInverseSurface,
                             fontSize: 9,
                             fontWeight: FontWeight.w900,
                             letterSpacing: .4,
@@ -155,8 +160,8 @@ class ProductCard extends StatelessWidget {
                 children: [
                   Text(
                     product.category.toUpperCase(),
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
+                    style: TextStyle(
+                      color: scheme.onSurfaceVariant,
                       fontSize: 9.5,
                       letterSpacing: .6,
                       fontWeight: FontWeight.w800,
@@ -167,8 +172,8 @@ class ProductCard extends StatelessWidget {
                     product.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
+                    style: TextStyle(
+                      color: scheme.onSurface,
                       fontSize: 13.5,
                       height: 1.25,
                       fontWeight: FontWeight.w800,
@@ -177,11 +182,13 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded, color: AppColors.star, size: 17),
+                      const Icon(Icons.star_rounded,
+                          color: AppColors.star, size: 17),
                       const SizedBox(width: 3),
                       Text(
                         product.rating.toStringAsFixed(1),
-                        style: const TextStyle(
+                        style: TextStyle(
+                          color: scheme.onSurface,
                           fontSize: 11.5,
                           fontWeight: FontWeight.w800,
                         ),
@@ -189,9 +196,9 @@ class ProductCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         '(${product.reviews})',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10.5,
-                          color: AppColors.textTertiary,
+                          color: scheme.onSurfaceVariant.withValues(alpha: .72),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -206,8 +213,8 @@ class ProductCard extends StatelessWidget {
                           children: [
                             Text(
                               '${AppConstants.currency} ${product.price.toStringAsFixed(0)}',
-                              style: const TextStyle(
-                                color: AppColors.textPrimary,
+                              style: TextStyle(
+                                color: scheme.onSurface,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -215,9 +222,11 @@ class ProductCard extends StatelessWidget {
                             if (product.oldPrice != null)
                               Text(
                                 '${AppConstants.currency} ${product.oldPrice!.toStringAsFixed(0)}',
-                                style: const TextStyle(
-                                  color: AppColors.textTertiary,
+                                style: TextStyle(
+                                  color: scheme.onSurfaceVariant
+                                      .withValues(alpha: .72),
                                   decoration: TextDecoration.lineThrough,
+                                  decorationColor: scheme.onSurfaceVariant,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -239,19 +248,19 @@ class ProductCard extends StatelessWidget {
                             height: 38,
                             decoration: BoxDecoration(
                               color: product.inStock
-                                  ? AppColors.primary
-                                  : AppColors.surfaceStrong,
+                                  ? scheme.primary
+                                  : scheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(AppRadius.sm),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: (product.inStock
-                                          ? AppColors.primary
-                                          : AppColors.surfaceStrong)
-                                      .withValues(alpha: .24),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
+                              boxShadow: product.inStock && !dark
+                                  ? [
+                                      BoxShadow(
+                                        color: scheme.primary
+                                            .withValues(alpha: .24),
+                                        blurRadius: 14,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ]
+                                  : null,
                             ),
                             alignment: Alignment.center,
                             child: Icon(
@@ -259,8 +268,8 @@ class ProductCard extends StatelessWidget {
                                   ? Icons.add_rounded
                                   : Icons.block_rounded,
                               color: product.inStock
-                                  ? Colors.white
-                                  : AppColors.textTertiary,
+                                  ? scheme.onPrimary
+                                  : scheme.onSurfaceVariant,
                               size: 21,
                             ),
                           ),

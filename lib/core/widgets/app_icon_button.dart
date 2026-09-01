@@ -24,6 +24,8 @@ class AppIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return AppPressable(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.md),
@@ -34,17 +36,13 @@ class AppIconButton extends StatelessWidget {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              color: backgroundColor ?? AppColors.surface,
+              color: backgroundColor ?? scheme.surface,
               borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: AppColors.border),
-              boxShadow: AppShadows.soft,
+              border: Border.all(color: scheme.outlineVariant),
+              boxShadow: dark ? null : AppShadows.soft,
             ),
             alignment: Alignment.center,
-            child: Icon(
-              icon,
-              size: 21,
-              color: iconColor ?? AppColors.textPrimary,
-            ),
+            child: Icon(icon, size: 21, color: iconColor ?? scheme.onSurface),
           ),
           if (showBadge)
             Positioned(
@@ -56,7 +54,7 @@ class AppIconButton extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.danger,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
-                  border: Border.all(color: AppColors.surface, width: 2),
+                  border: Border.all(color: scheme.surface, width: 2),
                 ),
                 alignment: Alignment.center,
                 child: Text(

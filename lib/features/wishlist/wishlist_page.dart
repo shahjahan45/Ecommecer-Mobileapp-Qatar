@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/navigation/app_page_route.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/widgets/empty_state_card.dart';
 import '../../models/product.dart';
 import '../../widgets/product_card.dart';
@@ -36,7 +35,6 @@ class _WishlistPageState extends State<WishlistPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Wishlist'),
         actions: [
@@ -177,7 +175,6 @@ class _WishlistPageState extends State<WishlistPage> {
     );
   }
 
-
   Widget _buildEmptySliver({
     required double contentWidth,
     required Widget child,
@@ -288,7 +285,8 @@ class _WishlistPageState extends State<WishlistPage> {
           behavior: SnackBarBehavior.floating,
           content: Row(
             children: [
-              const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+              const Icon(Icons.check_circle_rounded,
+                  color: Colors.white, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(

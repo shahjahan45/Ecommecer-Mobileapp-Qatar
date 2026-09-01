@@ -78,9 +78,8 @@ class _PremiumLaunchBackdropPainter extends CustomPainter {
     // same light surface used by onboarding underneath.
     final settledMotion = ((motionT - 0.48) / 0.52).clamp(0.0, 1.0);
     final ambientDrift = math.sin(settledMotion * math.pi * 1.35) * 3.2;
-    final startY = size.height *
-            (1.02 - (0.36 * revealT) + (0.17 * exitT)) +
-        ambientDrift;
+    final startY =
+        size.height * (1.02 - (0.36 * revealT) + (0.17 * exitT)) + ambientDrift;
 
     final wavePath = Path()
       ..moveTo(0, startY - (size.height * 0.035 * revealT))

@@ -80,7 +80,9 @@ class ShopOrder {
 
   double get total => subtotal + deliveryFee - discount;
 
-  bool get isActive => status != ShopOrderStatus.delivered && status != ShopOrderStatus.cancelled;
+  bool get isActive =>
+      status != ShopOrderStatus.delivered &&
+      status != ShopOrderStatus.cancelled;
   bool get isDelivered => status == ShopOrderStatus.delivered;
   bool get isCancelled => status == ShopOrderStatus.cancelled;
 }

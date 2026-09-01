@@ -60,7 +60,8 @@ class AuthScaffold extends StatelessWidget {
                   ),
                 ),
                 SingleChildScrollView(
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   padding: EdgeInsets.fromLTRB(
                     horizontalPadding,
                     compactHeight ? 10 : 18,
@@ -78,11 +79,13 @@ class AuthScaffold extends StatelessWidget {
                               children: [
                                 if (showBackButton) ...[
                                   IconButton.filledTonal(
-                                    onPressed: () => Navigator.maybePop(context),
+                                    onPressed: () =>
+                                        Navigator.maybePop(context),
                                     style: IconButton.styleFrom(
                                       backgroundColor: AppColors.surface,
                                       foregroundColor: AppColors.textPrimary,
-                                      side: const BorderSide(color: AppColors.border),
+                                      side: const BorderSide(
+                                          color: AppColors.border),
                                     ),
                                     icon: const Icon(Icons.arrow_back_rounded),
                                   ),
@@ -90,15 +93,18 @@ class AuthScaffold extends StatelessWidget {
                                 ],
                                 const Expanded(child: BrandMark(compact: true)),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 6),
                                   decoration: BoxDecoration(
                                     color: AppColors.successSoft,
-                                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                                    borderRadius:
+                                        BorderRadius.circular(AppRadius.pill),
                                   ),
                                   child: const Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.lock_rounded, size: 12, color: AppColors.success),
+                                      Icon(Icons.lock_rounded,
+                                          size: 12, color: AppColors.success),
                                       SizedBox(width: 4),
                                       Text(
                                         'Secure',
@@ -116,14 +122,21 @@ class AuthScaffold extends StatelessWidget {
                             SizedBox(height: compactHeight ? 24 : 38),
                             Text(
                               title,
-                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                    fontSize: constraints.maxWidth < 390 ? 28 : 32,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineLarge
+                                  ?.copyWith(
+                                    fontSize:
+                                        constraints.maxWidth < 390 ? 28 : 32,
                                   ),
                             ),
                             const SizedBox(height: 10),
                             Text(
                               subtitle,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
                                     height: 1.6,
                                     fontSize: 14.5,
                                   ),
@@ -133,7 +146,8 @@ class AuthScaffold extends StatelessWidget {
                               clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
                                 color: AppColors.surface,
-                                borderRadius: BorderRadius.circular(AppRadius.xxl),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.xxl),
                                 border: Border.all(color: AppColors.border),
                                 boxShadow: AppShadows.elevated,
                               ),
@@ -143,7 +157,10 @@ class AuthScaffold extends StatelessWidget {
                                     height: 4,
                                     decoration: const BoxDecoration(
                                       gradient: LinearGradient(
-                                        colors: [AppColors.primary, AppColors.secondary],
+                                        colors: [
+                                          AppColors.primary,
+                                          AppColors.secondary
+                                        ],
                                       ),
                                     ),
                                   ),

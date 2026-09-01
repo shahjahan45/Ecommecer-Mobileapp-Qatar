@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../design_system/app_tokens.dart';
-import '../theme/app_colors.dart';
 
 class EmptyStateCard extends StatelessWidget {
   final IconData icon;
@@ -21,6 +20,7 @@ class EmptyStateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 380;
@@ -36,10 +36,12 @@ class EmptyStateCard extends StatelessWidget {
               margin: EdgeInsets.all(outerMargin),
               padding: EdgeInsets.all(innerPadding),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: scheme.surface,
                 borderRadius: BorderRadius.circular(AppRadius.xxl),
-                border: Border.all(color: AppColors.border),
-                boxShadow: AppShadows.soft,
+                border: Border.all(color: scheme.outlineVariant),
+                boxShadow: Theme.of(context).brightness == Brightness.dark
+                    ? null
+                    : AppShadows.soft,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -47,15 +49,15 @@ class EmptyStateCard extends StatelessWidget {
                   Container(
                     width: iconSize,
                     height: iconSize,
-                    decoration: const BoxDecoration(
-                      color: AppColors.primarySoft,
+                    decoration: BoxDecoration(
+                      color: scheme.primaryContainer,
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
                     child: Icon(
                       icon,
                       size: compact ? 31 : 38,
-                      color: AppColors.primary,
+                      color: scheme.primary,
                     ),
                   ),
                   SizedBox(height: compact ? AppSpacing.md : AppSpacing.lg),
@@ -70,9 +72,10 @@ class EmptyStateCard extends StatelessWidget {
                   Text(
                     message,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          height: 1.45,
-                        ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(height: 1.45),
                   ),
                   if (actionLabel != null) ...[
                     SizedBox(height: compact ? AppSpacing.lg : AppSpacing.xl),

@@ -140,9 +140,8 @@ class _ColorVariantButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkColor = color.computeLuminance() > 0.58
-        ? AppColors.textPrimary
-        : Colors.white;
+    final checkColor =
+        color.computeLuminance() > 0.58 ? AppColors.textPrimary : Colors.white;
 
     return Semantics(
       container: true,
@@ -270,8 +269,7 @@ class _TextVariantButton extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color:
-                        selected ? AppColors.primary : AppColors.textPrimary,
+                    color: selected ? AppColors.primary : AppColors.textPrimary,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w800,
                   ),

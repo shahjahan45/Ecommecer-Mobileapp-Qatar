@@ -1,8 +1,8 @@
 name: ecommerce_mobile
-version: 1.10.7+35
+version: 1.12.0+42
 publish_to: 'none'
 
-description: Cumulative DCX Online Store Phase 10.7 with a seamless branded Android native first frame, safe padded DCX splash mark, no blank launch flash, continuous Flutter logo handoff, 3-4 second cinematic motion sequence, reduced-motion accessibility, account center, orders, checkout, cart, wishlist, product discovery, authentication, and official branding.
+description: Cumulative DCX Online Store Phase 12 with a professional promotions and savings engine, promo-code UX across cart and checkout, persistent adaptive themes, the complete premium launch experience and all previous commerce features.
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  google_fonts: ^6.2.1
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:

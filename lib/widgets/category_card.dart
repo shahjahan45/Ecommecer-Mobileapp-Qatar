@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/design_system/app_tokens.dart';
-import '../core/theme/app_colors.dart';
 import '../core/widgets/app_pressable.dart';
 import '../models/category.dart';
 
@@ -19,6 +18,13 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final selectedSurface = dark
+        ? Color.alphaBlend(
+            category.accent.withValues(alpha: .15), scheme.surfaceContainer)
+        : category.softColor;
+
     return AppPressable(
       onTap: onTap,
       child: AnimatedContainer(
@@ -27,12 +33,14 @@ class CategoryCard extends StatelessWidget {
         width: 92,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 13),
         decoration: BoxDecoration(
-          color: selected ? category.softColor : AppColors.surface,
+          color: selected ? selectedSurface : scheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
           border: Border.all(
-            color: selected ? category.accent.withValues(alpha: 0.28) : AppColors.border,
+            color: selected
+                ? category.accent.withValues(alpha: dark ? 0.48 : 0.28)
+                : scheme.outlineVariant,
           ),
-          boxShadow: selected ? AppShadows.soft : const [],
+          boxShadow: selected && !dark ? AppShadows.soft : const [],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -42,7 +50,7 @@ class CategoryCard extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: selected ? AppColors.surface : category.softColor,
+                color: selected ? scheme.surface : selectedSurface,
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               alignment: Alignment.center,
@@ -57,7 +65,7 @@ class CategoryCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: selected ? FontWeight.w800 : FontWeight.w700,
-                color: selected ? category.accent : AppColors.textPrimary,
+                color: selected ? category.accent : scheme.onSurface,
               ),
             ),
           ],

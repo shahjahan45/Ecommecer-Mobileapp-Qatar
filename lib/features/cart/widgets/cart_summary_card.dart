@@ -15,24 +15,31 @@ class CartSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final promotion = cart.appliedPromotion;
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.receipt_long_rounded, color: AppColors.primary, size: 20),
-              SizedBox(width: 8),
+              const Icon(
+                Icons.receipt_long_rounded,
+                color: AppColors.primary,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
               Text(
                 'Order summary',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: scheme.onSurface,
                   fontSize: 16,
                   fontWeight: FontWeight.w900,
                 ),
@@ -44,8 +51,16 @@ class CartSummaryCard extends StatelessWidget {
           if (cart.totalSavings > 0) ...[
             const SizedBox(height: 10),
             _SummaryRow(
-              label: 'You save',
+              label: 'Product savings',
               amount: -cart.totalSavings,
+              amountColor: AppColors.success,
+            ),
+          ],
+          if (promotion != null && cart.promotionSavings > 0) ...[
+            const SizedBox(height: 10),
+            _SummaryRow(
+              label: 'Promo • ${promotion.code}',
+              amount: -cart.promotionSavings,
               amountColor: AppColors.success,
             ),
           ],
@@ -55,9 +70,9 @@ class CartSummaryCard extends StatelessWidget {
             amount: cart.deliveryFee,
             freeLabel: cart.deliveryFee == 0 ? 'FREE' : null,
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 14),
-            child: Divider(height: 1, color: AppColors.border),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: Divider(height: 1, color: scheme.outlineVariant),
           ),
           _SummaryRow(
             label: 'Total',
@@ -89,13 +104,15 @@ class _SummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Row(
       children: [
         Expanded(
           child: Text(
             label,
             style: TextStyle(
-              color: strong ? AppColors.textPrimary : AppColors.textSecondary,
+              color: strong ? scheme.onSurface : scheme.onSurfaceVariant,
               fontSize: strong ? 14 : 12,
               fontWeight: strong ? FontWeight.w900 : FontWeight.w700,
             ),
@@ -114,7 +131,7 @@ class _SummaryRow extends StatelessWidget {
           Text(
             '${amount < 0 ? '-' : ''}${AppConstants.currency} ${amount.abs().toStringAsFixed(0)}',
             style: TextStyle(
-              color: amountColor ?? AppColors.textPrimary,
+              color: amountColor ?? scheme.onSurface,
               fontSize: strong ? 17 : 12.5,
               fontWeight: strong ? FontWeight.w900 : FontWeight.w800,
             ),
@@ -131,17 +148,24 @@ class _DeliveryProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final complete = cart.amountToFreeDelivery <= 0;
     final progress = cart.isEmpty
         ? 0.0
         : (cart.subtotal / CartController.freeDeliveryThreshold)
             .clamp(0.0, 1.0)
             .toDouble();
+    final freeByPromo = cart.appliedPromotion?.code == 'FREESHIP' &&
+        cart.promotionDeliverySaving > 0;
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: complete ? AppColors.successSoft : AppColors.primarySoft,
+        color: complete
+            ? (scheme.brightness == Brightness.dark
+                ? AppColors.success.withValues(alpha: .12)
+                : AppColors.successSoft)
+            : scheme.primaryContainer.withValues(alpha: .58),
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Column(
@@ -151,18 +175,22 @@ class _DeliveryProgress extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                complete ? Icons.local_shipping_rounded : Icons.inventory_2_outlined,
-                color: complete ? AppColors.success : AppColors.primary,
+                complete
+                    ? Icons.local_shipping_rounded
+                    : Icons.inventory_2_outlined,
+                color: complete ? AppColors.success : scheme.primary,
                 size: 18,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  complete
-                      ? 'You unlocked free delivery'
-                      : 'Add ${AppConstants.currency} ${cart.amountToFreeDelivery.toStringAsFixed(0)} more for free delivery',
+                  freeByPromo
+                      ? 'Free delivery unlocked with FREESHIP'
+                      : complete
+                          ? 'You unlocked free delivery'
+                          : 'Add ${AppConstants.currency} ${cart.amountToFreeDelivery.toStringAsFixed(0)} more for free delivery',
                   style: TextStyle(
-                    color: complete ? AppColors.success : AppColors.primaryDark,
+                    color: complete ? AppColors.success : scheme.primary,
                     fontSize: 11,
                     height: 1.35,
                     fontWeight: FontWeight.w800,
@@ -176,10 +204,10 @@ class _DeliveryProgress extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.pill),
             child: LinearProgressIndicator(
               minHeight: 5,
-              value: progress,
-              backgroundColor: Colors.white.withValues(alpha: 0.74),
+              value: complete ? 1 : progress,
+              backgroundColor: scheme.surface.withValues(alpha: 0.72),
               valueColor: AlwaysStoppedAnimation<Color>(
-                complete ? AppColors.success : AppColors.primary,
+                complete ? AppColors.success : scheme.primary,
               ),
             ),
           ),

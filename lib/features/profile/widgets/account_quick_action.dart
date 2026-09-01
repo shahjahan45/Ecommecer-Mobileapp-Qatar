@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/design_system/app_tokens.dart';
-import '../../../core/theme/app_colors.dart';
 
 class AccountQuickAction extends StatelessWidget {
   final IconData icon;
@@ -23,11 +22,18 @@ class AccountQuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final iconSurface = dark
+        ? Color.alphaBlend(
+            color.withValues(alpha: .16), scheme.surfaceContainer)
+        : softColor;
+
     return Semantics(
       button: true,
       label: label,
       child: Material(
-        color: AppColors.surface,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: InkWell(
           onTap: onTap,
@@ -43,7 +49,7 @@ class AccountQuickAction extends StatelessWidget {
                 padding: EdgeInsets.all(padding),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(AppRadius.md),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: scheme.outlineVariant),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,20 +61,17 @@ class AccountQuickAction extends StatelessWidget {
                           height: iconBox,
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                              color: softColor,
+                              color: iconSurface,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(
-                              icon,
-                              color: color,
-                              size: compact ? 19 : 20,
-                            ),
+                            child: Icon(icon,
+                                color: color, size: compact ? 19 : 20),
                           ),
                         ),
                         const Spacer(),
                         Icon(
                           Icons.arrow_outward_rounded,
-                          color: AppColors.textTertiary,
+                          color: scheme.onSurfaceVariant.withValues(alpha: .62),
                           size: compact ? 16 : 18,
                         ),
                       ],
@@ -79,7 +82,7 @@ class AccountQuickAction extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: scheme.onSurface,
                         fontSize: compact ? 12.5 : 13,
                         fontWeight: FontWeight.w900,
                       ),
@@ -90,7 +93,7 @@ class AccountQuickAction extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: scheme.onSurfaceVariant,
                         fontSize: compact ? 10 : 10.5,
                         fontWeight: FontWeight.w600,
                       ),

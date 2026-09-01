@@ -125,8 +125,7 @@ class _PremiumAuthBackgroundPainter extends CustomPainter {
         ..color = AppColors.primary.withValues(alpha: 0.09),
     );
 
-    final dotPaint = Paint()
-      ..color = AppColors.primary.withValues(alpha: 0.11);
+    final dotPaint = Paint()..color = AppColors.primary.withValues(alpha: 0.11);
     const columns = 4;
     const rows = 5;
     final startX = size.width * 0.84;
