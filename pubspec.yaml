@@ -1,8 +1,8 @@
 name: ecommerce_mobile
-version: 1.12.0+42
+version: 1.13.0+43
 publish_to: 'none'
 
-description: Cumulative DCX Online Store Phase 12 with a professional promotions and savings engine, promo-code UX across cart and checkout, persistent adaptive themes, the complete premium launch experience and all previous commerce features.
+description: Cumulative DCX Online Store Phase 13 with secure payment orchestration, professional order placement and confirmation, promotions, adaptive themes, the complete premium launch experience and all previous commerce features.
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

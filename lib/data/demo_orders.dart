@@ -1,3 +1,4 @@
+import '../models/payment.dart';
 import '../models/shop_order.dart';
 import 'demo_catalog.dart';
 
@@ -68,6 +69,8 @@ class DemoOrders {
       trackingNumber: 'QP2608271031',
       deliveryAddress: 'Al Wakrah, Qatar',
       paymentMethod: 'Card payment',
+      paymentStatus: CheckoutPaymentStatus.paid,
+      paymentReference: 'CARD-8271031',
       shippingHistory: const <ShippingEvent>[
         ShippingEvent(
           title: 'In transit',
@@ -143,6 +146,8 @@ class DemoOrders {
       trackingNumber: 'Not available',
       deliveryAddress: 'Doha, Qatar',
       paymentMethod: 'Bank transfer',
+      paymentStatus: CheckoutPaymentStatus.awaitingTransfer,
+      paymentReference: 'BANK-8120914',
       shippingHistory: const <ShippingEvent>[
         ShippingEvent(
           title: 'Order cancelled',

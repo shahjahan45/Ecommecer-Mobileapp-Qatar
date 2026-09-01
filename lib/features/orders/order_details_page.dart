@@ -5,6 +5,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/design_system/app_tokens.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../../core/theme/app_colors.dart';
+import '../../models/payment.dart';
 import '../../models/shop_order.dart';
 import '../cart/cart_controller.dart';
 import '../products/product_details_page.dart';
@@ -574,7 +575,7 @@ class _OrderPaymentSummary extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  order.paymentMethod,
+                  order.paymentStatus.label,
                   style: const TextStyle(
                     color: AppColors.success,
                     fontSize: 9,
@@ -584,12 +585,37 @@ class _OrderPaymentSummary extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 10),
+          Text(
+            order.paymentMethod,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          if (order.paymentReference != null) ...[
+            const SizedBox(height: 3),
+            Text(
+              'Reference: ${order.paymentReference}',
+              style: const TextStyle(
+                color: AppColors.textTertiary,
+                fontSize: 9.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
           const SizedBox(height: 14),
           _MoneyRow(label: 'Subtotal', value: order.subtotal),
           if (order.discount > 0) ...[
             const SizedBox(height: 8),
             _MoneyRow(
-                label: 'Discount', value: -order.discount, positive: true),
+              label: order.promotionCode == null
+                  ? 'Discount'
+                  : 'Promo • ${order.promotionCode}',
+              value: -order.discount,
+              positive: true,
+            ),
           ],
           const SizedBox(height: 8),
           _MoneyRow(

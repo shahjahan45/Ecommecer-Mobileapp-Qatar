@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/design_system/app_tokens.dart';
+import '../../core/navigation/app_page_route.dart';
 import '../../core/theme/app_colors.dart';
+import '../../models/payment.dart';
 import '../cart/cart_controller.dart';
 import '../cart/widgets/cart_summary_card.dart';
 import '../cart/widgets/promotion_code_card.dart';
+import 'checkout_order_service.dart';
+import 'order_confirmation_page.dart';
+import 'payment_flow_controller.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -16,9 +21,15 @@ class CheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<CheckoutPage> {
   final CartController _cart = CartController.instance;
+  final PaymentFlowController _paymentFlow = PaymentFlowController();
   String _delivery = 'Standard delivery';
-  String _payment = 'Cash on delivery';
   _DeliveryAddressData? _deliveryAddress;
+
+  @override
+  void dispose() {
+    _paymentFlow.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +77,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 const _SecureCheckoutBanner(),
                                 const SizedBox(height: 14),
                                 _CheckoutOptionCard(
+                                  key: const Key('checkout-address-option'),
                                   icon: Icons.location_on_outlined,
                                   title: 'Delivery address',
                                   subtitle: _deliveryAddress == null
@@ -78,6 +90,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 ),
                                 const SizedBox(height: 12),
                                 _CheckoutOptionCard(
+                                  key: const Key('checkout-delivery-option'),
                                   icon: Icons.local_shipping_outlined,
                                   title: 'Delivery method',
                                   subtitle: _delivery,
@@ -86,9 +99,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 ),
                                 const SizedBox(height: 12),
                                 _CheckoutOptionCard(
+                                  key: const Key('checkout-payment-option'),
                                   icon: Icons.payments_outlined,
                                   title: 'Payment method',
-                                  subtitle: _payment,
+                                  subtitle: _paymentFlow.selectedMethod.label,
                                   actionLabel: 'Change',
                                   onTap: _showPaymentSheet,
                                 ),
@@ -112,12 +126,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
       ),
       bottomNavigationBar: AnimatedBuilder(
-        animation: _cart,
+        animation: Listenable.merge(<Listenable>[_cart, _paymentFlow]),
         builder: (context, child) {
           if (_cart.isEmpty) return const SizedBox.shrink();
           return _CheckoutBottomBar(
             total: _cart.total,
-            onPressed: _reviewOrder,
+            isProcessing: _paymentFlow.isProcessing,
+            onPressed: _paymentFlow.isProcessing ? null : _reviewOrder,
           );
         },
       ),
@@ -194,16 +209,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _showPaymentSheet() async {
-    final selected = await showModalBottomSheet<String>(
+    final selected = await showModalBottomSheet<CheckoutPaymentMethod>(
       context: context,
       showDragHandle: true,
       backgroundColor: AppColors.surface,
       builder: (context) {
-        const options = <String>[
-          'Cash on delivery',
-          'Card payment',
-          'Bank transfer',
-        ];
         return SafeArea(
           top: false,
           child: Padding(
@@ -221,19 +231,49 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 6),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Choose how you want to complete this order.',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 12),
-                ...options.map(
+                ...CheckoutPaymentMethod.values.map(
                   (option) => Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: _SelectionTile(
-                      title: option,
-                      subtitle: option == 'Cash on delivery'
-                          ? 'Pay when your order arrives'
-                          : 'Secure payment at order confirmation',
-                      selected: _payment == option,
+                      key: ValueKey<String>('checkout-payment-${option.name}'),
+                      title: option.label,
+                      subtitle: option.subtitle,
+                      selected: _paymentFlow.selectedMethod == option,
                       onTap: () => Navigator.pop(context, option),
                     ),
                   ),
+                ),
+                const SizedBox(height: 2),
+                const Row(
+                  children: [
+                    Icon(Icons.lock_outline_rounded,
+                        size: 14, color: AppColors.textTertiary),
+                    SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        'Payment orchestration is gateway-ready; raw card data is never stored in this app layer.',
+                        style: TextStyle(
+                          color: AppColors.textTertiary,
+                          fontSize: 9.5,
+                          height: 1.35,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -243,12 +283,24 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
 
     if (selected != null && mounted) {
-      setState(() => _payment = selected);
+      _paymentFlow.selectMethod(selected);
+      setState(() {});
     }
   }
 
   Future<void> _reviewOrder() async {
-    await showModalBottomSheet<void>(
+    if (_deliveryAddress == null) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('Add a delivery address before placing your order.'),
+          ),
+        );
+      return;
+    }
+
+    final confirmed = await showModalBottomSheet<bool>(
       context: context,
       showDragHandle: true,
       backgroundColor: AppColors.surface,
@@ -268,7 +320,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  'Order review ready',
+                  'Review and confirm',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -278,7 +330,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '${_cart.totalQuantity} items • $_delivery • $_payment',
+                  '${_cart.totalQuantity} items • $_delivery • ${_paymentFlow.selectedMethod.label}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
@@ -287,12 +339,50 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceMuted,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: Column(
+                    children: [
+                      _ReviewRow(
+                          label: 'Deliver to',
+                          value: _deliveryAddress!.fullName),
+                      const SizedBox(height: 8),
+                      _ReviewRow(
+                          label: 'Payment',
+                          value: _paymentFlow.selectedMethod.label),
+                      if (_cart.appliedPromotion != null) ...[
+                        const SizedBox(height: 8),
+                        _ReviewRow(
+                            label: 'Promo',
+                            value: _cart.appliedPromotion!.code),
+                      ],
+                      const Divider(height: 22),
+                      _ReviewRow(
+                        label: 'Order total',
+                        value:
+                            '${AppConstants.currency} ${_cart.total.toStringAsFixed(0)}',
+                        strong: true,
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 50,
-                  child: FilledButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Done'),
+                  height: 52,
+                  child: FilledButton.icon(
+                    key: const Key('checkout-confirm-order'),
+                    onPressed: () => Navigator.pop(context, true),
+                    icon: const Icon(Icons.lock_rounded, size: 18),
+                    label: Text(
+                      'Place order • ${AppConstants.currency} ${_cart.total.toStringAsFixed(0)}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ],
@@ -300,6 +390,85 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
         );
       },
+    );
+
+    if (confirmed == true && mounted) {
+      await _placeOrder();
+    }
+  }
+
+  Future<void> _placeOrder() async {
+    final address = _deliveryAddress;
+    if (address == null || _cart.isEmpty || _paymentFlow.isProcessing) return;
+
+    final payment = await _paymentFlow.authorize(amount: _cart.total);
+    if (!mounted) return;
+
+    if (!payment.succeeded) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(payment.message)));
+      return;
+    }
+
+    final order = CheckoutOrderService.placeOrder(
+      cart: _cart,
+      deliveryAddress:
+          '${address.fullName} • ${address.mobile} • ${address.address}',
+      deliveryMethod: _delivery,
+      payment: payment,
+    );
+
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      AppPageRoute(page: OrderConfirmationPage(order: order)),
+    );
+  }
+}
+
+class _ReviewRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool strong;
+
+  const _ReviewRow({
+    required this.label,
+    required this.value,
+    this.strong = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 86,
+          child: Text(
+            label,
+            style: TextStyle(
+              color: strong ? AppColors.textPrimary : AppColors.textSecondary,
+              fontSize: 10.5,
+              fontWeight: strong ? FontWeight.w900 : FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: strong ? 12.5 : 10.5,
+              height: 1.35,
+              fontWeight: strong ? FontWeight.w900 : FontWeight.w800,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -359,6 +528,7 @@ class _CheckoutOptionCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _CheckoutOptionCard({
+    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -619,6 +789,7 @@ class _SelectionTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const _SelectionTile({
+    super.key,
     required this.title,
     required this.subtitle,
     required this.selected,
@@ -682,10 +853,12 @@ class _CheckoutTrustCard extends StatelessWidget {
 
 class _CheckoutBottomBar extends StatelessWidget {
   final double total;
-  final VoidCallback onPressed;
+  final bool isProcessing;
+  final VoidCallback? onPressed;
 
   const _CheckoutBottomBar({
     required this.total,
+    required this.isProcessing,
     required this.onPressed,
   });
 
@@ -737,9 +910,18 @@ class _CheckoutBottomBar extends StatelessWidget {
                   child: FilledButton.icon(
                     onPressed: onPressed,
                     iconAlignment: IconAlignment.end,
-                    icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-                    label: const Text(
-                      'Review order',
+                    icon: isProcessing
+                        ? const SizedBox(
+                            width: 17,
+                            height: 17,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.1,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.arrow_forward_rounded, size: 18),
+                    label: Text(
+                      isProcessing ? 'Processing securely…' : 'Review order',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

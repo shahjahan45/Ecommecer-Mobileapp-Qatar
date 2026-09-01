@@ -1,3 +1,4 @@
+import 'payment.dart';
 import 'product.dart';
 
 enum ShopOrderStatus {
@@ -50,6 +51,9 @@ class ShopOrder {
   final String trackingNumber;
   final String deliveryAddress;
   final String paymentMethod;
+  final CheckoutPaymentStatus paymentStatus;
+  final String? paymentReference;
+  final String? promotionCode;
   final List<ShippingEvent> shippingHistory;
 
   const ShopOrder({
@@ -65,6 +69,9 @@ class ShopOrder {
     required this.trackingNumber,
     required this.deliveryAddress,
     required this.paymentMethod,
+    this.paymentStatus = CheckoutPaymentStatus.payOnDelivery,
+    this.paymentReference,
+    this.promotionCode,
     this.shippingHistory = const [],
   });
 

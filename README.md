@@ -150,3 +150,15 @@ Phase 11.5 hardens the Appearance settings regression coverage for Flutter `List
 Demo QA codes: `WELCOME10`, `DCX25`, `FREESHIP`.
 
 See `PHASE_12_PROMOTIONS_SAVINGS_ENGINE.md`, `PHASE_12_CODE_INDEX.md`, and `PHASE_12_VERIFICATION_REPORT.md`.
+
+## Phase 13 — Secure Payment Flow & Order Confirmation
+
+- Adds structured Cash on delivery / Card / Bank transfer checkout methods.
+- Adds processing-safe payment orchestration with explicit payment status/reference metadata.
+- Adds a professional review-and-confirm step before order placement.
+- Converts the current Cart snapshot into a new My Orders record, carries promotion savings forward and clears the cart only after successful local authorization.
+- Adds a premium responsive Order Confirmation screen with payment, receipt and delivery details.
+- Extends Order Details with payment status/reference and promo metadata.
+- Keeps raw card data out of the app layer and leaves a clean gateway integration boundary for a later Laravel/API payment phase.
+
+See `PHASE_13_SECURE_PAYMENT_ORDER_CONFIRMATION.md`, `PHASE_13_CODE_INDEX.md`, and `PHASE_13_VERIFICATION_REPORT.md`.
