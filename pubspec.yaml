@@ -1,8 +1,8 @@
 name: ecommerce_mobile
-version: 1.13.0+43
+version: 1.15.1+49
 publish_to: 'none'
 
-description: Cumulative DCX Online Store Phase 13 with secure payment orchestration, professional order placement and confirmation, promotions, adaptive themes, the complete premium launch experience and all previous commerce features.
+description: Cumulative DCX Online Store Phase 15.1 with geocoding 5.x API compatibility, premium saved addresses, optional Google Maps location selection, refined Profile/Home footer experiences, secure checkout, notifications, support, promotions, adaptive themes and all previous commerce features.
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -12,6 +12,9 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.5.5
+  google_maps_flutter: 2.12.3
+  geocoding: ^5.0.0
+  font_awesome_flutter: ^11.0.0
 
 dev_dependencies:
   flutter_test:

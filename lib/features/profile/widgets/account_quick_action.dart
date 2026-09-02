@@ -25,8 +25,7 @@ class AccountQuickAction extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final dark = Theme.of(context).brightness == Brightness.dark;
     final iconSurface = dark
-        ? Color.alphaBlend(
-            color.withValues(alpha: .16), scheme.surfaceContainer)
+        ? Color.alphaBlend(color.withValues(alpha: .16), scheme.surfaceContainer)
         : softColor;
 
     return Semantics(
@@ -64,8 +63,7 @@ class AccountQuickAction extends StatelessWidget {
                               color: iconSurface,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(icon,
-                                color: color, size: compact ? 19 : 20),
+                            child: Icon(icon, color: color, size: compact ? 19 : 20),
                           ),
                         ),
                         const Spacer(),

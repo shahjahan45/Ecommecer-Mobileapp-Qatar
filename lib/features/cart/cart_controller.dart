@@ -80,9 +80,7 @@ class CartController extends ChangeNotifier {
   }
 
   double get amountToFreeDelivery {
-    if (isEmpty ||
-        subtotal >= freeDeliveryThreshold ||
-        _promotionUnlocksDelivery) {
+    if (isEmpty || subtotal >= freeDeliveryThreshold || _promotionUnlocksDelivery) {
       return 0;
     }
     return freeDeliveryThreshold - subtotal;
@@ -136,8 +134,9 @@ class CartController extends ChangeNotifier {
       return;
     }
 
-    final maxQuantity =
-        item.product.stockQuantity > 0 ? item.product.stockQuantity : 1;
+    final maxQuantity = item.product.stockQuantity > 0
+        ? item.product.stockQuantity
+        : 1;
     final next = quantity.clamp(1, maxQuantity).toInt();
     if (next == item.quantity) return;
 
@@ -169,8 +168,7 @@ class CartController extends ChangeNotifier {
 
   void restore(CartItem item) {
     final safeQuantity = item.quantity
-        .clamp(
-            1, item.product.stockQuantity > 0 ? item.product.stockQuantity : 1)
+        .clamp(1, item.product.stockQuantity > 0 ? item.product.stockQuantity : 1)
         .toInt();
     _items[item.key] = item.copyWith(quantity: safeQuantity);
     _reconcilePromotion();
@@ -189,8 +187,9 @@ class CartController extends ChangeNotifier {
   void restoreAll(Iterable<CartItem> items) {
     _items.clear();
     for (final item in items) {
-      final maxQuantity =
-          item.product.stockQuantity > 0 ? item.product.stockQuantity : 1;
+      final maxQuantity = item.product.stockQuantity > 0
+          ? item.product.stockQuantity
+          : 1;
       _items[item.key] = item.copyWith(
         quantity: item.quantity.clamp(1, maxQuantity).toInt(),
       );

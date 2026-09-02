@@ -13,8 +13,7 @@ void main() {
     Size(412, 915),
     Size(800, 1100),
   ]) {
-    testWidgets('appearance stays responsive at ${size.width}x${size.height}',
-        (tester) async {
+    testWidgets('appearance stays responsive at ${size.width}x${size.height}', (tester) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);

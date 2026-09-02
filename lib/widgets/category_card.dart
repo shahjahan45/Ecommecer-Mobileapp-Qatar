@@ -21,8 +21,7 @@ class CategoryCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final dark = Theme.of(context).brightness == Brightness.dark;
     final selectedSurface = dark
-        ? Color.alphaBlend(
-            category.accent.withValues(alpha: .15), scheme.surfaceContainer)
+        ? Color.alphaBlend(category.accent.withValues(alpha: .15), scheme.surfaceContainer)
         : category.softColor;
 
     return AppPressable(

@@ -138,10 +138,8 @@ class _PromotionCodeCardState extends State<PromotionCodeCard> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.success
-                                          .withValues(alpha: .12),
-                                      borderRadius:
-                                          BorderRadius.circular(AppRadius.pill),
+                                      color: AppColors.success.withValues(alpha: .12),
+                                      borderRadius: BorderRadius.circular(AppRadius.pill),
                                     ),
                                     child: const Text(
                                       'APPLIED',
@@ -219,8 +217,7 @@ class _PromotionCodeCardState extends State<PromotionCodeCard> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: scheme.primaryContainer
-                                  .withValues(alpha: .62),
+                              color: scheme.primaryContainer.withValues(alpha: .62),
                               borderRadius: BorderRadius.circular(AppRadius.md),
                             ),
                             alignment: Alignment.center,
@@ -276,8 +273,7 @@ class _PromotionCodeCardState extends State<PromotionCodeCard> {
                             ),
                           );
                           final button = FilledButton(
-                            key: const ValueKey<String>(
-                                'promotion-apply-button'),
+                            key: const ValueKey<String>('promotion-apply-button'),
                             onPressed: _apply,
                             child: const Text('Apply'),
                           );

@@ -18,8 +18,7 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
   @override
   void initState() {
     super.initState();
-    _methods =
-        DemoOrders.orders.map((order) => order.paymentMethod).toSet().toList();
+    _methods = DemoOrders.orders.map((order) => order.paymentMethod).toSet().toList();
     _selected = _methods.isEmpty ? 'Cash on delivery' : _methods.first;
   }
 

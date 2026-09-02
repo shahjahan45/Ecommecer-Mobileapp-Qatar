@@ -26,8 +26,7 @@ class ProductCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final dark = Theme.of(context).brightness == Brightness.dark;
     final visualSoft = dark
-        ? Color.alphaBlend(
-            product.accent.withValues(alpha: .13), scheme.surfaceContainer)
+        ? Color.alphaBlend(product.accent.withValues(alpha: .13), scheme.surfaceContainer)
         : product.softColor;
 
     return AppPressable(
@@ -66,8 +65,7 @@ class ProductCard extends StatelessWidget {
                         color: Colors.transparent,
                         child: Transform.rotate(
                           angle: -0.08,
-                          child: Icon(product.icon,
-                              size: 68, color: product.accent),
+                          child: Icon(product.icon, size: 68, color: product.accent),
                         ),
                       ),
                     ),
@@ -78,16 +76,14 @@ class ProductCard extends StatelessWidget {
                     child: AnimatedBuilder(
                       animation: WishlistController.instance,
                       builder: (context, child) {
-                        final favorite =
-                            WishlistController.instance.contains(product);
+                        final favorite = WishlistController.instance.contains(product);
                         return Semantics(
                           button: true,
                           label: favorite
                               ? 'Remove ${product.name} from wishlist'
                               : 'Add ${product.name} to wishlist',
                           child: AppPressable(
-                            onTap: () =>
-                                WishlistController.instance.toggle(product),
+                            onTap: () => WishlistController.instance.toggle(product),
                             borderRadius: BorderRadius.circular(AppRadius.sm),
                             child: AnimatedContainer(
                               duration: AppMotion.fast,
@@ -95,25 +91,21 @@ class ProductCard extends StatelessWidget {
                               height: 38,
                               decoration: BoxDecoration(
                                 color: scheme.surface.withValues(alpha: 0.94),
-                                borderRadius:
-                                    BorderRadius.circular(AppRadius.sm),
+                                borderRadius: BorderRadius.circular(AppRadius.sm),
                                 boxShadow: dark ? null : AppShadows.soft,
                               ),
                               alignment: Alignment.center,
                               child: AnimatedSwitcher(
                                 duration: AppMotion.fast,
                                 transitionBuilder: (child, animation) =>
-                                    ScaleTransition(
-                                        scale: animation, child: child),
+                                    ScaleTransition(scale: animation, child: child),
                                 child: Icon(
                                   favorite
                                       ? Icons.favorite_rounded
                                       : Icons.favorite_border_rounded,
                                   key: ValueKey(favorite),
                                   size: 19,
-                                  color: favorite
-                                      ? AppColors.danger
-                                      : scheme.onSurface,
+                                  color: favorite ? AppColors.danger : scheme.onSurface,
                                 ),
                               ),
                             ),
@@ -127,8 +119,7 @@ class ProductCard extends StatelessWidget {
                       top: 10,
                       left: 10,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 9, vertical: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                         decoration: BoxDecoration(
                           color: product.discountPercent > 0
                               ? AppColors.danger
@@ -182,8 +173,7 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded,
-                          color: AppColors.star, size: 17),
+                      const Icon(Icons.star_rounded, color: AppColors.star, size: 17),
                       const SizedBox(width: 3),
                       Text(
                         product.rating.toStringAsFixed(1),
@@ -223,8 +213,7 @@ class ProductCard extends StatelessWidget {
                               Text(
                                 '${AppConstants.currency} ${product.oldPrice!.toStringAsFixed(0)}',
                                 style: TextStyle(
-                                  color: scheme.onSurfaceVariant
-                                      .withValues(alpha: .72),
+                                  color: scheme.onSurfaceVariant.withValues(alpha: .72),
                                   decoration: TextDecoration.lineThrough,
                                   decorationColor: scheme.onSurfaceVariant,
                                   fontSize: 10,
@@ -254,8 +243,7 @@ class ProductCard extends StatelessWidget {
                               boxShadow: product.inStock && !dark
                                   ? [
                                       BoxShadow(
-                                        color: scheme.primary
-                                            .withValues(alpha: .24),
+                                        color: scheme.primary.withValues(alpha: .24),
                                         blurRadius: 14,
                                         offset: const Offset(0, 6),
                                       ),
@@ -264,9 +252,7 @@ class ProductCard extends StatelessWidget {
                             ),
                             alignment: Alignment.center,
                             child: Icon(
-                              product.inStock
-                                  ? Icons.add_rounded
-                                  : Icons.block_rounded,
+                              product.inStock ? Icons.add_rounded : Icons.block_rounded,
                               color: product.inStock
                                   ? scheme.onPrimary
                                   : scheme.onSurfaceVariant,

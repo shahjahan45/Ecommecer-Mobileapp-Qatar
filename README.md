@@ -1,18 +1,26 @@
-# DCX Online Store — Phase 12 Cumulative Build
 
-Version: `1.12.0+42`
+## Phase 15.1 — Geocoding 5.x compatibility
 
-This cumulative Flutter build preserves every previous launch, authentication, shopping, Product Details, Wishlist, Cart, Checkout, Orders/Tracking, Profile/Account Center, responsive, accessibility and adaptive-theme improvement, then adds a professional promotions and savings engine shared by Cart and Checkout.
+Fixed the Phase 15 Google Maps location picker for `geocoding 5.x`. Forward and reverse geocoding now use a `Geocoding` instance, eliminating the compile errors for `locationFromAddress` and `placemarkFromCoordinates`.
 
-## Phase 12 highlight
+# DCX Online Store — Phase 15 Cumulative Build
 
-- Validated promo codes with percentage, fixed-amount and free-delivery offer types.
-- Professional responsive promo-code UI in both Cart and Checkout.
-- Live promotion savings reflected in order summaries and final totals.
-- Automatic eligibility reconciliation when cart contents or quantities change.
-- Replaceable demo promotion catalog structured for future backend/API authority.
-- Light/dark theme-aware surfaces and accessible promo actions.
-- New promotion calculation and responsive regression tests.
+Version: `1.15.0+48`
+
+This cumulative Flutter build preserves all previous commerce, launch, theme, promotion, payment, order, notification and support work, then upgrades delivery addresses, optional Google Maps location selection and footer placement for a cleaner international-app experience.
+
+## Phase 15 highlight
+
+- Persistent saved delivery addresses shared between Checkout and Profile.
+- Home / Work / Other address types with a fast reuse flow.
+- **Save this address for future use** at checkout.
+- Optional Google Maps search/pin selection and reverse-geocoded address preview.
+- Full branded footer moved to Profile with Sajahan Mansoor / DataCubeX Technologies developer credit.
+- Minimal logo-free Home social/link section.
+- Dedicated About / Privacy / Terms / Refund information destinations.
+- New saved-address, footer and reuse regression tests.
+
+See `PHASE_15_PREMIUM_ADDRESS_MAPS_FOOTER.md`, `PHASE_15_CODE_INDEX.md`, `PHASE_15_VERIFICATION_REPORT.md`, and `GOOGLE_MAPS_SETUP.md`.
 
 ## Phase 10 highlight
 
@@ -162,3 +170,16 @@ See `PHASE_12_PROMOTIONS_SAVINGS_ENGINE.md`, `PHASE_12_CODE_INDEX.md`, and `PHAS
 - Keeps raw card data out of the app layer and leaves a clean gateway integration boundary for a later Laravel/API payment phase.
 
 See `PHASE_13_SECURE_PAYMENT_ORDER_CONFIRMATION.md`, `PHASE_13_CODE_INDEX.md`, and `PHASE_13_VERIFICATION_REPORT.md`.
+
+## Phase 14 — Notifications & Support Center
+Phase 14 adds live unread notification state, filters, preferences, automatic order-confirmation alerts, dynamic Home/Account badges, and a professional customer support center with local ticket creation. See `PHASE_14_NOTIFICATIONS_SUPPORT_CENTER.md`.
+
+
+## Phase 14.1 — Support FAQ Material Surface Fix
+Replaces the FAQ group's painted `Container` with a proper `Material` surface so `ExpansionTile` / `ListTile` ink and background painting use the correct Material ancestor. Stable FAQ keys and an expand/collapse responsive regression check were added. No support/business logic was changed.
+
+## Phase 14.2 — Premium Mobile App Footer
+Order Confirmation now includes a responsive commercial-app footer with trust indicators, the official DCX logo, policy labels, customer support access, copyright, and professional developer attribution to **Sajahan Mansoor · DataCubeX Technologies**. The footer is implemented as a reusable theme-aware component.
+
+## Phase 14.3 — Order Confirmation Scrollable Test Fix
+Fixes the Flutter test `_TypeError` caused by passing a `ListView` finder to `WidgetTester.scrollUntilVisible`. The test now resolves the ListView's internal `Scrollable` descendant before scrolling to the premium footer. Production UI is unchanged. Version 1.14.3+47.

@@ -86,8 +86,7 @@ class _AccountMenuTile extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final dark = Theme.of(context).brightness == Brightness.dark;
     final iconSurface = dark
-        ? Color.alphaBlend(
-            item.color.withValues(alpha: .16), scheme.surfaceContainer)
+        ? Color.alphaBlend(item.color.withValues(alpha: .16), scheme.surfaceContainer)
         : item.softColor;
 
     return Semantics(
@@ -143,8 +142,7 @@ class _AccountMenuTile extends StatelessWidget {
               if (item.trailingLabel != null) ...[
                 const SizedBox(width: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                   decoration: BoxDecoration(
                     color: scheme.primaryContainer,
                     borderRadius: BorderRadius.circular(AppRadius.pill),

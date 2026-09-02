@@ -7,6 +7,7 @@ import '../../core/theme/app_theme_context.dart';
 import '../../models/payment.dart';
 import '../../models/shop_order.dart';
 import '../orders/order_details_page.dart';
+import '../profile/help_support_page.dart';
 
 class OrderConfirmationPage extends StatelessWidget {
   final ShopOrder order;
@@ -32,8 +33,7 @@ class OrderConfirmationPage extends StatelessWidget {
             final horizontal = constraints.maxWidth < 380 ? 16.0 : 20.0;
             return ListView(
               key: const PageStorageKey<String>('order-confirmation-scroll'),
-              padding:
-                  EdgeInsets.fromLTRB(horizontal, 12, horizontal, bottom + 28),
+              padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, bottom + 28),
               children: [
                 Center(
                   child: ConstrainedBox(
@@ -53,8 +53,7 @@ class OrderConfirmationPage extends StatelessWidget {
                           key: const Key('confirmation-view-order'),
                           onPressed: () {
                             Navigator.of(context).push(
-                              AppPageRoute(
-                                  page: OrderDetailsPage(order: order)),
+                              AppPageRoute(page: OrderDetailsPage(order: order)),
                             );
                           },
                           icon: const Icon(Icons.receipt_long_rounded),
@@ -64,22 +63,18 @@ class OrderConfirmationPage extends StatelessWidget {
                         OutlinedButton.icon(
                           key: const Key('confirmation-continue-shopping'),
                           onPressed: () {
-                            Navigator.of(context)
-                                .popUntil((route) => route.isFirst);
+                            Navigator.of(context).popUntil((route) => route.isFirst);
                           },
                           icon: const Icon(Icons.storefront_outlined),
                           label: const Text('Continue shopping'),
                         ),
-                        const SizedBox(height: 14),
-                        Text(
-                          'A payment and order reference is available in My orders for future support.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: context.dcxTextTertiary,
-                            fontSize: 10.5,
-                            height: 1.4,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        const SizedBox(height: 18),
+                        _SupportCard(
+                          onContactSupport: () {
+                            Navigator.of(context).push(
+                              AppPageRoute(page: const HelpSupportPage()),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -89,6 +84,82 @@ class OrderConfirmationPage extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+
+class _SupportCard extends StatelessWidget {
+  final VoidCallback onContactSupport;
+
+  const _SupportCard({required this.onContactSupport});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = context.dcxScheme;
+    return Container(
+      key: const Key('confirmation-support-card'),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: scheme.primaryContainer.withValues(alpha: context.isDarkMode ? .28 : .42),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: scheme.primary.withValues(alpha: .12)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: scheme.primary.withValues(alpha: .10),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Icon(Icons.support_agent_rounded, color: scheme.primary, size: 21),
+          ),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Need help with your order?',
+                  style: TextStyle(
+                    color: context.dcxTextPrimary,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Our support center is ready whenever you need assistance.',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: context.dcxTextTertiary,
+                    fontSize: 8.8,
+                    height: 1.35,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          TextButton.icon(
+            key: const Key('confirmation-contact-support'),
+            onPressed: onContactSupport,
+            icon: const Icon(Icons.chat_bubble_outline_rounded, size: 15),
+            label: const Text('Contact'),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+              minimumSize: const Size(0, 38),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -198,8 +269,7 @@ class _StatusCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(13),
             ),
             alignment: Alignment.center,
-            child: Icon(icon,
-                color: context.dcxScheme.onPrimaryContainer, size: 21),
+            child: Icon(icon, color: context.dcxScheme.onPrimaryContainer, size: 21),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -256,19 +326,13 @@ class _ReceiptCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          _ReceiptRow(
-              label: '${order.totalQuantity} items', value: order.subtotal),
+          _ReceiptRow(label: '${order.totalQuantity} items', value: order.subtotal),
           if (order.discount > 0) ...[
             const SizedBox(height: 8),
-            _ReceiptRow(
-                label: order.promotionCode == null
-                    ? 'Discount'
-                    : 'Promo • ${order.promotionCode}',
-                value: -order.discount),
+            _ReceiptRow(label: order.promotionCode == null ? 'Discount' : 'Promo • ${order.promotionCode}', value: -order.discount),
           ],
           const SizedBox(height: 8),
-          _ReceiptRow(
-              label: 'Delivery', value: order.deliveryFee, freeLabel: true),
+          _ReceiptRow(label: 'Delivery', value: order.deliveryFee, freeLabel: true),
           const Divider(height: 24),
           _ReceiptRow(label: 'Total', value: order.total, strong: true),
         ],
@@ -290,8 +354,7 @@ class _DeliveryCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.local_shipping_outlined,
-                  size: 19, color: context.dcxScheme.primary),
+              Icon(Icons.local_shipping_outlined, size: 19, color: context.dcxScheme.primary),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -383,8 +446,7 @@ class _ReceiptRow extends StatelessWidget {
         Text(
           valueLabel,
           style: TextStyle(
-            color:
-                value < 0 ? context.dcxScheme.tertiary : context.dcxTextPrimary,
+            color: value < 0 ? context.dcxScheme.tertiary : context.dcxTextPrimary,
             fontSize: strong ? 13 : 10.5,
             fontWeight: strong ? FontWeight.w900 : FontWeight.w800,
           ),

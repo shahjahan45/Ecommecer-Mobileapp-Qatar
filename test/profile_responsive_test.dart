@@ -13,9 +13,7 @@ void main() {
     Size(800, 1100),
     Size(1100, 800),
   ]) {
-    testWidgets(
-        'account center stays responsive at ${size.width}x${size.height}',
-        (tester) async {
+    testWidgets('account center stays responsive at ${size.width}x${size.height}', (tester) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
@@ -50,6 +48,19 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Help & support'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      await tester.dragUntilVisible(
+        find.byKey(const Key('dcx-mobile-footer')),
+        find.byKey(const PageStorageKey<String>('profile-account-scroll')),
+        const Offset(0, -220),
+        maxIteration: 24,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('dcx-mobile-footer')), findsOneWidget);
+      expect(find.text('Sajahan Mansoor'), findsOneWidget);
+      expect(find.text('DataCubeX Technologies'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }

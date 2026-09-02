@@ -11,8 +11,7 @@ void main() {
     expect(AppTheme.darkTheme.brightness, Brightness.dark);
     expect(AppTheme.lightTheme.useMaterial3, isTrue);
     expect(AppTheme.darkTheme.useMaterial3, isTrue);
-    expect(AppTheme.lightTheme.colorScheme.primary,
-        isNot(AppTheme.darkTheme.colorScheme.primary));
+    expect(AppTheme.lightTheme.colorScheme.primary, isNot(AppTheme.darkTheme.colorScheme.primary));
     expect(
       AppTheme.darkTheme.scaffoldBackgroundColor.computeLuminance(),
       lessThan(AppTheme.lightTheme.scaffoldBackgroundColor.computeLuminance()),

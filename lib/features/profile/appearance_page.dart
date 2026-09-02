@@ -60,20 +60,14 @@ class AppearancePage extends StatelessWidget {
                           children: [
                             Text(
                               'Make DCX feel like yours',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w900,
                                   ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Choose a comfortable theme. System mode follows your device automatically.',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     height: 1.4,
                                   ),
                             ),
@@ -120,17 +114,15 @@ class AppearancePage extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.visibility_outlined,
-                          color: scheme.primary, size: 20),
+                      Icon(Icons.visibility_outlined, color: scheme.primary, size: 20),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           'DCX keeps strong text contrast and large touch targets in both light and dark themes.',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    height: 1.45,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                height: 1.45,
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
                       ),
                     ],
@@ -190,9 +182,7 @@ class _ThemeOptionCard extends StatelessWidget {
       label: '${option.label} theme',
       hint: subtitle,
       child: Material(
-        color: selected
-            ? scheme.primaryContainer.withValues(alpha: .52)
-            : scheme.surface,
+        color: selected ? scheme.primaryContainer.withValues(alpha: .52) : scheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: InkWell(
           onTap: onTap,
@@ -220,8 +210,7 @@ class _ThemeOptionCard extends StatelessWidget {
                   ),
                   child: Icon(
                     icon,
-                    color:
-                        selected ? scheme.onPrimary : scheme.onSurfaceVariant,
+                    color: selected ? scheme.onPrimary : scheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(width: 13),
@@ -231,11 +220,10 @@ class _ThemeOptionCard extends StatelessWidget {
                     children: [
                       Text(
                         option.label,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w900,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                            ),
                       ),
                       const SizedBox(height: 3),
                       Text(
@@ -314,10 +302,7 @@ class _ThemePreviewCard extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       'Theme changes animate smoothly across the app.',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(fontSize: 11),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 11),
                     ),
                   ],
                 ),

@@ -145,9 +145,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark
-            ? scheme.surfaceContainerHighest.withValues(alpha: .42)
-            : scheme.surface,
+        fillColor: isDark ? scheme.surfaceContainerHighest.withValues(alpha: .42) : scheme.surface,
         hintStyle: platformStyle(
           platformTextTheme.bodyMedium,
           color: scheme.onSurfaceVariant.withValues(alpha: .72),
@@ -157,8 +155,7 @@ class AppTheme {
           platformTextTheme.bodyMedium,
           color: scheme.onSurfaceVariant,
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 18, vertical: 17),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 17),
         border: fieldBorder(scheme.outlineVariant),
         enabledBorder: fieldBorder(scheme.outlineVariant),
         focusedBorder: fieldBorder(scheme.primary, width: 1.5),
@@ -221,8 +218,7 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: scheme.surface,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.xl)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
       ),
       chipTheme: base.chipTheme.copyWith(
         backgroundColor: scheme.surfaceContainer,
@@ -233,14 +229,12 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor:
-            isDark ? const Color(0xFFE9E5F2) : AppColors.textPrimary,
+        backgroundColor: isDark ? const Color(0xFFE9E5F2) : AppColors.textPrimary,
         contentTextStyle: platformStyle(
           platformTextTheme.bodyMedium,
           color: isDark ? const Color(0xFF201D26) : Colors.white,
         ),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: scheme.surface,

@@ -5,9 +5,13 @@ import '../../core/design_system/app_tokens.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/payment.dart';
+import '../../models/saved_address.dart';
 import '../cart/cart_controller.dart';
 import '../cart/widgets/cart_summary_card.dart';
 import '../cart/widgets/promotion_code_card.dart';
+import '../profile/address/address_book_controller.dart';
+import '../profile/address_book_page.dart';
+import 'checkout_address_sheet.dart';
 import 'checkout_order_service.dart';
 import 'order_confirmation_page.dart';
 import 'payment_flow_controller.dart';
@@ -23,7 +27,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
   final CartController _cart = CartController.instance;
   final PaymentFlowController _paymentFlow = PaymentFlowController();
   String _delivery = 'Standard delivery';
-  _DeliveryAddressData? _deliveryAddress;
+  SavedAddress? _deliveryAddress;
+  final AddressBookController _addressBook = AddressBookController.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _addressBook.load().then((_) {
+      if (!mounted || _deliveryAddress != null) return;
+      final preferred = _addressBook.defaultAddress;
+      if (preferred != null) setState(() => _deliveryAddress = preferred);
+    });
+  }
 
   @override
   void dispose() {
@@ -65,8 +80,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   physics: const ClampingScrollPhysics(),
                   slivers: [
                     SliverPadding(
-                      padding:
-                          EdgeInsets.fromLTRB(horizontal, 12, horizontal, 28),
+                      padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 28),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -81,11 +95,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   icon: Icons.location_on_outlined,
                                   title: 'Delivery address',
                                   subtitle: _deliveryAddress == null
-                                      ? 'Add or confirm your delivery address'
-                                      : '${_deliveryAddress!.fullName} • ${_deliveryAddress!.address}',
-                                  actionLabel: _deliveryAddress == null
-                                      ? 'Add address'
-                                      : 'Edit',
+                                      ? 'Add or select a saved delivery address'
+                                      : '${_deliveryAddress!.label} • ${_deliveryAddress!.fullName} • ${_deliveryAddress!.addressLine}${_deliveryAddress!.mapLocation == null ? '' : ' • Map pin added'}',
+                                  actionLabel: _deliveryAddress == null ? 'Add address' : 'Edit',
                                   onTap: _showAddressSheet,
                                 ),
                                 const SizedBox(height: 12),
@@ -142,19 +154,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Future<void> _showAddressSheet() async {
     FocusManager.instance.primaryFocus?.unfocus();
 
-    final result = await showModalBottomSheet<_DeliveryAddressData>(
+    final result = await showModalBottomSheet<AddressEditorResult>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       showDragHandle: true,
       backgroundColor: AppColors.surface,
-      builder: (sheetContext) => _DeliveryAddressSheet(
-        initialValue: _deliveryAddress,
+      builder: (sheetContext) => CheckoutAddressSheet(
+        selectedAddress: _deliveryAddress,
       ),
     );
 
     if (!mounted || result == null) return;
-    setState(() => _deliveryAddress = result);
+    if (result.saveForFuture) {
+      await _addressBook.save(result.address);
+      if (!mounted) return;
+    }
+    setState(() => _deliveryAddress = result.address);
   }
 
   Future<void> _showDeliverySheet() async {
@@ -259,8 +275,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 const SizedBox(height: 2),
                 const Row(
                   children: [
-                    Icon(Icons.lock_outline_rounded,
-                        size: 14, color: AppColors.textTertiary),
+                    Icon(Icons.lock_outline_rounded, size: 14, color: AppColors.textTertiary),
                     SizedBox(width: 6),
                     Expanded(
                       child: Text(
@@ -349,23 +364,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   child: Column(
                     children: [
                       _ReviewRow(
-                          label: 'Deliver to',
-                          value: _deliveryAddress!.fullName),
+                        label: 'Deliver to',
+                        value: '${_deliveryAddress!.label} • ${_deliveryAddress!.fullName} • ${_deliveryAddress!.addressLine}${_deliveryAddress!.mapLocation == null ? '' : ' • Map pin added'}',
+                      ),
                       const SizedBox(height: 8),
-                      _ReviewRow(
-                          label: 'Payment',
-                          value: _paymentFlow.selectedMethod.label),
+                      _ReviewRow(label: 'Payment', value: _paymentFlow.selectedMethod.label),
                       if (_cart.appliedPromotion != null) ...[
                         const SizedBox(height: 8),
-                        _ReviewRow(
-                            label: 'Promo',
-                            value: _cart.appliedPromotion!.code),
+                        _ReviewRow(label: 'Promo', value: _cart.appliedPromotion!.code),
                       ],
                       const Divider(height: 22),
                       _ReviewRow(
                         label: 'Order total',
-                        value:
-                            '${AppConstants.currency} ${_cart.total.toStringAsFixed(0)}',
+                        value: '${AppConstants.currency} ${_cart.total.toStringAsFixed(0)}',
                         strong: true,
                       ),
                     ],
@@ -413,8 +424,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     final order = CheckoutOrderService.placeOrder(
       cart: _cart,
-      deliveryAddress:
-          '${address.fullName} • ${address.mobile} • ${address.address}',
+      deliveryAddress: address.mapLocation == null
+          ? address.checkoutSummary
+          : '${address.checkoutSummary} • Map pin ${address.mapLocation!.coordinateLabel}',
       deliveryMethod: _delivery,
       payment: payment,
     );
@@ -424,7 +436,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
       AppPageRoute(page: OrderConfirmationPage(order: order)),
     );
   }
+
 }
+
 
 class _ReviewRow extends StatelessWidget {
   final String label;
@@ -600,8 +614,7 @@ class _CheckoutOptionCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 2),
-              const Icon(Icons.chevron_right_rounded,
-                  size: 18, color: AppColors.primary),
+              const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.primary),
             ],
           ),
         ),
@@ -610,177 +623,6 @@ class _CheckoutOptionCard extends StatelessWidget {
   }
 }
 
-class _DeliveryAddressData {
-  final String fullName;
-  final String mobile;
-  final String address;
-
-  const _DeliveryAddressData({
-    required this.fullName,
-    required this.mobile,
-    required this.address,
-  });
-}
-
-class _DeliveryAddressSheet extends StatefulWidget {
-  final _DeliveryAddressData? initialValue;
-
-  const _DeliveryAddressSheet({this.initialValue});
-
-  @override
-  State<_DeliveryAddressSheet> createState() => _DeliveryAddressSheetState();
-}
-
-class _DeliveryAddressSheetState extends State<_DeliveryAddressSheet> {
-  late final TextEditingController _nameController;
-  late final TextEditingController _mobileController;
-  late final TextEditingController _addressController;
-  final FocusNode _nameFocus = FocusNode();
-  final FocusNode _mobileFocus = FocusNode();
-  final FocusNode _addressFocus = FocusNode();
-  bool _saving = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController =
-        TextEditingController(text: widget.initialValue?.fullName ?? '');
-    _mobileController =
-        TextEditingController(text: widget.initialValue?.mobile ?? '');
-    _addressController =
-        TextEditingController(text: widget.initialValue?.address ?? '');
-  }
-
-  @override
-  void dispose() {
-    _nameFocus.dispose();
-    _mobileFocus.dispose();
-    _addressFocus.dispose();
-    _nameController.dispose();
-    _mobileController.dispose();
-    _addressController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _saveAddress() async {
-    if (_saving) return;
-    setState(() => _saving = true);
-
-    FocusManager.instance.primaryFocus?.unfocus();
-    await WidgetsBinding.instance.endOfFrame;
-    if (!mounted) return;
-
-    final result = _DeliveryAddressData(
-      fullName: _nameController.text.trim(),
-      mobile: _mobileController.text.trim(),
-      address: _addressController.text.trim(),
-    );
-
-    Navigator.of(context).pop(result);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
-    final horizontal = MediaQuery.sizeOf(context).width < 360 ? 16.0 : 20.0;
-
-    return AnimatedPadding(
-      duration: const Duration(milliseconds: 180),
-      curve: Curves.easeOutCubic,
-      padding: EdgeInsets.only(bottom: bottomInset),
-      child: SafeArea(
-        top: false,
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Delivery address',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Enter the details for this order.',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                key: const Key('checkout-address-name'),
-                controller: _nameController,
-                focusNode: _nameFocus,
-                textInputAction: TextInputAction.next,
-                onSubmitted: (_) => _mobileFocus.requestFocus(),
-                scrollPadding: const EdgeInsets.only(bottom: 140),
-                decoration: const InputDecoration(
-                  labelText: 'Full name',
-                  prefixIcon: Icon(Icons.person_outline_rounded),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                key: const Key('checkout-address-mobile'),
-                controller: _mobileController,
-                focusNode: _mobileFocus,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.next,
-                onSubmitted: (_) => _addressFocus.requestFocus(),
-                scrollPadding: const EdgeInsets.only(bottom: 140),
-                decoration: const InputDecoration(
-                  labelText: 'Mobile number',
-                  prefixIcon: Icon(Icons.phone_outlined),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                key: const Key('checkout-address-line'),
-                controller: _addressController,
-                focusNode: _addressFocus,
-                minLines: 2,
-                maxLines: 4,
-                textInputAction: TextInputAction.newline,
-                scrollPadding: const EdgeInsets.only(bottom: 180),
-                decoration: const InputDecoration(
-                  labelText: 'Delivery address',
-                  alignLabelWithHint: true,
-                  prefixIcon: Icon(Icons.location_on_outlined),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 52,
-                child: FilledButton(
-                  key: const Key('checkout-save-address'),
-                  onPressed: _saving ? null : _saveAddress,
-                  child: _saving
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Text('Save address'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _SelectionTile extends StatelessWidget {
   final String title;
@@ -832,8 +674,7 @@ class _CheckoutTrustCard extends StatelessWidget {
     return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.lock_outline_rounded,
-            size: 15, color: AppColors.textTertiary),
+        Icon(Icons.lock_outline_rounded, size: 15, color: AppColors.textTertiary),
         SizedBox(width: 6),
         Flexible(
           child: Text(

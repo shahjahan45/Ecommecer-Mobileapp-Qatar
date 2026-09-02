@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../core/navigation/app_page_route.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/dcx_mobile_footer.dart';
 import '../../data/demo_orders.dart';
+import '../notifications/notification_controller.dart';
 import '../notifications/notifications_page.dart';
+import '../notifications/widgets/notification_badge_icon.dart';
 import '../orders/orders_page.dart';
 import '../wishlist/wishlist_controller.dart';
 import '../wishlist/wishlist_page.dart';
 import 'account_security_page.dart';
 import 'appearance_page.dart';
+import 'app_information_page.dart';
 import 'address_book_page.dart';
 import 'help_support_page.dart';
 import 'payment_methods_page.dart';
@@ -26,15 +30,14 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wishlist = WishlistController.instance;
+    final notifications = NotificationController.instance;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Account'),
         actions: [
-          IconButton(
-            tooltip: 'Notifications',
-            onPressed: () => _open(context, const NotificationsPage()),
-            icon: const Icon(Icons.notifications_none_rounded),
+          NotificationBadgeIcon(
+            onTap: () => _open(context, const NotificationsPage()),
           ),
           const SizedBox(width: 6),
         ],
@@ -43,10 +46,9 @@ class ProfilePage extends StatelessWidget {
         top: false,
         bottom: false,
         child: AnimatedBuilder(
-          animation: wishlist,
+          animation: Listenable.merge([wishlist, notifications]),
           builder: (context, child) {
-            final activeOrders =
-                DemoOrders.orders.where((order) => order.isActive).length;
+            final activeOrders = DemoOrders.orders.where((order) => order.isActive).length;
             return LayoutBuilder(
               builder: (context, constraints) {
                 final horizontal = constraints.maxWidth < 380 ? 16.0 : 20.0;
@@ -59,8 +61,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                   slivers: [
                     SliverPadding(
-                      padding: EdgeInsets.fromLTRB(
-                          horizontal, 8, horizontal, bottom),
+                      padding: EdgeInsets.fromLTRB(horizontal, 8, horizontal, bottom),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -76,10 +77,7 @@ class ProfilePage extends StatelessWidget {
                                 const SizedBox(height: 18),
                                 Text(
                                   'Quick access',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                         fontSize: 14.5,
                                         fontWeight: FontWeight.w900,
                                       ),
@@ -88,14 +86,10 @@ class ProfilePage extends StatelessWidget {
                                 _QuickAccessGrid(
                                   wishlistCount: wishlist.count,
                                   activeOrders: activeOrders,
-                                  onOrders: () =>
-                                      _open(context, const OrdersPage()),
-                                  onWishlist: () =>
-                                      _open(context, const WishlistPage()),
-                                  onAddresses: () =>
-                                      _open(context, const AddressBookPage()),
-                                  onPayments: () => _open(
-                                      context, const PaymentMethodsPage()),
+                                  onOrders: () => _open(context, const OrdersPage()),
+                                  onWishlist: () => _open(context, const WishlistPage()),
+                                  onAddresses: () => _open(context, const AddressBookPage()),
+                                  onPayments: () => _open(context, const PaymentMethodsPage()),
                                 ),
                                 const SizedBox(height: 22),
                                 AccountMenuSection(
@@ -109,10 +103,8 @@ class ProfilePage extends StatelessWidget {
                                           : '$activeOrders active ${activeOrders == 1 ? 'order' : 'orders'} to follow',
                                       color: AppColors.primary,
                                       softColor: AppColors.primarySoft,
-                                      trailingLabel:
-                                          '${DemoOrders.orders.length}',
-                                      onTap: () =>
-                                          _open(context, const OrdersPage()),
+                                      trailingLabel: '${DemoOrders.orders.length}',
+                                      onTap: () => _open(context, const OrdersPage()),
                                     ),
                                     AccountMenuItem(
                                       icon: Icons.favorite_border_rounded,
@@ -121,18 +113,18 @@ class ProfilePage extends StatelessWidget {
                                       color: AppColors.danger,
                                       softColor: AppColors.dangerSoft,
                                       trailingLabel: '${wishlist.count}',
-                                      onTap: () =>
-                                          _open(context, const WishlistPage()),
+                                      onTap: () => _open(context, const WishlistPage()),
                                     ),
                                     AccountMenuItem(
                                       icon: Icons.notifications_none_rounded,
                                       title: 'Notifications',
-                                      subtitle:
-                                          'Offers, delivery and account updates',
+                                      subtitle: 'Offers, delivery and account updates',
                                       color: AppColors.secondary,
                                       softColor: AppColors.secondarySoft,
-                                      onTap: () => _open(
-                                          context, const NotificationsPage()),
+                                      trailingLabel: notifications.unreadCount == 0
+                                          ? null
+                                          : '${notifications.unreadCount}',
+                                      onTap: () => _open(context, const NotificationsPage()),
                                     ),
                                   ],
                                 ),
@@ -143,43 +135,35 @@ class ProfilePage extends StatelessWidget {
                                     AccountMenuItem(
                                       icon: Icons.location_on_outlined,
                                       title: 'Delivery addresses',
-                                      subtitle:
-                                          'Manage addresses used for checkout',
+                                      subtitle: 'Manage addresses used for checkout',
                                       color: AppColors.success,
                                       softColor: AppColors.successSoft,
-                                      onTap: () => _open(
-                                          context, const AddressBookPage()),
+                                      onTap: () => _open(context, const AddressBookPage()),
                                     ),
                                     AccountMenuItem(
                                       icon: Icons.credit_card_rounded,
                                       title: 'Payment methods',
-                                      subtitle:
-                                          'Choose your preferred payment option',
+                                      subtitle: 'Choose your preferred payment option',
                                       color: AppColors.info,
                                       softColor: AppColors.infoSoft,
-                                      onTap: () => _open(
-                                          context, const PaymentMethodsPage()),
+                                      onTap: () => _open(context, const PaymentMethodsPage()),
                                     ),
                                     AccountMenuItem(
                                       icon: Icons.shield_outlined,
                                       title: 'Security & privacy',
-                                      subtitle:
-                                          'Review how your account is protected',
+                                      subtitle: 'Review how your account is protected',
                                       color: AppColors.primary,
                                       softColor: AppColors.primarySoft,
-                                      onTap: () => _open(
-                                          context, const AccountSecurityPage()),
+                                      onTap: () => _open(context, const AccountSecurityPage()),
                                     ),
                                     AccountMenuItem(
-                                      actionKey: const Key(
-                                          'profile-appearance-action'),
+                                      actionKey: const Key('profile-appearance-action'),
                                       icon: Icons.palette_outlined,
                                       title: 'Appearance',
                                       subtitle: 'System, light or dark theme',
                                       color: AppColors.secondary,
                                       softColor: AppColors.secondarySoft,
-                                      onTap: () => _open(
-                                          context, const AppearancePage()),
+                                      onTap: () => _open(context, const AppearancePage()),
                                     ),
                                   ],
                                 ),
@@ -190,14 +174,34 @@ class ProfilePage extends StatelessWidget {
                                     AccountMenuItem(
                                       icon: Icons.support_agent_rounded,
                                       title: 'Help & support',
-                                      subtitle:
-                                          'Quick answers for shopping and account questions',
+                                      subtitle: 'Quick answers for shopping and account questions',
                                       color: AppColors.warning,
                                       softColor: AppColors.warningSoft,
-                                      onTap: () => _open(
-                                          context, const HelpSupportPage()),
+                                      onTap: () => _open(context, const HelpSupportPage()),
                                     ),
                                   ],
+                                ),
+                                const SizedBox(height: 24),
+                                DcxMobileFooter(
+                                  onHelp: () => _open(context, const HelpSupportPage()),
+                                  onContact: () => _open(context, const HelpSupportPage()),
+                                  onAbout: () => _open(
+                                    context,
+                                    const AppInformationPage(type: AppInformationType.about),
+                                  ),
+                                  onPrivacy: () => _open(
+                                    context,
+                                    const AppInformationPage(type: AppInformationType.privacy),
+                                  ),
+                                  onTerms: () => _open(
+                                    context,
+                                    const AppInformationPage(type: AppInformationType.terms),
+                                  ),
+                                  onRefund: () => _open(
+                                    context,
+                                    const AppInformationPage(type: AppInformationType.refund),
+                                  ),
+                                  onFaqs: () => _open(context, const HelpSupportPage()),
                                 ),
                               ],
                             ),
@@ -242,8 +246,7 @@ class _QuickAccessGrid extends StatelessWidget {
           AccountQuickAction(
             icon: Icons.local_shipping_outlined,
             label: 'Orders',
-            supportingText:
-                activeOrders == 0 ? 'Order history' : '$activeOrders active',
+            supportingText: activeOrders == 0 ? 'Order history' : '$activeOrders active',
             color: AppColors.primary,
             softColor: AppColors.primarySoft,
             onTap: onOrders,

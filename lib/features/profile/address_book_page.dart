@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../core/design_system/app_tokens.dart';
-import '../../core/theme/app_colors.dart';
-import '../../data/demo_orders.dart';
+import '../../core/navigation/app_page_route.dart';
+import '../../core/theme/app_theme_context.dart';
+import '../../models/saved_address.dart';
+import 'address/address_book_controller.dart';
+import 'address/map_location_picker_page.dart';
 
 class AddressBookPage extends StatefulWidget {
   const AddressBookPage({super.key});
@@ -12,68 +15,42 @@ class AddressBookPage extends StatefulWidget {
 }
 
 class _AddressBookPageState extends State<AddressBookPage> {
-  late final List<_SavedAddress> _addresses;
+  final AddressBookController _controller = AddressBookController.instance;
 
   @override
   void initState() {
     super.initState();
-    final unique = <String>{};
-    _addresses = DemoOrders.orders
-        .where((order) => unique.add(order.deliveryAddress))
-        .map(
-          (order) => _SavedAddress(
-            id: order.id,
-            label: 'Delivery address',
-            fullName: 'DCX customer',
-            mobile: '',
-            address: order.deliveryAddress,
-            isDefault: unique.length == 1,
-          ),
-        )
-        .toList(growable: true);
+    _controller.load();
   }
 
   Future<void> _addAddress() async {
-    final result = await showModalBottomSheet<_SavedAddress>(
+    final result = await showModalBottomSheet<AddressEditorResult>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const _AddressEditorSheet(),
+      builder: (_) => const AddressEditorSheet(),
     );
-
     if (!mounted || result == null) return;
-    setState(() => _addresses.add(result));
+    await _controller.save(result.address);
   }
 
-  Future<void> _editAddress(_SavedAddress address) async {
-    final result = await showModalBottomSheet<_SavedAddress>(
+  Future<void> _editAddress(SavedAddress address) async {
+    final result = await showModalBottomSheet<AddressEditorResult>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _AddressEditorSheet(initialValue: address),
+      builder: (_) => AddressEditorSheet(initialValue: address),
     );
-
     if (!mounted || result == null) return;
-    final index = _addresses.indexWhere((item) => item.id == address.id);
-    if (index == -1) return;
-    setState(() => _addresses[index] = result);
+    await _controller.save(result.address);
   }
 
-  void _setDefault(_SavedAddress address) {
-    setState(() {
-      for (var index = 0; index < _addresses.length; index++) {
-        final item = _addresses[index];
-        _addresses[index] = item.copyWith(isDefault: item.id == address.id);
-      }
-    });
-  }
-
-  void _removeAddress(_SavedAddress address) {
-    final index = _addresses.indexOf(address);
-    if (index == -1) return;
-    setState(() => _addresses.removeAt(index));
+  Future<void> _removeAddress(SavedAddress address) async {
+    final snapshot = address;
+    await _controller.remove(address.id);
+    if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -81,10 +58,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
           content: const Text('Address removed'),
           action: SnackBarAction(
             label: 'UNDO',
-            onPressed: () {
-              if (!mounted) return;
-              setState(() => _addresses.insert(index, address));
-            },
+            onPressed: () => _controller.save(snapshot),
           ),
         ),
       );
@@ -96,66 +70,57 @@ class _AddressBookPageState extends State<AddressBookPage> {
       appBar: AppBar(title: const Text('Delivery addresses')),
       body: SafeArea(
         top: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final horizontal = constraints.maxWidth < 380 ? 16.0 : 20.0;
-            return ListView(
-              key: const PageStorageKey<String>('address-book-scroll'),
-              padding: EdgeInsets.fromLTRB(
-                horizontal,
-                10,
-                horizontal,
-                MediaQuery.paddingOf(context).bottom + 28,
-              ),
-              children: [
-                Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 760),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _AddressBookHero(addressCount: _addresses.length),
-                        const SizedBox(height: 18),
-                        Row(
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final horizontal = constraints.maxWidth < 380 ? 16.0 : 20.0;
+                return ListView(
+                  key: const PageStorageKey<String>('address-book-scroll'),
+                  padding: EdgeInsets.fromLTRB(
+                    horizontal,
+                    10,
+                    horizontal,
+                    MediaQuery.paddingOf(context).bottom + 28,
+                  ),
+                  children: [
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 760),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const Expanded(
-                              child: Text(
-                                'Saved addresses',
-                                style: TextStyle(
-                                  color: AppColors.textPrimary,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ),
-                            TextButton.icon(
+                            const _AddressBookHero(),
+                            const SizedBox(height: 16),
+                            FilledButton.icon(
                               key: const Key('add-address-button'),
                               onPressed: _addAddress,
-                              icon: const Icon(Icons.add_rounded, size: 18),
-                              label: const Text('Add address'),
+                              icon: const Icon(Icons.add_location_alt_outlined),
+                              label: const Text('Add new address'),
                             ),
+                            const SizedBox(height: 18),
+                            if (_controller.addresses.isEmpty)
+                              const _EmptyAddressState()
+                            else
+                              ..._controller.addresses.map(
+                                (address) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: _AddressCard(
+                                    address: address,
+                                    onEdit: () => _editAddress(address),
+                                    onDefault: () => _controller.setDefault(address.id),
+                                    onDelete: () => _removeAddress(address),
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
-                        const SizedBox(height: 8),
-                        if (_addresses.isEmpty)
-                          const _EmptyAddressState()
-                        else
-                          ..._addresses.map(
-                            (address) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: _AddressCard(
-                                address: address,
-                                onEdit: () => _editAddress(address),
-                                onDelete: () => _removeAddress(address),
-                                onSetDefault: () => _setDefault(address),
-                              ),
-                            ),
-                          ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                  ],
+                );
+              },
             );
           },
         ),
@@ -165,54 +130,53 @@ class _AddressBookPageState extends State<AddressBookPage> {
 }
 
 class _AddressBookHero extends StatelessWidget {
-  final int addressCount;
-
-  const _AddressBookHero({required this.addressCount});
+  const _AddressBookHero();
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.dcxScheme;
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.primarySoft,
+        gradient: LinearGradient(
+          colors: context.isDarkMode
+              ? [scheme.primaryContainer.withValues(alpha: .36), context.dcxSurface]
+              : [const Color(0xFFF2EEFF), const Color(0xFFFBFAFF)],
+        ),
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+        border: Border.all(color: scheme.primary.withValues(alpha: .14)),
       ),
       child: Row(
         children: [
           Container(
-            width: 52,
-            height: 52,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              color: scheme.primary.withValues(alpha: .10),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             alignment: Alignment.center,
-            child: const Icon(
-              Icons.location_on_rounded,
-              color: AppColors.primary,
-              size: 26,
-            ),
+            child: Icon(Icons.home_work_outlined, color: scheme.primary, size: 25),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 13),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Faster checkout',
+                Text(
+                  'Saved addresses',
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: context.dcxTextPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '$addressCount saved ${addressCount == 1 ? 'address' : 'addresses'} available for delivery.',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 11.5,
+                  'Save Home, Work or another location once and reuse it instantly at checkout.',
+                  style: TextStyle(
+                    color: context.dcxTextSecondary,
+                    fontSize: 10.8,
                     height: 1.4,
                     fontWeight: FontWeight.w600,
                   ),
@@ -227,129 +191,168 @@ class _AddressBookHero extends StatelessWidget {
 }
 
 class _AddressCard extends StatelessWidget {
-  final _SavedAddress address;
+  final SavedAddress address;
   final VoidCallback onEdit;
+  final VoidCallback onDefault;
   final VoidCallback onDelete;
-  final VoidCallback onSetDefault;
 
   const _AddressCard({
     required this.address,
     required this.onEdit,
+    required this.onDefault,
     required this.onDelete,
-    required this.onSetDefault,
   });
+
+  IconData get _icon {
+    switch (address.type) {
+      case SavedAddressType.home:
+        return Icons.home_outlined;
+      case SavedAddressType.work:
+        return Icons.business_center_outlined;
+      case SavedAddressType.other:
+        return Icons.location_on_outlined;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+    final scheme = context.dcxScheme;
+    return Material(
+      key: ValueKey<String>('saved-address-${address.id}'),
+      color: context.dcxSurface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(
+        side: BorderSide(
           color: address.isDefault
-              ? AppColors.primary.withValues(alpha: 0.4)
-              : AppColors.border,
-          width: address.isDefault ? 1.2 : 1,
+              ? scheme.primary.withValues(alpha: .42)
+              : context.dcxBorder,
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.primarySoft,
-                  borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: scheme.primaryContainer.withValues(alpha: context.isDarkMode ? .42 : .72),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(_icon, color: scheme.primary, size: 21),
                 ),
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.home_work_outlined,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 11),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
+                const SizedBox(width: 11),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 7,
+                        runSpacing: 5,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
                             address.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
+                            style: TextStyle(
+                              color: context.dcxTextPrimary,
                               fontSize: 13.5,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
-                        ),
-                        if (address.isDefault) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 7,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.successSoft,
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.pill),
-                            ),
-                            child: const Text(
-                              'Default',
-                              style: TextStyle(
-                                color: AppColors.success,
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w900,
+                          if (address.isDefault)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: scheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(AppRadius.pill),
+                              ),
+                              child: Text(
+                                'Default',
+                                style: TextStyle(
+                                  color: scheme.onPrimaryContainer,
+                                  fontSize: 8.5,
+                                  fontWeight: FontWeight.w900,
+                                ),
                               ),
                             ),
-                          ),
                         ],
-                      ],
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      address.address,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 11.5,
-                        height: 1.35,
-                        fontWeight: FontWeight.w600,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${address.fullName} • ${address.mobile}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: context.dcxTextSecondary,
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  tooltip: 'Address options',
+                  onSelected: (value) {
+                    if (value == 'edit') onEdit();
+                    if (value == 'default') onDefault();
+                    if (value == 'delete') onDelete();
+                  },
+                  itemBuilder: (context) => <PopupMenuEntry<String>>[
+                    const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                    if (!address.isDefault)
+                      const PopupMenuItem(value: 'default', child: Text('Set as default')),
+                    const PopupMenuItem(value: 'delete', child: Text('Remove')),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              address.addressLine,
+              style: TextStyle(
+                color: context.dcxTextPrimary,
+                fontSize: 11.5,
+                height: 1.45,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if (address.mapLocation != null) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: context.dcxSurfaceMuted,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.map_outlined, color: scheme.primary, size: 17),
+                    const SizedBox(width: 7),
+                    Expanded(
+                      child: Text(
+                        'Map pin • ${address.mapLocation!.displayLabel}',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: context.dcxTextSecondary,
+                          fontSize: 9.5,
+                          height: 1.35,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              PopupMenuButton<String>(
-                tooltip: 'Address options',
-                onSelected: (value) {
-                  if (value == 'edit') onEdit();
-                  if (value == 'default') onSetDefault();
-                  if (value == 'delete') onDelete();
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                  if (!address.isDefault)
-                    const PopupMenuItem(
-                      value: 'default',
-                      child: Text('Set as default'),
-                    ),
-                  const PopupMenuItem(value: 'delete', child: Text('Remove')),
-                ],
-              ),
             ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -363,29 +366,28 @@ class _EmptyAddressState extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.dcxSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.dcxBorder),
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Icon(Icons.location_off_outlined,
-              color: AppColors.textTertiary, size: 36),
-          SizedBox(height: 10),
+          Icon(Icons.location_off_outlined, color: context.dcxTextTertiary, size: 36),
+          const SizedBox(height: 10),
           Text(
             'No saved addresses yet',
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: context.dcxTextPrimary,
               fontSize: 14,
               fontWeight: FontWeight.w900,
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Text(
-            'Add a delivery address to make checkout faster.',
+            'Add an address now to make your next checkout almost instant.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: context.dcxTextSecondary,
               fontSize: 11.5,
               height: 1.4,
             ),
@@ -396,75 +398,51 @@ class _EmptyAddressState extends StatelessWidget {
   }
 }
 
-class _SavedAddress {
-  final String id;
-  final String label;
-  final String fullName;
-  final String mobile;
-  final String address;
-  final bool isDefault;
+class AddressEditorSheet extends StatefulWidget {
+  final SavedAddress? initialValue;
+  final bool showSaveForFuture;
+  final bool initiallySaveForFuture;
 
-  const _SavedAddress({
-    required this.id,
-    required this.label,
-    required this.fullName,
-    required this.mobile,
-    required this.address,
-    this.isDefault = false,
+  const AddressEditorSheet({
+    super.key,
+    this.initialValue,
+    this.showSaveForFuture = false,
+    this.initiallySaveForFuture = true,
   });
 
-  _SavedAddress copyWith({bool? isDefault}) {
-    return _SavedAddress(
-      id: id,
-      label: label,
-      fullName: fullName,
-      mobile: mobile,
-      address: address,
-      isDefault: isDefault ?? this.isDefault,
-    );
-  }
-}
-
-class _AddressEditorSheet extends StatefulWidget {
-  final _SavedAddress? initialValue;
-
-  const _AddressEditorSheet({this.initialValue});
-
   @override
-  State<_AddressEditorSheet> createState() => _AddressEditorSheetState();
+  State<AddressEditorSheet> createState() => _AddressEditorSheetState();
 }
 
-class _AddressEditorSheetState extends State<_AddressEditorSheet> {
+class _AddressEditorSheetState extends State<AddressEditorSheet> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _labelController;
+  late final TextEditingController _customLabelController;
   late final TextEditingController _nameController;
   late final TextEditingController _mobileController;
   late final TextEditingController _addressController;
   final _nameFocus = FocusNode();
   final _mobileFocus = FocusNode();
   final _addressFocus = FocusNode();
+  late SavedAddressType _type;
+  MapLocationData? _mapLocation;
+  late bool _saveForFuture;
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-    _labelController = TextEditingController(
-      text: widget.initialValue?.label ?? 'Home',
-    );
-    _nameController = TextEditingController(
-      text: widget.initialValue?.fullName == 'DCX customer'
-          ? ''
-          : widget.initialValue?.fullName ?? '',
-    );
-    _mobileController =
-        TextEditingController(text: widget.initialValue?.mobile ?? '');
-    _addressController =
-        TextEditingController(text: widget.initialValue?.address ?? '');
+    _type = widget.initialValue?.type ?? SavedAddressType.home;
+    _customLabelController = TextEditingController(text: widget.initialValue?.customLabel ?? '');
+    _nameController = TextEditingController(text: widget.initialValue?.fullName ?? '');
+    _mobileController = TextEditingController(text: widget.initialValue?.mobile ?? '');
+    _addressController = TextEditingController(text: widget.initialValue?.addressLine ?? '');
+    _mapLocation = widget.initialValue?.mapLocation;
+    _saveForFuture = widget.initiallySaveForFuture;
   }
 
   @override
   void dispose() {
-    _labelController.dispose();
+    _customLabelController.dispose();
     _nameController.dispose();
     _mobileController.dispose();
     _addressController.dispose();
@@ -474,6 +452,21 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
     super.dispose();
   }
 
+  Future<void> _pickMapLocation() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final result = await Navigator.of(context).push<MapLocationData>(
+      AppPageRoute(
+        page: MapLocationPickerPage(initialLocation: _mapLocation),
+      ),
+    );
+    if (!mounted || result == null) return;
+    setState(() => _mapLocation = result);
+    if (_addressController.text.trim().isEmpty &&
+        (result.resolvedAddress?.trim().isNotEmpty ?? false)) {
+      _addressController.text = result.resolvedAddress!.trim();
+    }
+  }
+
   Future<void> _save() async {
     if (_saving || !_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
@@ -481,15 +474,22 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted) return;
 
+    final address = SavedAddress(
+      id: widget.initialValue?.id ?? DateTime.now().microsecondsSinceEpoch.toString(),
+      type: _type,
+      customLabel: _type == SavedAddressType.other ? _customLabelController.text.trim() : '',
+      fullName: _nameController.text.trim(),
+      mobile: _mobileController.text.trim(),
+      addressLine: _addressController.text.trim(),
+      mapLocation: _mapLocation,
+      isDefault: widget.initialValue?.isDefault ?? false,
+      createdAt: widget.initialValue?.createdAt ?? DateTime.now(),
+    );
+
     Navigator.of(context).pop(
-      _SavedAddress(
-        id: widget.initialValue?.id ??
-            DateTime.now().microsecondsSinceEpoch.toString(),
-        label: _labelController.text.trim(),
-        fullName: _nameController.text.trim(),
-        mobile: _mobileController.text.trim(),
-        address: _addressController.text.trim(),
-        isDefault: widget.initialValue?.isDefault ?? false,
+      AddressEditorResult(
+        address: address,
+        saveForFuture: widget.showSaveForFuture ? _saveForFuture : true,
       ),
     );
   }
@@ -497,15 +497,15 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
   @override
   Widget build(BuildContext context) {
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+    final scheme = context.dcxScheme;
     return Material(
-      color: Colors.transparent,
-      child: Container(
-        key: const Key('address-editor-sheet'),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: SafeArea(
+      key: const Key('address-editor-sheet'),
+      color: context.dcxSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: SafeArea(
           top: false,
           child: SingleChildScrollView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -520,49 +520,89 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
                       width: 42,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceStrong,
+                        color: context.dcxSurfaceStrong,
                         borderRadius: BorderRadius.circular(AppRadius.pill),
                       ),
                     ),
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    widget.initialValue == null
-                        ? 'Add delivery address'
-                        : 'Edit delivery address',
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
+                    widget.showSaveForFuture
+                        ? 'Delivery address'
+                        : widget.initialValue == null
+                            ? 'Add delivery address'
+                            : 'Edit delivery address',
+                    style: TextStyle(
+                      color: context.dcxTextPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                   const SizedBox(height: 5),
-                  const Text(
-                    'Keep delivery details clear so checkout stays fast and accurate.',
+                  Text(
+                    'Use a saved type and optional map pin to keep delivery details fast and precise.',
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: context.dcxTextSecondary,
                       fontSize: 11.5,
                       height: 1.4,
                     ),
                   ),
                   const SizedBox(height: 18),
-                  TextFormField(
-                    key: const Key('address-label-field'),
-                    controller: _labelController,
-                    textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Label',
-                      hintText: 'Home, Office, Family',
-                      prefixIcon: Icon(Icons.bookmark_border_rounded),
+                  Text(
+                    'Address type',
+                    style: TextStyle(
+                      color: context.dcxTextPrimary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
                     ),
-                    validator: (value) => value == null || value.trim().isEmpty
-                        ? 'Add a short address label'
-                        : null,
-                    onFieldSubmitted: (_) => _nameFocus.requestFocus(),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: SavedAddressType.values.map((type) {
+                      final selected = _type == type;
+                      return ChoiceChip(
+                        key: ValueKey<String>('address-type-${type.name}'),
+                        selected: selected,
+                        onSelected: (_) => setState(() => _type = type),
+                        avatar: Icon(
+                          type == SavedAddressType.home
+                              ? Icons.home_outlined
+                              : type == SavedAddressType.work
+                                  ? Icons.business_center_outlined
+                                  : Icons.location_on_outlined,
+                          size: 16,
+                          color: selected ? scheme.onSecondaryContainer : context.dcxTextSecondary,
+                        ),
+                        label: Text(type.label),
+                      );
+                    }).toList(),
+                  ),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 180),
+                    child: _type == SavedAddressType.other
+                        ? Padding(
+                            key: const ValueKey<String>('custom-address-label'),
+                            padding: const EdgeInsets.only(top: 12),
+                            child: TextFormField(
+                              key: const Key('address-label-field'),
+                              controller: _customLabelController,
+                              decoration: const InputDecoration(
+                                labelText: 'Custom label',
+                                hintText: 'Parents, Warehouse, Apartment',
+                                prefixIcon: Icon(Icons.bookmark_border_rounded),
+                              ),
+                              validator: (value) => value == null || value.trim().isEmpty
+                                  ? 'Add a short label for Other'
+                                  : null,
+                            ),
+                          )
+                        : const SizedBox.shrink(),
                   ),
                   const SizedBox(height: 14),
                   TextFormField(
-                    key: const Key('address-name-field'),
+                    key: Key(widget.showSaveForFuture ? 'checkout-address-name' : 'address-name-field'),
                     controller: _nameController,
                     focusNode: _nameFocus,
                     textInputAction: TextInputAction.next,
@@ -577,7 +617,7 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
                   ),
                   const SizedBox(height: 14),
                   TextFormField(
-                    key: const Key('address-mobile-field'),
+                    key: Key(widget.showSaveForFuture ? 'checkout-address-mobile' : 'address-mobile-field'),
                     controller: _mobileController,
                     focusNode: _mobileFocus,
                     keyboardType: TextInputType.phone,
@@ -586,15 +626,14 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
                       labelText: 'Mobile number',
                       prefixIcon: Icon(Icons.phone_outlined),
                     ),
-                    validator: (value) =>
-                        value == null || value.trim().length < 7
-                            ? 'Enter a valid mobile number'
-                            : null,
+                    validator: (value) => value == null || value.trim().length < 7
+                        ? 'Enter a valid mobile number'
+                        : null,
                     onFieldSubmitted: (_) => _addressFocus.requestFocus(),
                   ),
                   const SizedBox(height: 14),
                   TextFormField(
-                    key: const Key('address-location-field'),
+                    key: Key(widget.showSaveForFuture ? 'checkout-address-line' : 'address-location-field'),
                     controller: _addressController,
                     focusNode: _addressFocus,
                     minLines: 2,
@@ -606,34 +645,147 @@ class _AddressEditorSheetState extends State<_AddressEditorSheet> {
                       alignLabelWithHint: true,
                       prefixIcon: Icon(Icons.location_on_outlined),
                     ),
-                    validator: (value) =>
-                        value == null || value.trim().length < 4
-                            ? 'Enter a complete delivery address'
-                            : null,
-                    onFieldSubmitted: (_) => _save(),
+                    validator: (value) => value == null || value.trim().length < 4
+                        ? 'Enter a complete delivery address'
+                        : null,
                   ),
+                  const SizedBox(height: 14),
+                  _MapLocationField(
+                    mapLocation: _mapLocation,
+                    onSelect: _pickMapLocation,
+                    onClear: _mapLocation == null ? null : () => setState(() => _mapLocation = null),
+                  ),
+                  if (widget.showSaveForFuture) ...[
+                    const SizedBox(height: 12),
+                    CheckboxListTile(
+                      key: const Key('save-address-for-future'),
+                      value: _saveForFuture,
+                      onChanged: (value) => setState(() => _saveForFuture = value ?? true),
+                      contentPadding: EdgeInsets.zero,
+                      controlAffinity: ListTileControlAffinity.leading,
+                      title: const Text(
+                        'Save this address for future use',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+                      ),
+                      subtitle: const Text(
+                        'You can select it instantly on your next order.',
+                        style: TextStyle(fontSize: 10.5, height: 1.35),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 18),
                   SizedBox(
                     height: 54,
                     child: FilledButton.icon(
-                      key: const Key('save-address-button'),
+                      key: Key(widget.showSaveForFuture ? 'checkout-save-address' : 'save-address-button'),
                       onPressed: _saving ? null : _save,
                       icon: _saving
                           ? const SizedBox(
                               width: 18,
                               height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                             )
                           : const Icon(Icons.check_rounded),
-                      label: Text(_saving ? 'Saving...' : 'Save address'),
+                      label: Text(widget.showSaveForFuture ? 'Use this address' : 'Save address'),
                     ),
                   ),
                 ],
               ),
             ),
+          ),
+        ),
+    );
+  }
+}
+
+class AddressEditorResult {
+  final SavedAddress address;
+  final bool saveForFuture;
+
+  const AddressEditorResult({
+    required this.address,
+    required this.saveForFuture,
+  });
+}
+
+class _MapLocationField extends StatelessWidget {
+  final MapLocationData? mapLocation;
+  final VoidCallback onSelect;
+  final VoidCallback? onClear;
+
+  const _MapLocationField({
+    required this.mapLocation,
+    required this.onSelect,
+    this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = context.dcxScheme;
+    return Material(
+      key: const Key('optional-map-location-field'),
+      color: context.dcxSurfaceMuted,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: InkWell(
+        onTap: onSelect,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Container(
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            border: Border.all(color: context.dcxBorder),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                alignment: Alignment.center,
+                child: Icon(Icons.map_outlined, color: scheme.onPrimaryContainer, size: 20),
+              ),
+              const SizedBox(width: 11),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Map Location (optional)',
+                      style: TextStyle(
+                        color: context.dcxTextPrimary,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      mapLocation == null
+                          ? 'Search or drop a Google Maps pin for extra delivery precision.'
+                          : mapLocation!.displayLabel,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: context.dcxTextSecondary,
+                        fontSize: 9.5,
+                        height: 1.35,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (onClear != null)
+                IconButton(
+                  tooltip: 'Remove map pin',
+                  onPressed: onClear,
+                  icon: const Icon(Icons.close_rounded, size: 18),
+                )
+              else
+                Icon(Icons.chevron_right_rounded, color: scheme.primary),
+            ],
           ),
         ),
       ),

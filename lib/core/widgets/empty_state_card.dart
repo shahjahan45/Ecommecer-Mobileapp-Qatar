@@ -72,10 +72,7 @@ class EmptyStateCard extends StatelessWidget {
                   Text(
                     message,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(height: 1.45),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.45),
                   ),
                   if (actionLabel != null) ...[
                     SizedBox(height: compact ? AppSpacing.lg : AppSpacing.xl),

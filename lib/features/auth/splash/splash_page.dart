@@ -16,7 +16,8 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage>
+    with TickerProviderStateMixin {
   static const _launchDuration = Duration(milliseconds: 3000);
   static const _handoffDuration = Duration(milliseconds: 650);
   static const _navigationDelay = Duration(milliseconds: 3150);
@@ -294,7 +295,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                             ),
                           ),
                           Align(
-                            alignment: Alignment(0, veryCompact ? 0.78 : 0.80),
+                            alignment:
+                                Alignment(0, veryCompact ? 0.78 : 0.80),
                             child: Padding(
                               padding: EdgeInsets.fromLTRB(
                                 24,

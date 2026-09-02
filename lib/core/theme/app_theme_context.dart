@@ -10,7 +10,6 @@ extension DcxThemeContext on BuildContext {
   Color get dcxSurfaceStrong => dcxScheme.surfaceContainerHigh;
   Color get dcxTextPrimary => dcxScheme.onSurface;
   Color get dcxTextSecondary => dcxScheme.onSurfaceVariant;
-  Color get dcxTextTertiary =>
-      dcxScheme.onSurfaceVariant.withValues(alpha: .72);
+  Color get dcxTextTertiary => dcxScheme.onSurfaceVariant.withValues(alpha: .72);
   Color get dcxBorder => dcxScheme.outlineVariant;
 }

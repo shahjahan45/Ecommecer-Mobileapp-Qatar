@@ -1,5 +1,6 @@
 import 'package:ecommerce_mobile/core/theme/app_theme.dart';
 import 'package:ecommerce_mobile/features/cart/cart_controller.dart';
+import 'package:ecommerce_mobile/features/profile/address/address_book_controller.dart';
 import 'package:ecommerce_mobile/features/checkout/checkout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,11 +18,13 @@ void main() {
       'checkout foundation stays responsive at ${size.width}x${size.height}',
       (tester) async {
         CartController.instance.resetForTesting(withDemoItems: true);
+        AddressBookController.instance.resetForTesting();
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
         addTearDown(CartController.instance.resetForTesting);
+      addTearDown(AddressBookController.instance.resetForTesting);
 
         await tester.pumpWidget(
           MaterialApp(
@@ -43,11 +46,13 @@ void main() {
     'delivery address sheet saves and closes without framework errors',
     (tester) async {
       CartController.instance.resetForTesting(withDemoItems: true);
+        AddressBookController.instance.resetForTesting();
       tester.view.physicalSize = const Size(360, 640);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(CartController.instance.resetForTesting);
+        addTearDown(AddressBookController.instance.resetForTesting);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -74,12 +79,15 @@ void main() {
         'Doha, Qatar',
       );
 
+      await tester.ensureVisible(find.byKey(const Key('checkout-save-address')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('checkout-save-address')));
       await tester.pump();
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Test Customer'), findsOneWidget);
       expect(find.textContaining('Doha, Qatar'), findsOneWidget);
+      expect(AddressBookController.instance.addresses.length, 1);
       expect(tester.takeException(), isNull);
     },
   );

@@ -44,10 +44,8 @@ class _EcommerceAppState extends State<EcommerceApp> {
               statusBarColor: Colors.transparent,
               systemNavigationBarColor: Colors.transparent,
               systemNavigationBarDividerColor: Colors.transparent,
-              statusBarIconBrightness:
-                  dark ? Brightness.light : Brightness.dark,
-              systemNavigationBarIconBrightness:
-                  dark ? Brightness.light : Brightness.dark,
+              statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
+              systemNavigationBarIconBrightness: dark ? Brightness.light : Brightness.dark,
               statusBarBrightness: dark ? Brightness.dark : Brightness.light,
             );
 

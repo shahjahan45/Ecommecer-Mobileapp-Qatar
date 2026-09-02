@@ -85,8 +85,7 @@ class _OrdersPageState extends State<OrdersPage> {
                             TextField(
                               controller: _searchController,
                               textInputAction: TextInputAction.search,
-                              onChanged: (value) =>
-                                  setState(() => _query = value),
+                              onChanged: (value) => setState(() => _query = value),
                               decoration: InputDecoration(
                                 hintText: 'Search order number or product',
                                 prefixIcon: const Icon(Icons.search_rounded),
@@ -98,16 +97,14 @@ class _OrdersPageState extends State<OrdersPage> {
                                           _searchController.clear();
                                           setState(() => _query = '');
                                         },
-                                        icon: const Icon(Icons.close_rounded,
-                                            size: 19),
+                                        icon: const Icon(Icons.close_rounded, size: 19),
                                       ),
                               ),
                             ),
                             const SizedBox(height: 12),
                             _FilterBar(
                               selected: _filter,
-                              onSelected: (filter) =>
-                                  setState(() => _filter = filter),
+                              onSelected: (filter) => setState(() => _filter = filter),
                             ),
                             const SizedBox(height: 16),
                             Row(
@@ -141,14 +138,11 @@ class _OrdersPageState extends State<OrdersPage> {
                 ),
                 if (orders.isEmpty)
                   SliverPadding(
-                    padding: EdgeInsets.fromLTRB(
-                        horizontal, 0, horizontal, bottomPadding),
+                    padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, bottomPadding),
                     sliver: SliverToBoxAdapter(
                       child: EmptyStateCard(
                         icon: Icons.receipt_long_outlined,
-                        title: _query.isEmpty
-                            ? 'No orders here'
-                            : 'No matching orders',
+                        title: _query.isEmpty ? 'No orders here' : 'No matching orders',
                         message: _query.isEmpty
                             ? 'Orders with this status will appear here when available.'
                             : 'Try another order number, product name, or filter.',
@@ -167,12 +161,10 @@ class _OrdersPageState extends State<OrdersPage> {
                   )
                 else
                   SliverPadding(
-                    padding: EdgeInsets.fromLTRB(
-                        horizontal, 0, horizontal, bottomPadding),
+                    padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, bottomPadding),
                     sliver: SliverList.separated(
                       itemCount: orders.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 12),
+                      separatorBuilder: (context, index) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final order = orders[index];
                         return Center(
@@ -289,13 +281,10 @@ class _FilterBar extends StatelessWidget {
               showCheckmark: false,
               selectedColor: AppColors.primarySoft,
               side: BorderSide(
-                color:
-                    selected == filter ? AppColors.primary : AppColors.border,
+                color: selected == filter ? AppColors.primary : AppColors.border,
               ),
               labelStyle: TextStyle(
-                color: selected == filter
-                    ? AppColors.primary
-                    : AppColors.textSecondary,
+                color: selected == filter ? AppColors.primary : AppColors.textSecondary,
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
               ),
@@ -318,8 +307,7 @@ class _OrdersOverviewHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final active = orders.where((order) => order.isActive).length;
     final delivered = orders.where((order) => order.isDelivered).length;
-    final totalItems =
-        orders.fold<int>(0, (total, order) => total + order.totalQuantity);
+    final totalItems = orders.fold<int>(0, (total, order) => total + order.totalQuantity);
 
     return Container(
       padding: const EdgeInsets.all(16),

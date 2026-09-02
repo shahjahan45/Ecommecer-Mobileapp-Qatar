@@ -57,12 +57,9 @@ class PaymentFlowController extends ChangeNotifier {
     final now = DateTime.now();
     final suffix = now.microsecondsSinceEpoch.toString();
     final reference = switch (_selectedMethod) {
-      CheckoutPaymentMethod.cashOnDelivery =>
-        'COD-${suffix.substring(suffix.length - 8)}',
-      CheckoutPaymentMethod.card =>
-        'CARD-${suffix.substring(suffix.length - 8)}',
-      CheckoutPaymentMethod.bankTransfer =>
-        'BANK-${suffix.substring(suffix.length - 8)}',
+      CheckoutPaymentMethod.cashOnDelivery => 'COD-${suffix.substring(suffix.length - 8)}',
+      CheckoutPaymentMethod.card => 'CARD-${suffix.substring(suffix.length - 8)}',
+      CheckoutPaymentMethod.bankTransfer => 'BANK-${suffix.substring(suffix.length - 8)}',
     };
 
     final result = switch (_selectedMethod) {

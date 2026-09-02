@@ -52,10 +52,11 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(
-            find.byKey(const Key('order-confirmation-page')), findsOneWidget);
+        expect(find.byKey(const Key('order-confirmation-page')), findsOneWidget);
         expect(find.text('Thank you for your order'), findsOneWidget);
         expect(find.text('Payment authorized'), findsOneWidget);
+        expect(find.byKey(const Key('confirmation-support-card')), findsOneWidget);
+        expect(find.byKey(const Key('dcx-mobile-footer')), findsNothing);
         expect(tester.takeException(), isNull, reason: 'Failed at size $size');
       },
     );

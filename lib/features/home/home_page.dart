@@ -9,6 +9,7 @@ import '../../core/widgets/app_icon_button.dart';
 import '../../core/widgets/app_pressable.dart';
 import '../../core/widgets/app_skeleton.dart';
 import '../../core/widgets/fade_slide_in.dart';
+import '../../core/widgets/dcx_mobile_footer.dart';
 import '../../models/category.dart';
 import '../../models/product.dart';
 import '../../widgets/category_card.dart';
@@ -20,8 +21,13 @@ import '../products/product_details_page.dart';
 import '../products/product_listing_page.dart';
 import '../search/search_page.dart';
 import '../notifications/notifications_page.dart';
+import '../notifications/widgets/notification_badge_icon.dart';
 import '../wishlist/wishlist_page.dart';
 import '../wishlist/wishlist_controller.dart';
+import '../profile/address/address_book_controller.dart';
+import '../profile/address_book_page.dart';
+import '../profile/app_information_page.dart';
+import '../profile/help_support_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,8 +37,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final PageController _bannerController =
-      PageController(viewportFraction: .94);
+  final AddressBookController _addressBook = AddressBookController.instance;
+  final PageController _bannerController = PageController(viewportFraction: .94);
   Timer? _bannerTimer;
   int _bannerIndex = 0;
   int _selectedCategory = 0;
@@ -181,6 +187,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _addressBook.addListener(_handleAddressBookChanged);
+    _addressBook.load();
     _simulateInitialLoad();
     _startBannerTimer();
   }
@@ -202,8 +210,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _handleAddressBookChanged() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void dispose() {
+    _addressBook.removeListener(_handleAddressBookChanged);
     _bannerTimer?.cancel();
     _bannerController.dispose();
     super.dispose();
@@ -240,8 +253,7 @@ class _HomePageState extends State<HomePage> {
           behavior: SnackBarBehavior.floating,
           content: Row(
             children: [
-              const Icon(Icons.check_circle_rounded,
-                  color: Colors.white, size: 20),
+              const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -272,8 +284,7 @@ class _HomePageState extends State<HomePage> {
         color: AppColors.primary,
         onRefresh: _refresh,
         child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
-              parent: ClampingScrollPhysics()),
+          physics: const AlwaysScrollableScrollPhysics(parent: ClampingScrollPhysics()),
           slivers: [
             SliverToBoxAdapter(
               child: FadeSlideIn(
@@ -315,8 +326,7 @@ class _HomePageState extends State<HomePage> {
                   subtitle: 'Find exactly what you need',
                   actionText: 'See all',
                   onAction: () {
-                    Navigator.of(context)
-                        .push(AppPageRoute(page: const CategoriesPage()));
+                    Navigator.of(context).push(AppPageRoute(page: const CategoriesPage()));
                   },
                 ),
               ),
@@ -331,9 +341,7 @@ class _HomePageState extends State<HomePage> {
                   actionText: 'View all',
                   onAction: () {
                     Navigator.of(context).push(
-                      AppPageRoute(
-                          page: const ProductListingPage(
-                              title: 'Trending products')),
+                      AppPageRoute(page: const ProductListingPage(title: 'Trending products')),
                     );
                   },
                 ),
@@ -355,16 +363,14 @@ class _HomePageState extends State<HomePage> {
                   actionText: 'View all',
                   onAction: () {
                     Navigator.of(context).push(
-                      AppPageRoute(
-                          page: const ProductListingPage(
-                              title: 'Recommended for you')),
+                      AppPageRoute(page: const ProductListingPage(title: 'Recommended for you')),
                     );
                   },
                 ),
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
               sliver: SliverLayoutBuilder(
                 builder: (context, constraints) {
                   final width = constraints.crossAxisExtent;
@@ -403,6 +409,42 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
+                child: DcxHomeBottomSection(
+                  onHelp: () => Navigator.of(context).push(
+                    AppPageRoute(page: const HelpSupportPage()),
+                  ),
+                  onContact: () => Navigator.of(context).push(
+                    AppPageRoute(page: const HelpSupportPage()),
+                  ),
+                  onAbout: () => Navigator.of(context).push(
+                    AppPageRoute(
+                      page: const AppInformationPage(type: AppInformationType.about),
+                    ),
+                  ),
+                  onPrivacy: () => Navigator.of(context).push(
+                    AppPageRoute(
+                      page: const AppInformationPage(type: AppInformationType.privacy),
+                    ),
+                  ),
+                  onTerms: () => Navigator.of(context).push(
+                    AppPageRoute(
+                      page: const AppInformationPage(type: AppInformationType.terms),
+                    ),
+                  ),
+                  onRefund: () => Navigator.of(context).push(
+                    AppPageRoute(
+                      page: const AppInformationPage(type: AppInformationType.refund),
+                    ),
+                  ),
+                  onFaqs: () => Navigator.of(context).push(
+                    AppPageRoute(page: const HelpSupportPage()),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -413,48 +455,56 @@ class _HomePageState extends State<HomePage> {
     return Row(
       children: [
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+          child: InkWell(
+            key: const Key('home-delivery-location'),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+            onTap: () {
+              Navigator.of(context).push(
+                AppPageRoute(page: const AddressBookPage()),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.location_on_rounded,
-                      size: 16, color: AppColors.primary),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Delivering to',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on_rounded, size: 16, color: AppColors.primary),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Delivering to',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          _addressBook.defaultAddress == null
+                              ? 'Doha, Qatar'
+                              : '${_addressBook.defaultAddress!.label} • ${_addressBook.defaultAddress!.addressLine}',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 19),
+                        ),
+                      ),
+                      const SizedBox(width: 3),
+                      const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      'Doha, Qatar',
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(fontSize: 19),
-                    ),
-                  ),
-                  const SizedBox(width: 3),
-                  const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
-        AppIconButton(
-          icon: Icons.notifications_none_rounded,
-          showBadge: true,
-          badgeText: '3',
+        NotificationBadgeIcon(
           onTap: () {
             Navigator.of(context).push(
               AppPageRoute(page: const NotificationsPage()),
@@ -467,12 +517,8 @@ class _HomePageState extends State<HomePage> {
           builder: (context, child) {
             final count = WishlistController.instance.count;
             return AppIconButton(
-              icon: count > 0
-                  ? Icons.favorite_rounded
-                  : Icons.favorite_border_rounded,
-              iconColor: count > 0
-                  ? AppColors.danger
-                  : Theme.of(context).colorScheme.onSurface,
+              icon: count > 0 ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              iconColor: count > 0 ? AppColors.danger : Theme.of(context).colorScheme.onSurface,
               showBadge: count > 0,
               badgeText: count > 99 ? '99+' : '$count',
               onTap: () {
@@ -498,17 +544,12 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border:
-              Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-          boxShadow: Theme.of(context).brightness == Brightness.dark
-              ? null
-              : AppShadows.soft,
+          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          boxShadow: Theme.of(context).brightness == Brightness.dark ? null : AppShadows.soft,
         ),
         child: Row(
           children: [
-            Icon(Icons.search_rounded,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                size: 23),
+            Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 23),
             const SizedBox(width: 11),
             Expanded(
               child: Text(
@@ -516,10 +557,7 @@ class _HomePageState extends State<HomePage> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurfaceVariant
-                      .withValues(alpha: .72),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: .72),
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -533,8 +571,7 @@ class _HomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               alignment: Alignment.center,
-              child: const Icon(Icons.tune_rounded,
-                  color: AppColors.primary, size: 19),
+              child: const Icon(Icons.tune_rounded, color: AppColors.primary, size: 19),
             ),
           ],
         ),
@@ -575,9 +612,7 @@ class _HomePageState extends State<HomePage> {
               width: index == _bannerIndex ? 24 : 7,
               height: 7,
               decoration: BoxDecoration(
-                color: index == _bannerIndex
-                    ? AppColors.primary
-                    : Theme.of(context).colorScheme.outlineVariant,
+                color: index == _bannerIndex ? AppColors.primary : Theme.of(context).colorScheme.outlineVariant,
                 borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
             ),
@@ -589,10 +624,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildQuickBenefits() {
     const benefits = [
-      _BenefitData(
-          Icons.local_shipping_outlined, 'Fast delivery', 'Across Qatar'),
-      _BenefitData(
-          Icons.verified_user_outlined, 'Secure checkout', 'Protected flow'),
+      _BenefitData(Icons.local_shipping_outlined, 'Fast delivery', 'Across Qatar'),
+      _BenefitData(Icons.verified_user_outlined, 'Secure checkout', 'Protected flow'),
       _BenefitData(Icons.support_agent_rounded, 'Easy support', 'We are here'),
     ];
 
@@ -647,13 +680,11 @@ class _HomePageState extends State<HomePage> {
               setState(() => _selectedCategory = index);
               if (index == 0) {
                 Navigator.of(context).push(
-                  AppPageRoute(
-                      page: const ProductListingPage(title: 'All products')),
+                  AppPageRoute(page: const ProductListingPage(title: 'All products')),
                 );
               } else {
                 final selected = categories[index];
-                final categoryName =
-                    selected.name == 'Phones' ? 'Electronics' : selected.name;
+                final categoryName = selected.name == 'Phones' ? 'Electronics' : selected.name;
                 final subcategory = selected.name == 'Phones' ? 'Phones' : null;
                 Navigator.of(context).push(
                   AppPageRoute(
@@ -750,8 +781,7 @@ class _HomePageState extends State<HomePage> {
             AppPressable(
               onTap: () => _showComingSoon('Deals'),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -814,6 +844,7 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+
 }
 
 class _PromoBanner extends StatelessWidget {
@@ -870,13 +901,11 @@ class _PromoBanner extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: .16),
                   borderRadius: BorderRadius.circular(AppRadius.pill),
-                  border:
-                      Border.all(color: Colors.white.withValues(alpha: .12)),
+                  border: Border.all(color: Colors.white.withValues(alpha: .12)),
                 ),
                 child: Text(
                   data.eyebrow,
@@ -908,15 +937,14 @@ class _PromoBanner extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: .82),
-                        fontSize: 11,
+                      color: Colors.white.withValues(alpha: .82),
+                      fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                   const SizedBox(width: 6),
-                  const Icon(Icons.arrow_forward_rounded,
-                      color: Colors.white, size: 16),
+                  const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 16),
                 ],
               ),
             ],
@@ -949,8 +977,7 @@ class _HomeLoadingState extends StatelessWidget {
           SizedBox(height: 18),
           AppSkeleton(width: double.infinity, height: 56, radius: AppRadius.lg),
           SizedBox(height: 20),
-          AppSkeleton(
-              width: double.infinity, height: 190, radius: AppRadius.xxl),
+          AppSkeleton(width: double.infinity, height: 190, radius: AppRadius.xxl),
           SizedBox(height: 26),
           AppSkeleton(width: 180, height: 24),
           SizedBox(height: 14),
@@ -958,31 +985,18 @@ class _HomeLoadingState extends StatelessWidget {
             height: 104,
             child: Row(
               children: [
-                Expanded(
-                    child: AppSkeleton(
-                        width: double.infinity,
-                        height: 104,
-                        radius: AppRadius.lg)),
+                Expanded(child: AppSkeleton(width: double.infinity, height: 104, radius: AppRadius.lg)),
                 SizedBox(width: 10),
-                Expanded(
-                    child: AppSkeleton(
-                        width: double.infinity,
-                        height: 104,
-                        radius: AppRadius.lg)),
+                Expanded(child: AppSkeleton(width: double.infinity, height: 104, radius: AppRadius.lg)),
                 SizedBox(width: 10),
-                Expanded(
-                    child: AppSkeleton(
-                        width: double.infinity,
-                        height: 104,
-                        radius: AppRadius.lg)),
+                Expanded(child: AppSkeleton(width: double.infinity, height: 104, radius: AppRadius.lg)),
               ],
             ),
           ),
           SizedBox(height: 26),
           AppSkeleton(width: 160, height: 24),
           SizedBox(height: 14),
-          AppSkeleton(
-              width: double.infinity, height: 250, radius: AppRadius.xl),
+          AppSkeleton(width: double.infinity, height: 250, radius: AppRadius.xl),
         ],
       ),
     );
@@ -1023,10 +1037,7 @@ class _BenefitCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurfaceVariant
-                  .withValues(alpha: .72),
+              color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: .72),
               fontSize: 9.5,
               fontWeight: FontWeight.w600,
             ),

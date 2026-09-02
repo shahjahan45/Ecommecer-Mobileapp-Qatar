@@ -38,8 +38,9 @@ class DcxBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final dark = Theme.of(context).brightness == Brightness.dark;
-    final safePosition =
-        position.clamp(0.0, (items.length - 1).toDouble()).toDouble();
+    final safePosition = position
+        .clamp(0.0, (items.length - 1).toDouble())
+        .toDouble();
 
     return SafeArea(
       top: false,
@@ -75,14 +76,10 @@ class DcxBottomNavigationBar extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 2),
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                              color: dark
-                                  ? scheme.primaryContainer
-                                      .withValues(alpha: .46)
-                                  : AppColors.primarySoft,
+                              color: dark ? scheme.primaryContainer.withValues(alpha: .46) : AppColors.primarySoft,
                               borderRadius: BorderRadius.circular(19),
                               border: Border.all(
-                                color: scheme.primary
-                                    .withValues(alpha: dark ? 0.20 : 0.08),
+                                color: scheme.primary.withValues(alpha: dark ? 0.20 : 0.08),
                               ),
                             ),
                           ),
@@ -134,8 +131,9 @@ class _NavigationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
-    final transitionDuration =
-        reduceMotion ? Duration.zero : const Duration(milliseconds: 220);
+    final transitionDuration = reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 220);
 
     return AppPressable(
       onTap: onTap,
@@ -163,8 +161,7 @@ class _NavigationButton extends StatelessWidget {
                         return FadeTransition(
                           opacity: animation,
                           child: ScaleTransition(
-                            scale: Tween<double>(begin: 0.82, end: 1)
-                                .animate(animation),
+                            scale: Tween<double>(begin: 0.82, end: 1).animate(animation),
                             child: child,
                           ),
                         );
@@ -173,8 +170,7 @@ class _NavigationButton extends StatelessWidget {
                         selected ? item.selectedIcon : item.icon,
                         key: ValueKey('${item.label}-$selected'),
                         size: 22,
-                        color:
-                            selected ? scheme.primary : scheme.onSurfaceVariant,
+                        color: selected ? scheme.primary : scheme.onSurfaceVariant,
                       ),
                     ),
                     if (badgeCount > 0)
@@ -182,14 +178,12 @@ class _NavigationButton extends StatelessWidget {
                         right: -10,
                         top: -8,
                         child: Container(
-                          constraints:
-                              const BoxConstraints(minWidth: 17, minHeight: 17),
+                          constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             color: AppColors.danger,
                             borderRadius: BorderRadius.circular(AppRadius.pill),
-                            border:
-                                Border.all(color: scheme.surface, width: 1.5),
+                            border: Border.all(color: scheme.surface, width: 1.5),
                           ),
                           alignment: Alignment.center,
                           child: Text(
@@ -214,11 +208,9 @@ class _NavigationButton extends StatelessWidget {
                       duration: transitionDuration,
                       curve: Curves.easeOutCubic,
                       style: TextStyle(
-                        color:
-                            selected ? scheme.primary : scheme.onSurfaceVariant,
+                        color: selected ? scheme.primary : scheme.onSurfaceVariant,
                         fontSize: 10.5,
-                        fontWeight:
-                            selected ? FontWeight.w800 : FontWeight.w600,
+                        fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                       ),
                       child: Text(
                         item.label,

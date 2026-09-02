@@ -2,6 +2,7 @@ import '../../data/demo_orders.dart';
 import '../../models/payment.dart';
 import '../../models/shop_order.dart';
 import '../cart/cart_controller.dart';
+import '../notifications/notification_controller.dart';
 
 class CheckoutOrderService {
   CheckoutOrderService._();
@@ -61,6 +62,10 @@ class CheckoutOrderService {
     );
 
     DemoOrders.orders.insert(0, order);
+    NotificationController.instance.addOrderConfirmation(
+      orderId: order.id,
+      placedAt: now,
+    );
     cart.clear();
     return order;
   }
@@ -68,14 +73,12 @@ class CheckoutOrderService {
   static String _orderId(DateTime value) {
     String two(int input) => input.toString().padLeft(2, '0');
     final date = '${two(value.year % 100)}${two(value.month)}${two(value.day)}';
-    final suffix =
-        (value.millisecondsSinceEpoch % 10000).toString().padLeft(4, '0');
+    final suffix = (value.millisecondsSinceEpoch % 10000).toString().padLeft(4, '0');
     return 'DCX-$date-$suffix';
   }
 
   static String _timestamp(DateTime value) {
-    final hour =
-        value.hour == 0 ? 12 : (value.hour > 12 ? value.hour - 12 : value.hour);
+    final hour = value.hour == 0 ? 12 : (value.hour > 12 ? value.hour - 12 : value.hour);
     final minute = value.minute.toString().padLeft(2, '0');
     final period = value.hour >= 12 ? 'PM' : 'AM';
     return 'Today, $hour:$minute $period';
