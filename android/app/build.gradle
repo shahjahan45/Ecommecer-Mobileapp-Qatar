@@ -1,0 +1,49 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
+}
+
+android {
+    namespace = "com.example.ecommerce_mobile"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    defaultConfig {
+        applicationId = "com.example.ecommerce_mobile"
+        minSdk = 24
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+    buildTypes {
+        release {
+            // Replace this debug signing configuration with your Play Store
+            // upload/release key before production publication.
+            signingConfig = signingConfigs.debug
+        }
+    }
+}
+
+// Firebase Android SDK alignment. FlutterFire provides the Dart/native bridges;
+// the BoM keeps the underlying Android Auth and Messaging SDKs compatible.
+dependencies {
+    implementation platform('com.google.firebase:firebase-bom:34.18.0')
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-messaging'
+}
+
+flutter {
+    source = "../.."
+}

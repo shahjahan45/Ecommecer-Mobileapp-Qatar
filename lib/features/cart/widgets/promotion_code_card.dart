@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/design_system/app_tokens.dart';
+import '../../../core/storefront/storefront_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../cart_controller.dart';
 
@@ -22,6 +23,7 @@ class _PromotionCodeCardState extends State<PromotionCodeCard> {
   final FocusNode _focusNode = FocusNode();
   String? _message;
   bool _messageIsError = false;
+  bool _applying = false;
 
   @override
   void dispose() {
@@ -30,12 +32,16 @@ class _PromotionCodeCardState extends State<PromotionCodeCard> {
     super.dispose();
   }
 
-  void _apply() {
+  Future<void> _apply() async {
     FocusManager.instance.primaryFocus?.unfocus();
+    if (_applying) return;
+    setState(() => _applying = true);
+    await StorefrontController.instance.refresh(force: true);
     final result = widget.cart.applyPromotion(_controller.text);
     if (!mounted) return;
 
     setState(() {
+      _applying = false;
       _message = result.message;
       _messageIsError = !result.applied;
       if (result.applied) {

@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'app.dart';
+import 'core/firebase/firebase_bootstrap.dart';
+import 'core/firebase/push_notification_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Android 15+ enforces edge-to-edge for modern target SDKs. Configure the
-  // system bars up front so the first Flutter frame and the rest of the app
-  // use a consistent, bezel-less surface while SafeArea/insets continue to
-  // protect interactive content.
+  // Phase 19.1: Android initializes from android/app/google-services.json.
+  // Dart-defined FirebaseOptions remain supported for other targets/CI.
+  if (await FirebaseBootstrap.ensureInitialized()) {
+    await PushNotificationService.instance.initialize();
+  }
+
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(const EcommerceApp());
 }

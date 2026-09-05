@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "412921458887",
+    "project_id": "dcx-ecom",
+    "storage_bucket": "dcx-ecom.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412921458887:android:6be8d8f1fd031112b80ee2",
+        "android_client_info": {
+          "package_name": "com.example.ecommerce_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAptHDRlNfZSBiKJ3xAx2o1ikCw-WMWVes"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

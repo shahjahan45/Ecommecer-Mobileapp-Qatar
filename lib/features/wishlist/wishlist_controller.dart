@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../data/demo_catalog.dart';
 import '../../models/product.dart';
+import '../../core/storefront/storefront_controller.dart';
 
 enum WishlistFilter {
   all,
@@ -14,7 +15,9 @@ class WishlistController extends ChangeNotifier {
       : _productIds = DemoCatalog.products
             .where((product) => product.favorite)
             .map((product) => product.id)
-            .toSet();
+            .toSet() {
+    StorefrontController.instance.addListener(_handleStorefrontChanged);
+  }
 
   static final WishlistController instance = WishlistController._();
 
@@ -26,7 +29,7 @@ class WishlistController extends ChangeNotifier {
 
   bool contains(Product product) => _productIds.contains(product.id);
 
-  List<Product> get products => DemoCatalog.products
+  List<Product> get products => StorefrontController.instance.products
       .where((product) => _productIds.contains(product.id))
       .toList(growable: false);
 
@@ -94,6 +97,13 @@ class WishlistController extends ChangeNotifier {
 
       return product.searchableText.contains(normalizedQuery);
     }).toList(growable: false);
+  }
+
+  void _handleStorefrontChanged() {
+    final available = StorefrontController.instance.products.map((product) => product.id).toSet();
+    final before = _productIds.length;
+    _productIds.removeWhere((id) => !available.contains(id));
+    if (before != _productIds.length) notifyListeners();
   }
 
   @visibleForTesting

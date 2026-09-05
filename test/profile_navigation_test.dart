@@ -73,4 +73,27 @@ void main() {
     expect(find.text('Use device setting'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  testWidgets('profile opens data and sync settings', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      const MaterialApp(home: ProfilePage()),
+    );
+    await tester.pumpAndSettle();
+
+    final action = find.byKey(const Key('profile-data-sync-action'));
+    expect(action, findsOneWidget);
+    await tester.ensureVisible(action);
+    await tester.pumpAndSettle();
+    await tester.tap(action);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Data & sync'), findsOneWidget);
+    expect(find.byKey(const Key('data-sync-hero')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
 }

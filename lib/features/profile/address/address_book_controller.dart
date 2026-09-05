@@ -100,6 +100,10 @@ class AddressBookController extends ChangeNotifier {
     if (persist) await _persistSafely();
   }
 
+  List<Map<String, dynamic>> exportForSync() => _addresses
+      .map((address) => address.toJson())
+      .toList(growable: false);
+
   void resetForTesting({List<SavedAddress> addresses = const <SavedAddress>[]}) {
     _addresses
       ..clear()

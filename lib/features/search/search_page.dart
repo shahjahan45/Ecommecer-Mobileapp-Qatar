@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../core/design_system/app_tokens.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/storefront/storefront_controller.dart';
 import '../../core/widgets/app_pressable.dart';
-import '../../data/demo_catalog.dart';
 import '../../models/product.dart';
 import '../products/product_listing_page.dart';
 
@@ -23,6 +23,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  final StorefrontController _storefront = StorefrontController.instance;
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
   final List<String> _recentSearches = [
@@ -38,6 +39,8 @@ class _SearchPageState extends State<SearchPage> {
     _controller = TextEditingController(text: widget.initialQuery);
     _focusNode = FocusNode();
     _query = widget.initialQuery;
+    _storefront.addListener(_handleStorefrontChanged);
+    _storefront.start();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _focusNode.requestFocus();
     });
@@ -45,6 +48,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   void dispose() {
+    _storefront.removeListener(_handleStorefrontChanged);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -53,10 +57,30 @@ class _SearchPageState extends State<SearchPage> {
   List<Product> get _matches {
     if (_query.trim().isEmpty) return const [];
     final query = _query.trim().toLowerCase();
-    return DemoCatalog.products
+    return _storefront.products
         .where((product) => product.searchableText.contains(query))
         .take(5)
         .toList();
+  }
+
+  void _handleStorefrontChanged() {
+    if (mounted) setState(() {});
+  }
+
+  List<String> get _popularSearches {
+    final values = <String>{};
+    for (final product in _storefront.products) {
+      if (product.brand.trim().isNotEmpty) values.add(product.brand.trim());
+      for (final tag in product.tags) {
+        if (tag.trim().isNotEmpty) values.add(tag.trim());
+        if (values.length >= 8) break;
+      }
+      if (values.length >= 8) break;
+    }
+    if (values.isEmpty) {
+      return const ['Electronics', 'Fashion', 'Beauty', 'Home', 'Sports'];
+    }
+    return values.take(8).toList(growable: false);
   }
 
   void _submit(String rawValue) {
@@ -127,6 +151,7 @@ class _SearchPageState extends State<SearchPage> {
                 child: _query.trim().isEmpty
                     ? _SearchDiscovery(
                         recentSearches: _recentSearches,
+                        popularSearches: _popularSearches,
                         onSearch: (value) {
                           _controller.text = value;
                           _controller.selection = TextSelection.collapsed(offset: value.length);
@@ -151,11 +176,13 @@ class _SearchPageState extends State<SearchPage> {
 
 class _SearchDiscovery extends StatelessWidget {
   final List<String> recentSearches;
+  final List<String> popularSearches;
   final ValueChanged<String> onSearch;
   final VoidCallback onClearRecent;
 
   const _SearchDiscovery({
     required this.recentSearches,
+    required this.popularSearches,
     required this.onSearch,
     required this.onClearRecent,
   });
@@ -229,7 +256,7 @@ class _SearchDiscovery extends StatelessWidget {
         Wrap(
           spacing: 8,
           runSpacing: 9,
-          children: DemoCatalog.popularSearches
+          children: popularSearches
               .map(
                 (item) => ActionChip(
                   avatar: const Icon(Icons.trending_up_rounded, size: 16),

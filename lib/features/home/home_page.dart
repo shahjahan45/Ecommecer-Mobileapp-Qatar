@@ -1,17 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/design_system/app_tokens.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/storefront/storefront_controller.dart';
 import '../../core/widgets/app_icon_button.dart';
 import '../../core/widgets/app_pressable.dart';
 import '../../core/widgets/app_skeleton.dart';
 import '../../core/widgets/fade_slide_in.dart';
+import '../../core/widgets/storefront_image.dart';
 import '../../core/widgets/dcx_mobile_footer.dart';
 import '../../models/category.dart';
 import '../../models/product.dart';
+import '../../models/promotion.dart';
+import '../../models/storefront_banner.dart';
 import '../../widgets/category_card.dart';
 import '../../widgets/product_card.dart';
 import '../../widgets/section_header.dart';
@@ -43,151 +48,26 @@ class _HomePageState extends State<HomePage> {
   int _bannerIndex = 0;
   int _selectedCategory = 0;
   bool _loading = true;
+  final StorefrontController _storefront = StorefrontController.instance;
 
-  static const categories = <ShopCategory>[
-    ShopCategory(
-      name: 'All',
-      icon: Icons.apps_rounded,
-      accent: AppColors.primary,
-      softColor: AppColors.primarySoft,
-    ),
-    ShopCategory(
-      name: 'Phones',
-      icon: Icons.smartphone_rounded,
-      accent: Color(0xFF2979FF),
-      softColor: Color(0xFFEAF2FF),
-    ),
-    ShopCategory(
-      name: 'Fashion',
-      icon: Icons.checkroom_rounded,
-      accent: Color(0xFFEC4899),
-      softColor: Color(0xFFFFEAF4),
-    ),
-    ShopCategory(
-      name: 'Beauty',
-      icon: Icons.spa_rounded,
-      accent: Color(0xFF9C4DFF),
-      softColor: Color(0xFFF4EAFE),
-    ),
-    ShopCategory(
-      name: 'Home',
-      icon: Icons.chair_alt_rounded,
-      accent: Color(0xFFFF8C42),
-      softColor: Color(0xFFFFF0E5),
-    ),
-    ShopCategory(
-      name: 'Sports',
-      icon: Icons.sports_basketball_rounded,
-      accent: Color(0xFF1FA971),
-      softColor: Color(0xFFE8F8F1),
-    ),
-  ];
+  static const ShopCategory _allCategory = ShopCategory(
+    name: 'All',
+    slug: 'all',
+    icon: Icons.apps_rounded,
+    accent: AppColors.primary,
+    softColor: AppColors.primarySoft,
+  );
 
-  static const products = <Product>[
-    Product(
-      id: 1,
-      name: 'AirBeat Pro Wireless Headphones',
-      category: 'Electronics',
-      price: 299,
-      oldPrice: 349,
-      rating: 4.8,
-      reviews: 326,
-      badge: 'Hot',
-      icon: Icons.headphones_rounded,
-      accent: Color(0xFF6B4EFF),
-      softColor: Color(0xFFF0ECFF),
-    ),
-    Product(
-      id: 2,
-      name: 'PulseFit Smart Watch Series X',
-      category: 'Wearables',
-      price: 179,
-      rating: 4.7,
-      reviews: 218,
-      favorite: true,
-      badge: 'Popular',
-      icon: Icons.watch_rounded,
-      accent: Color(0xFF2979FF),
-      softColor: Color(0xFFEAF2FF),
-    ),
-    Product(
-      id: 3,
-      name: 'CloudStep Everyday Running Shoes',
-      category: 'Sports',
-      price: 229,
-      oldPrice: 279,
-      rating: 4.9,
-      reviews: 492,
-      icon: Icons.directions_run_rounded,
-      accent: Color(0xFF1FA971),
-      softColor: Color(0xFFE8F8F1),
-    ),
-    Product(
-      id: 4,
-      name: 'Urban Carry Minimal Backpack',
-      category: 'Fashion',
-      price: 149,
-      rating: 4.6,
-      reviews: 174,
-      badge: 'New',
-      icon: Icons.backpack_rounded,
-      accent: Color(0xFFEC4899),
-      softColor: Color(0xFFFFEAF4),
-    ),
-    Product(
-      id: 5,
-      name: 'GlowCare Premium Skin Essentials',
-      category: 'Beauty',
-      price: 119,
-      oldPrice: 145,
-      rating: 4.8,
-      reviews: 291,
-      icon: Icons.spa_rounded,
-      accent: Color(0xFF9C4DFF),
-      softColor: Color(0xFFF4EAFE),
-    ),
-    Product(
-      id: 6,
-      name: 'BrewMate Smart Coffee Maker',
-      category: 'Home',
-      price: 249,
-      rating: 4.5,
-      reviews: 138,
-      badge: 'Trending',
-      icon: Icons.coffee_maker_rounded,
-      accent: Color(0xFFFF8C42),
-      softColor: Color(0xFFFFF0E5),
-    ),
-  ];
-
-  static const banners = <_PromoBannerData>[
-    _PromoBannerData(
-      eyebrow: 'WEEKEND DROP',
-      title: 'Premium picks\nup to 40% off',
-      subtitle: 'Fresh deals picked for you',
-      icon: Icons.shopping_bag_rounded,
-      colors: [Color(0xFF5B3FF0), Color(0xFF907CFF)],
-    ),
-    _PromoBannerData(
-      eyebrow: 'NEW ARRIVALS',
-      title: 'Smarter tech.\nCleaner style.',
-      subtitle: 'Explore this week’s new collection',
-      icon: Icons.devices_rounded,
-      colors: [Color(0xFF1267D6), Color(0xFF4EA1FF)],
-    ),
-    _PromoBannerData(
-      eyebrow: 'FREE DELIVERY',
-      title: 'More shopping.\nLess waiting.',
-      subtitle: 'On selected orders this week',
-      icon: Icons.local_shipping_rounded,
-      colors: [Color(0xFF15845E), Color(0xFF40C08B)],
-    ),
-  ];
+  List<ShopCategory> get categories => <ShopCategory>[_allCategory, ..._storefront.categories];
+  List<Product> get products => _storefront.products;
+  List<StorefrontBanner> get banners => _storefront.banners;
 
   @override
   void initState() {
     super.initState();
     _addressBook.addListener(_handleAddressBookChanged);
+    _storefront.addListener(_handleStorefrontChanged);
+    _storefront.start();
     _addressBook.load();
     _simulateInitialLoad();
     _startBannerTimer();
@@ -195,12 +75,16 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _simulateInitialLoad() async {
     await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (mounted) setState(() => _loading = false);
+    if (mounted) {
+      setState(() => _loading = false);
+    }
   }
 
   void _startBannerTimer() {
     _bannerTimer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (!_bannerController.hasClients || !mounted) return;
+      if (!_bannerController.hasClients || !mounted || banners.length < 2) {
+        return;
+      }
       final next = (_bannerIndex + 1) % banners.length;
       _bannerController.animateToPage(
         next,
@@ -211,23 +95,80 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _handleAddressBookChanged() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _handleStorefrontChanged() {
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      if (_selectedCategory >= categories.length) {
+        _selectedCategory = 0;
+      }
+      if (_bannerIndex >= banners.length) {
+        _bannerIndex = 0;
+      }
+    });
   }
 
   @override
   void dispose() {
     _addressBook.removeListener(_handleAddressBookChanged);
+    _storefront.removeListener(_handleStorefrontChanged);
     _bannerTimer?.cancel();
     _bannerController.dispose();
     super.dispose();
   }
 
-  void _showComingSoon(String feature) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text('$feature is currently unavailable.')),
-      );
+  Future<void> _openBanner(StorefrontBanner banner) async {
+    switch (banner.linkType) {
+      case 'product':
+        final id = int.tryParse(banner.linkValue);
+        final product = id == null ? null : _storefront.productById(id);
+        if (product != null) {
+          _openProductDetails(product, heroTag: 'banner-product-${product.id}');
+          return;
+        }
+        break;
+      case 'category':
+        ShopCategory? selected;
+        for (final category in _storefront.categories) {
+          if (category.slug == banner.linkValue || category.name == banner.linkValue) {
+            selected = category;
+            break;
+          }
+        }
+        if (selected != null) {
+          Navigator.of(context).push(
+            AppPageRoute(
+              page: ProductListingPage(
+                title: selected.name,
+                categoryName: selected.name,
+              ),
+            ),
+          );
+          return;
+        }
+        break;
+      case 'catalog':
+        Navigator.of(context).push(
+          AppPageRoute(page: const ProductListingPage(title: 'Shop')),
+        );
+        return;
+      case 'url':
+        final uri = Uri.tryParse(banner.linkValue.trim());
+        if (uri != null && uri.hasScheme) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          return;
+        }
+        break;
+    }
+    Navigator.of(context).push(
+      AppPageRoute(page: const ProductListingPage(title: 'Shop')),
+    );
   }
 
   void _openProductDetails(
@@ -271,12 +212,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _refresh() async {
-    await Future<void>.delayed(const Duration(milliseconds: 650));
+    await _storefront.refresh(force: true);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return const _HomeLoadingState();
+    if (_loading) {
+      return const _HomeLoadingState();
+    }
 
     return SafeArea(
       bottom: false,
@@ -322,8 +265,8 @@ class _HomePageState extends State<HomePage> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 26, 20, 10),
                 child: SectionHeader(
-                  title: 'Shop by category',
-                  subtitle: 'Find exactly what you need',
+                  title: _storefront.settingString('home', 'category_title', 'Shop by category'),
+                  subtitle: _storefront.settingString('home', 'category_subtitle', 'Find exactly what you need'),
                   actionText: 'See all',
                   onAction: () {
                     Navigator.of(context).push(AppPageRoute(page: const CategoriesPage()));
@@ -336,8 +279,8 @@ class _HomePageState extends State<HomePage> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 26, 20, 12),
                 child: SectionHeader(
-                  title: 'Trending now',
-                  subtitle: 'Popular choices from our collection',
+                  title: _storefront.settingString('home', 'trending_title', 'Trending now'),
+                  subtitle: _storefront.settingString('home', 'trending_subtitle', 'Popular choices from our collection'),
                   actionText: 'View all',
                   onAction: () {
                     Navigator.of(context).push(
@@ -358,8 +301,8 @@ class _HomePageState extends State<HomePage> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
                 child: SectionHeader(
-                  title: 'Recommended for you',
-                  subtitle: 'A curated selection based on your interests',
+                  title: _storefront.settingString('home', 'recommended_title', 'Recommended for you'),
+                  subtitle: _storefront.settingString('home', 'recommended_subtitle', 'A curated selection from our live catalog'),
                   actionText: 'View all',
                   onAction: () {
                     Navigator.of(context).push(
@@ -403,7 +346,7 @@ class _HomePageState extends State<HomePage> {
                           onAdd: () => _showAdded(product),
                         );
                       },
-                      childCount: products.length,
+                      childCount: products.take(8).length,
                     ),
                   );
                 },
@@ -488,7 +431,7 @@ class _HomePageState extends State<HomePage> {
                       Flexible(
                         child: Text(
                           _addressBook.defaultAddress == null
-                              ? 'Doha, Qatar'
+                              ? _storefront.settingString('general', 'default_location', 'Doha, Qatar')
                               : '${_addressBook.defaultAddress!.label} • ${_addressBook.defaultAddress!.addressLine}',
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
@@ -580,6 +523,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBannerCarousel() {
+    if (banners.isEmpty) {
+      return const SizedBox.shrink();
+    }
     final width = MediaQuery.sizeOf(context).width;
     final bannerHeight = width < 360 ? 210.0 : 190.0;
 
@@ -596,7 +542,9 @@ class _HomePageState extends State<HomePage> {
               final banner = banners[index];
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6),
-                child: _PromoBanner(data: banner),
+                child: _PromoBanner(data: banner, onTap: () {
+                  unawaited(_openBanner(banner));
+                }),
               );
             },
           ),
@@ -684,14 +632,11 @@ class _HomePageState extends State<HomePage> {
                 );
               } else {
                 final selected = categories[index];
-                final categoryName = selected.name == 'Phones' ? 'Electronics' : selected.name;
-                final subcategory = selected.name == 'Phones' ? 'Phones' : null;
                 Navigator.of(context).push(
                   AppPageRoute(
                     page: ProductListingPage(
                       title: selected.name,
-                      categoryName: categoryName,
-                      subcategoryName: subcategory,
+                      categoryName: selected.name,
                     ),
                   ),
                 );
@@ -710,7 +655,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        itemCount: 4,
+        itemCount: products.length < 4 ? products.length : 4,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final product = products[index];
@@ -732,10 +677,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildDealCard() {
+    final promotion = _storefront.promotions.isEmpty ? null : _storefront.promotions.first;
+    if (promotion == null) {
+      return const SizedBox.shrink();
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 350;
-
+        final saving = switch (promotion.type) {
+          PromotionType.percentage => '${promotion.value.toStringAsFixed(promotion.value % 1 == 0 ? 0 : 1)}% off',
+          PromotionType.fixedAmount => 'QAR ${promotion.value.toStringAsFixed(0)} off',
+          PromotionType.freeDelivery => 'Free delivery',
+        };
         final copy = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -746,100 +700,43 @@ class _HomePageState extends State<HomePage> {
                 color: AppColors.secondary.withValues(alpha: .16),
                 borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
-              child: const Text(
-                'DEAL OF THE DAY',
-                style: TextStyle(
-                  color: AppColors.secondary,
-                  fontSize: 9.5,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: .7,
-                ),
+              child: Text(
+                promotion.code,
+                style: const TextStyle(color: AppColors.secondary, fontSize: 9.5, fontWeight: FontWeight.w900, letterSpacing: .7),
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Smart essentials\nfor less',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                height: 1.12,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -.5,
-              ),
+            Text(
+              promotion.title.isEmpty ? saving : promotion.title,
+              style: const TextStyle(color: Colors.white, fontSize: 22, height: 1.12, fontWeight: FontWeight.w900, letterSpacing: -.5),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Limited-time prices on selected tech.',
-              style: TextStyle(
-                color: Color(0xFFAEB3C0),
-                fontSize: 11.5,
-                height: 1.4,
-                fontWeight: FontWeight.w600,
-              ),
+            Text(
+              promotion.description.isEmpty ? saving : promotion.description,
+              style: const TextStyle(color: Color(0xFFAEB3C0), fontSize: 11.5, height: 1.4, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 14),
             AppPressable(
-              onTap: () => _showComingSoon('Deals'),
+              onTap: () => Navigator.of(context).push(AppPageRoute(page: const ProductListingPage(title: 'Offers'))),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Explore deals',
-                      style: TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(width: 6),
-                    Icon(Icons.arrow_forward_rounded, size: 16),
-                  ],
-                ),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.sm)),
+                child: const Row(mainAxisSize: MainAxisSize.min, children: [Text('Explore offer', style: TextStyle(color: AppColors.textPrimary, fontSize: 11.5, fontWeight: FontWeight.w800)), SizedBox(width: 6), Icon(Icons.arrow_forward_rounded, size: 16)]),
               ),
             ),
           ],
         );
-
         final art = Container(
           width: compact ? double.infinity : 110,
           height: compact ? 96 : 140,
-          decoration: BoxDecoration(
-            color: const Color(0xFF242834),
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-          ),
+          decoration: BoxDecoration(color: const Color(0xFF242834), borderRadius: BorderRadius.circular(AppRadius.lg)),
           alignment: Alignment.center,
-          child: const Icon(
-            Icons.headphones_rounded,
-            size: 64,
-            color: AppColors.secondary,
-          ),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [const Icon(Icons.local_offer_rounded, size: 48, color: AppColors.secondary), const SizedBox(height: 7), Text(saving, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900))]),
         );
-
         return Container(
           padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: const Color(0xFF171A24),
-            borderRadius: BorderRadius.circular(AppRadius.xl),
-            boxShadow: AppShadows.elevated,
-          ),
-          child: compact
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [copy, const SizedBox(height: 16), art],
-                )
-              : Row(
-                  children: [
-                    Expanded(child: copy),
-                    const SizedBox(width: 12),
-                    art,
-                  ],
-                ),
+          decoration: BoxDecoration(color: const Color(0xFF171A24), borderRadius: BorderRadius.circular(AppRadius.xl), boxShadow: AppShadows.elevated),
+          child: compact ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [copy, const SizedBox(height: 16), art]) : Row(children: [Expanded(child: copy), const SizedBox(width: 12), art]),
         );
       },
     );
@@ -848,110 +745,51 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _PromoBanner extends StatelessWidget {
-  final _PromoBannerData data;
+  final StorefrontBanner data;
+  final VoidCallback? onTap;
 
-  const _PromoBanner({required this.data});
+  const _PromoBanner({required this.data, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final content = Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: data.colors,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: LinearGradient(colors: [data.startColor, data.endColor], begin: Alignment.topLeft, end: Alignment.bottomRight),
         borderRadius: BorderRadius.circular(AppRadius.xxl),
-        boxShadow: [
-          BoxShadow(
-            color: data.colors.first.withValues(alpha: .24),
-            blurRadius: 28,
-            offset: const Offset(0, 14),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: data.startColor.withValues(alpha: .24), blurRadius: 28, offset: const Offset(0, 14))],
       ),
+      clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
-          Positioned(
-            right: -30,
-            bottom: -65,
-            child: Container(
-              width: 190,
-              height: 190,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: .10),
-                shape: BoxShape.circle,
+          if (data.imageUrl != null)
+            Positioned.fill(
+              child: Opacity(
+                opacity: .30,
+                child: StorefrontImage(url: data.imageUrl, fit: BoxFit.cover, fallback: const SizedBox.shrink()),
               ),
             ),
-          ),
-          Positioned(
-            right: 15,
-            top: 12,
-            child: Transform.rotate(
-              angle: -.14,
-              child: Icon(
-                data.icon,
-                color: Colors.white.withValues(alpha: .20),
-                size: 112,
-              ),
-            ),
-          ),
+          Positioned(right: -30, bottom: -65, child: Container(width: 190, height: 190, decoration: BoxDecoration(color: Colors.white.withValues(alpha: .10), shape: BoxShape.circle))),
+          Positioned(right: 15, top: 12, child: Transform.rotate(angle: -.14, child: Icon(Icons.shopping_bag_rounded, color: Colors.white.withValues(alpha: .20), size: 112))),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .16),
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                  border: Border.all(color: Colors.white.withValues(alpha: .12)),
+              if (data.eyebrow.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: .16), borderRadius: BorderRadius.circular(AppRadius.pill), border: Border.all(color: Colors.white.withValues(alpha: .12))),
+                  child: Text(data.eyebrow, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 9.5, fontWeight: FontWeight.w900, letterSpacing: .9)),
                 ),
-                child: Text(
-                  data.eyebrow,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: .9,
-                  ),
-                ),
-              ),
               const SizedBox(height: 12),
-              Text(
-                data.title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 25,
-                  height: 1.06,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -.7,
-                ),
-              ),
+              Text(data.title, maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 25, height: 1.06, fontWeight: FontWeight.w900, letterSpacing: -.7)),
               const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      data.subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                      color: Colors.white.withValues(alpha: .82),
-                      fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 16),
-                ],
-              ),
+              Row(children: [Expanded(child: Text(data.subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withValues(alpha: .86), fontSize: 11, height: 1.3, fontWeight: FontWeight.w600))), const SizedBox(width: 6), Icon(data.ctaLabel.isNotEmpty ? Icons.arrow_forward_rounded : Icons.auto_awesome_rounded, color: Colors.white, size: 16)]),
             ],
           ),
         ],
       ),
     );
+    return AppPressable(onTap: onTap, borderRadius: BorderRadius.circular(AppRadius.xxl), child: content);
   }
 }
 
@@ -1046,22 +884,6 @@ class _BenefitCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _PromoBannerData {
-  final String eyebrow;
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final List<Color> colors;
-
-  const _PromoBannerData({
-    required this.eyebrow,
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.colors,
-  });
 }
 
 class _BenefitData {

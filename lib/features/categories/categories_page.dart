@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../../core/design_system/app_tokens.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/storefront/storefront_controller.dart';
 import '../../core/widgets/app_pressable.dart';
 import '../../core/widgets/fade_slide_in.dart';
-import '../../data/demo_catalog.dart';
 import '../../models/category.dart';
 import '../products/product_listing_page.dart';
 import '../search/search_page.dart';
@@ -18,9 +18,35 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
+  final StorefrontController _storefront = StorefrontController.instance;
   int _selectedIndex = 0;
 
-  ShopCategory get _selectedCategory => DemoCatalog.categories[_selectedIndex];
+  List<ShopCategory> get _categories => _storefront.categories;
+  ShopCategory? get _selectedCategory => _categories.isEmpty ? null : _categories[_selectedIndex.clamp(0, _categories.length - 1).toInt()];
+
+  @override
+  void initState() {
+    super.initState();
+    _storefront.addListener(_handleStorefrontChanged);
+    _storefront.start();
+  }
+
+  @override
+  void dispose() {
+    _storefront.removeListener(_handleStorefrontChanged);
+    super.dispose();
+  }
+
+  void _handleStorefrontChanged() {
+    if (!mounted) return;
+    setState(() {
+      if (_categories.isEmpty) {
+        _selectedIndex = 0;
+      } else if (_selectedIndex >= _categories.length) {
+        _selectedIndex = _categories.length - 1;
+      }
+    });
+  }
 
   void _openCategory(ShopCategory category, {String? subcategory}) {
     Navigator.of(context).push(
@@ -37,6 +63,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
   @override
   Widget build(BuildContext context) {
     final category = _selectedCategory;
+    if (category == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Categories')),
+        body: const Center(child: Text('No categories are currently available.')),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -129,7 +161,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final item = DemoCatalog.categories[index];
+                      final item = _categories[index];
                       return _CategoryDepartmentCard(
                         category: item,
                         selected: index == _selectedIndex,
@@ -137,7 +169,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         onOpen: () => _openCategory(item),
                       );
                     },
-                    childCount: DemoCatalog.categories.length,
+                    childCount: _categories.length,
                   ),
                 );
               },

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 class Product {
   final int id;
+  final int? serverId;
   final String name;
+  final String description;
   final String category;
   final String subcategory;
   final String brand;
@@ -19,10 +21,17 @@ class Product {
   final int stockQuantity;
   final bool isNew;
   final List<String> tags;
+  final String? imageUrl;
+  final List<String> galleryUrls;
+  final String variantTitle;
+  final List<String> variantOptions;
+  final List<Color> variantColors;
 
   const Product({
     required this.id,
+    this.serverId,
     required this.name,
+    this.description = '',
     required this.category,
     this.subcategory = '',
     this.brand = '',
@@ -39,6 +48,11 @@ class Product {
     this.stockQuantity = 12,
     this.isNew = false,
     this.tags = const [],
+    this.imageUrl,
+    this.galleryUrls = const [],
+    this.variantTitle = '',
+    this.variantOptions = const [],
+    this.variantColors = const [],
   });
 
   int get discountPercent {
@@ -48,8 +62,14 @@ class Product {
 
   bool get onSale => discountPercent > 0;
 
+  List<String> get allImageUrls => <String>[
+        if (imageUrl != null && imageUrl!.trim().isNotEmpty) imageUrl!,
+        ...galleryUrls.where((url) => url.trim().isNotEmpty),
+      ];
+
   String get searchableText => [
         name,
+        description,
         category,
         subcategory,
         brand,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/design_system/app_tokens.dart';
 import '../../core/theme/app_colors.dart';
-import '../../data/demo_catalog.dart';
+import '../../core/storefront/storefront_controller.dart';
 import '../../models/product.dart';
 import '../../widgets/product_card.dart';
 import '../cart/cart_controller.dart';
@@ -30,13 +30,41 @@ class ProductDetailsPage extends StatefulWidget {
 }
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
+  final StorefrontController _storefront = StorefrontController.instance;
   int _quantity = 1;
   int _selectedVariant = 0;
   bool _checkoutNavigationPending = false;
 
-  Product get product => widget.product;
+  Product get product => _storefront.productById(widget.product.id) ?? widget.product;
+
+  @override
+  void initState() {
+    super.initState();
+    _storefront.addListener(_handleStorefrontChanged);
+    _storefront.start();
+  }
+
+  @override
+  void dispose() {
+    _storefront.removeListener(_handleStorefrontChanged);
+    super.dispose();
+  }
+
+  void _handleStorefrontChanged() {
+    if (!mounted) return;
+    final latest = _storefront.productById(widget.product.id);
+    if (latest == null) return;
+    setState(() {
+      if (_quantity > latest.stockQuantity && latest.stockQuantity > 0) {
+        _quantity = latest.stockQuantity;
+      }
+    });
+  }
 
   List<String> get _variants {
+    if (product.variantOptions.isNotEmpty) {
+      return product.variantOptions;
+    }
     switch (product.category) {
       case 'Fashion':
         return const ['S', 'M', 'L', 'XL'];
@@ -52,6 +80,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   List<Color>? get _variantColors {
+    if (product.variantColors.length == _variants.length &&
+        product.variantColors.isNotEmpty) {
+      return product.variantColors;
+    }
+    if (product.variantOptions.isNotEmpty) return null;
     switch (product.category) {
       case 'Home':
         return const [
@@ -73,6 +106,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   String get _variantTitle {
+    if (product.variantTitle.trim().isNotEmpty) {
+      return product.variantTitle;
+    }
     switch (product.category) {
       case 'Fashion':
       case 'Sports':
@@ -80,13 +116,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       case 'Beauty':
         return 'Select pack';
       case 'Home':
-        return 'Select color';
       default:
         return 'Select color';
     }
   }
 
-  List<Product> get _relatedProducts => DemoCatalog.products
+  List<Product> get _relatedProducts => _storefront.products
       .where((item) => item.category == product.category && item.id != product.id)
       .take(4)
       .toList();
@@ -509,8 +544,9 @@ class _ProductDetailsContent extends StatelessWidget {
           title: 'About this product',
           icon: Icons.notes_rounded,
           child: Text(
-            '${product.name} is designed for dependable everyday use with a clean, modern finish. '
-            'It brings together thoughtful usability, quality materials and the practical details expected from ${product.brand.isEmpty ? 'DCX Online Store' : product.brand}.',
+            product.description.trim().isNotEmpty
+                ? product.description
+                : '${product.name} is designed for dependable everyday use with a clean, modern finish. It brings together thoughtful usability, quality materials and the practical details expected from ${product.brand.isEmpty ? 'DCX Online Store' : product.brand}.',
             style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12.5,

@@ -39,6 +39,39 @@ class NotificationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addRemoteNotification({
+    required String id,
+    required String title,
+    required String message,
+    String? type,
+    String? orderId,
+    bool isRead = false,
+  }) {
+    final normalized = (type ?? '').trim().toLowerCase();
+    final notificationType = normalized == 'order'
+        ? AppNotificationType.order
+        : normalized == 'payment'
+            ? AppNotificationType.payment
+            : normalized == 'promotion'
+                ? AppNotificationType.promotion
+                : AppNotificationType.account;
+    if (!preferenceFor(notificationType)) return;
+    _items.removeWhere((item) => item.id == id);
+    _items.insert(
+      0,
+      AppNotification(
+        id: id,
+        type: notificationType,
+        title: title,
+        message: message,
+        createdAt: DateTime.now(),
+        isRead: isRead,
+        orderId: orderId,
+      ),
+    );
+    notifyListeners();
+  }
+
   void addOrderConfirmation({required String orderId, required DateTime placedAt}) {
     if (!orderUpdatesEnabled) return;
     _items.insert(
@@ -84,6 +117,18 @@ class NotificationController extends ChangeNotifier {
       case AppNotificationType.account:
         return accountUpdatesEnabled;
     }
+  }
+
+  void restoreForSession({
+    required List<AppNotification> items,
+    required Map<AppNotificationType, bool> preferences,
+  }) {
+    _items = List<AppNotification>.from(items);
+    orderUpdatesEnabled = preferences[AppNotificationType.order] ?? true;
+    paymentUpdatesEnabled = preferences[AppNotificationType.payment] ?? true;
+    offersEnabled = preferences[AppNotificationType.promotion] ?? true;
+    accountUpdatesEnabled = preferences[AppNotificationType.account] ?? true;
+    notifyListeners();
   }
 
   @visibleForTesting

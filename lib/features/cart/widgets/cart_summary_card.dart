@@ -4,6 +4,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/design_system/app_tokens.dart';
 import '../../../core/theme/app_colors.dart';
 import '../cart_controller.dart';
+import '../../../models/promotion.dart';
 
 class CartSummaryCard extends StatelessWidget {
   final CartController cart;
@@ -152,10 +153,10 @@ class _DeliveryProgress extends StatelessWidget {
     final complete = cart.amountToFreeDelivery <= 0;
     final progress = cart.isEmpty
         ? 0.0
-        : (cart.subtotal / CartController.freeDeliveryThreshold)
+        : (cart.subtotal / cart.liveFreeDeliveryThreshold)
             .clamp(0.0, 1.0)
             .toDouble();
-    final freeByPromo = cart.appliedPromotion?.code == 'FREESHIP' &&
+    final freeByPromo = cart.appliedPromotion?.type == PromotionType.freeDelivery &&
         cart.promotionDeliverySaving > 0;
 
     return Container(
@@ -185,7 +186,7 @@ class _DeliveryProgress extends StatelessWidget {
               Expanded(
                 child: Text(
                   freeByPromo
-                      ? 'Free delivery unlocked with FREESHIP'
+                      ? 'Free delivery unlocked with ${cart.appliedPromotion?.code ?? 'promo'}'
                       : complete
                           ? 'You unlocked free delivery'
                           : 'Add ${AppConstants.currency} ${cart.amountToFreeDelivery.toStringAsFixed(0)} more for free delivery',

@@ -21,11 +21,12 @@ class CartItem {
   }
 
   CartItem copyWith({
+    Product? product,
     int? quantity,
   }) {
     return CartItem(
       key: key,
-      product: product,
+      product: product ?? this.product,
       quantity: quantity ?? this.quantity,
       variant: variant,
     );

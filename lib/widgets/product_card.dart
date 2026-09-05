@@ -4,6 +4,7 @@ import '../core/constants/app_constants.dart';
 import '../core/design_system/app_tokens.dart';
 import '../core/theme/app_colors.dart';
 import '../core/widgets/app_pressable.dart';
+import '../core/widgets/storefront_image.dart';
 import '../features/wishlist/wishlist_controller.dart';
 import '../models/product.dart';
 
@@ -63,9 +64,9 @@ class ProductCard extends StatelessWidget {
                       tag: heroTag ?? 'product-icon-${product.id}',
                       child: Material(
                         color: Colors.transparent,
-                        child: Transform.rotate(
-                          angle: -0.08,
-                          child: Icon(product.icon, size: 68, color: product.accent),
+                        child: StorefrontProductVisual(
+                          product: product,
+                          iconSize: 68,
                         ),
                       ),
                     ),

@@ -8,6 +8,7 @@ class ShopCategory {
   final Color softColor;
   final int productCount;
   final List<String> subcategories;
+  final String? imageUrl;
 
   const ShopCategory({
     required this.name,
@@ -17,5 +18,6 @@ class ShopCategory {
     required this.softColor,
     this.productCount = 0,
     this.subcategories = const [],
+    this.imageUrl,
   });
 }

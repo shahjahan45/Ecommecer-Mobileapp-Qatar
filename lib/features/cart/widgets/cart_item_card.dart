@@ -4,6 +4,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/design_system/app_tokens.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_pressable.dart';
+import '../../../core/widgets/storefront_image.dart';
 import '../../../models/cart_item.dart';
 
 class CartItemCard extends StatelessWidget {
@@ -54,10 +55,10 @@ class CartItemCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       alignment: Alignment.center,
-                      child: Icon(
-                        product.icon,
-                        size: compact ? 38 : 44,
-                        color: product.accent,
+                      clipBehavior: Clip.antiAlias,
+                      child: StorefrontProductVisual(
+                        product: product,
+                        iconSize: compact ? 38 : 44,
                       ),
                     ),
                   ),

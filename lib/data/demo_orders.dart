@@ -162,4 +162,33 @@ class DemoOrders {
       ],
     ),
   ];
+
+  static const Set<String> _seedOrderIds = <String>{
+    'DCX-260829-1048',
+    'DCX-260827-1031',
+    'DCX-260819-0977',
+    'DCX-260812-0914',
+  };
+
+  static List<ShopOrder> get customerOrders => orders
+      .where((order) => !_seedOrderIds.contains(order.id))
+      .toList(growable: false);
+
+  static void addCustomerOrder(ShopOrder order) {
+    orders.removeWhere((item) => item.id == order.id);
+    orders.insert(0, order);
+  }
+
+  static void restoreCustomerOrders(Iterable<ShopOrder> restored) {
+    orders.removeWhere((order) => !_seedOrderIds.contains(order.id));
+    final customerOrders = restored
+        .where((order) => !_seedOrderIds.contains(order.id))
+        .toList(growable: false)
+      ..sort((a, b) => b.placedAt.compareTo(a.placedAt));
+    orders.insertAll(0, customerOrders);
+  }
+
+  static void resetCustomerOrdersForTesting() {
+    orders.removeWhere((order) => !_seedOrderIds.contains(order.id));
+  }
 }

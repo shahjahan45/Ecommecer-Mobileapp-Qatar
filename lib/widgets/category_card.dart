@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/design_system/app_tokens.dart';
 import '../core/widgets/app_pressable.dart';
+import '../core/widgets/storefront_image.dart';
 import '../models/category.dart';
 
 class CategoryCard extends StatelessWidget {
@@ -53,7 +54,14 @@ class CategoryCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               alignment: Alignment.center,
-              child: Icon(category.icon, color: category.accent, size: 24),
+              clipBehavior: Clip.antiAlias,
+              child: StorefrontImage(
+                url: category.imageUrl,
+                fit: BoxFit.cover,
+                fallback: Center(
+                  child: Icon(category.icon, color: category.accent, size: 24),
+                ),
+              ),
             ),
             const SizedBox(height: 10),
             Text(

@@ -61,7 +61,7 @@ class CheckoutOrderService {
       ],
     );
 
-    DemoOrders.orders.insert(0, order);
+    DemoOrders.addCustomerOrder(order);
     NotificationController.instance.addOrderConfirmation(
       orderId: order.id,
       placedAt: now,

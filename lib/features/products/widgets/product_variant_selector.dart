@@ -33,7 +33,7 @@ class ProductVariantSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     if (options.isEmpty) return const SizedBox.shrink();
 
-    final safeSelectedIndex = selectedIndex.clamp(0, options.length - 1);
+    final safeSelectedIndex = selectedIndex.clamp(0, options.length - 1).toInt();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

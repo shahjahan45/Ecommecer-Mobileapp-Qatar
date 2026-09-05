@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../design_system/app_tokens.dart';
+import '../storefront/storefront_controller.dart';
 import '../theme/app_theme_context.dart';
 
 class DcxMobileFooter extends StatelessWidget {
@@ -82,16 +84,7 @@ class DcxMobileFooter extends StatelessWidget {
                   onFaqs: onFaqs,
                 ),
                 const SizedBox(height: 14),
-                Text(
-                  '© $year DCX Online Store. All rights reserved.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: context.dcxTextTertiary,
-                    fontSize: 9.2,
-                    height: 1.35,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                _LiveCopyright(year: year),
                 const SizedBox(height: 14),
                 Container(
                   key: const Key('dcx-developer-credit'),
@@ -355,20 +348,96 @@ class _SocialRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      container: true,
-      label: 'DCX Online Store social channels',
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 10,
-        runSpacing: 8,
-        children: const [
-          _SocialGlyph(label: 'Facebook', icon: FontAwesomeIcons.facebookF),
-          _SocialGlyph(label: 'Instagram', icon: FontAwesomeIcons.instagram),
-          _SocialGlyph(label: 'YouTube', icon: FontAwesomeIcons.youtube),
-          _SocialGlyph(label: 'TikTok', icon: FontAwesomeIcons.tiktok),
-        ],
-      ),
+    final storefront = StorefrontController.instance;
+    return AnimatedBuilder(
+      animation: storefront,
+      builder: (context, _) {
+        final links = storefront.socialLinks;
+        final defaults = <Map<String, dynamic>>[
+          {'platform': 'facebook'},
+          {'platform': 'instagram'},
+          {'platform': 'youtube'},
+          {'platform': 'tiktok'},
+        ];
+        final items = links.isEmpty ? defaults : links;
+        return Semantics(
+          container: true,
+          label: 'DCX Online Store social channels',
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 10,
+            runSpacing: 8,
+            children: items.map((item) {
+              final platform = (item['platform']?.toString().trim().isNotEmpty ?? false)
+                  ? item['platform'].toString().trim()
+                  : 'social';
+              final url = item['url']?.toString();
+              return _SocialGlyph(
+                label: platform[0].toUpperCase() + platform.substring(1),
+                icon: _socialIcon(platform),
+                onTap: url == null || url.isEmpty
+                    ? null
+                    : () async {
+                        final uri = Uri.tryParse(url);
+                        if (uri != null) {
+                          await launchUrl(uri, mode: LaunchMode.externalApplication);
+                        }
+                      },
+              );
+            }).toList(growable: false),
+          ),
+        );
+      },
+    );
+  }
+
+  FaIconData _socialIcon(String platform) {
+    switch (platform.toLowerCase()) {
+      case 'instagram':
+        return FontAwesomeIcons.instagram;
+      case 'youtube':
+        return FontAwesomeIcons.youtube;
+      case 'tiktok':
+        return FontAwesomeIcons.tiktok;
+      case 'x':
+      case 'twitter':
+        return FontAwesomeIcons.xTwitter;
+      case 'linkedin':
+        return FontAwesomeIcons.linkedinIn;
+      case 'whatsapp':
+        return FontAwesomeIcons.whatsapp;
+      default:
+        return FontAwesomeIcons.facebookF;
+    }
+  }
+}
+
+class _LiveCopyright extends StatelessWidget {
+  final int year;
+  const _LiveCopyright({required this.year});
+
+  @override
+  Widget build(BuildContext context) {
+    final storefront = StorefrontController.instance;
+    return AnimatedBuilder(
+      animation: storefront,
+      builder: (context, _) {
+        final storeName = storefront.settingString(
+          'general',
+          'store_name',
+          'DCX Online Store',
+        );
+        return Text(
+          '© $year $storeName. All rights reserved.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: context.dcxTextTertiary,
+            fontSize: 9.2,
+            height: 1.35,
+            fontWeight: FontWeight.w600,
+          ),
+        );
+      },
     );
   }
 }
@@ -376,8 +445,9 @@ class _SocialRow extends StatelessWidget {
 class _SocialGlyph extends StatelessWidget {
   final String label;
   final FaIconData icon;
+  final VoidCallback? onTap;
 
-  const _SocialGlyph({required this.label, required this.icon});
+  const _SocialGlyph({required this.label, required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -385,16 +455,20 @@ class _SocialGlyph extends StatelessWidget {
       label: label,
       child: Tooltip(
         message: label,
-        child: Container(
-          width: 34,
-          height: 34,
-          decoration: BoxDecoration(
-            color: context.dcxSurface,
-            shape: BoxShape.circle,
-            border: Border.all(color: context.dcxBorder),
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: context.dcxSurface,
+              shape: BoxShape.circle,
+              border: Border.all(color: context.dcxBorder),
+            ),
+            alignment: Alignment.center,
+            child: FaIcon(icon, size: 15, color: context.dcxTextPrimary),
           ),
-          alignment: Alignment.center,
-          child: FaIcon(icon, size: 15, color: context.dcxTextPrimary),
         ),
       ),
     );

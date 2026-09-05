@@ -4,6 +4,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/design_system/app_tokens.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_pressable.dart';
+import '../../../core/widgets/storefront_image.dart';
 import '../../wishlist/wishlist_controller.dart';
 import '../../../models/product.dart';
 
@@ -54,10 +55,9 @@ class ProductListTile extends StatelessWidget {
                       tag: heroTag ?? 'product-icon-${product.id}',
                       child: Material(
                         color: Colors.transparent,
-                        child: Icon(
-                          product.icon,
-                          color: product.accent,
-                          size: 48,
+                        child: StorefrontProductVisual(
+                          product: product,
+                          iconSize: 48,
                         ),
                       ),
                     ),

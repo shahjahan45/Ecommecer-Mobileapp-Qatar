@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/design_system/app_tokens.dart';
 import '../../core/theme/app_theme_context.dart';
+import '../../core/storefront/storefront_controller.dart';
 
 enum AppInformationType {
   about,
@@ -21,6 +22,19 @@ extension AppInformationTypeX on AppInformationType {
         return 'Terms & Conditions';
       case AppInformationType.refund:
         return 'Refund Policy';
+    }
+  }
+
+  String get slug {
+    switch (this) {
+      case AppInformationType.about:
+        return 'about-us';
+      case AppInformationType.privacy:
+        return 'privacy-policy';
+      case AppInformationType.terms:
+        return 'terms-and-conditions';
+      case AppInformationType.refund:
+        return 'refund-policy';
     }
   }
 
@@ -48,8 +62,19 @@ class AppInformationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content = _content(type);
-    return Scaffold(
+    final storefront = StorefrontController.instance;
+    return AnimatedBuilder(
+      animation: storefront,
+      builder: (context, _) {
+        final fallback = _content(type);
+        final liveContent = storefront.content(type.slug);
+        final content = liveContent == null
+            ? fallback
+            : (
+                intro: 'Current information published by DCX Core.',
+                sections: <(String, String)>[(type.title, liveContent)],
+              );
+        return Scaffold(
       appBar: AppBar(title: Text(type.title)),
       body: SafeArea(
         top: false,
@@ -132,23 +157,6 @@ class AppInformationPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                     ],
-                    if (type != AppInformationType.about)
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: context.dcxScheme.primaryContainer.withValues(alpha: .42),
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
-                        ),
-                        child: Text(
-                          'The production release should synchronize this screen with the store’s approved legal policy text so customers always see the authoritative version.',
-                          style: TextStyle(
-                            color: context.dcxTextSecondary,
-                            fontSize: 10.3,
-                            height: 1.45,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -156,6 +164,8 @@ class AppInformationPage extends StatelessWidget {
           ],
         ),
       ),
+        );
+      },
     );
   }
 }

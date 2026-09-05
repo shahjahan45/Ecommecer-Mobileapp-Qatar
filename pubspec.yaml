@@ -1,8 +1,8 @@
 name: ecommerce_mobile
-version: 1.15.1+49
+version: 1.19.4+64
 publish_to: 'none'
 
-description: Cumulative DCX Online Store Phase 15.1 with geocoding 5.x API compatibility, premium saved addresses, optional Google Maps location selection, refined Profile/Home footer experiences, secure checkout, notifications, support, promotions, adaptive themes and all previous commerce features.
+description: Cumulative DCX Online Store Phase 19.1.1 hotfix with Firebase customer identity, real-time storefront, corrected search discovery compilation, and all previous commerce and operations features.
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -15,6 +15,10 @@ dependencies:
   google_maps_flutter: 2.12.3
   geocoding: ^5.0.0
   font_awesome_flutter: ^11.0.0
+  url_launcher: ^6.3.2
+  firebase_core: ^4.12.1
+  firebase_auth: ^6.5.7
+  firebase_messaging: ^16.4.3
 
 dev_dependencies:
   flutter_test:

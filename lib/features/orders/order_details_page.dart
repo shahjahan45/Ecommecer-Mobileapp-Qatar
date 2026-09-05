@@ -9,6 +9,7 @@ import '../../models/payment.dart';
 import '../../models/shop_order.dart';
 import '../cart/cart_controller.dart';
 import '../products/product_details_page.dart';
+import '../support/support_request_page.dart';
 import 'widgets/order_item_tile.dart';
 import 'widgets/order_status_chip.dart';
 import 'widgets/order_tracking_timeline.dart';
@@ -182,7 +183,7 @@ class OrderDetailsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Have ${order.id} ready when contacting support so we can help you faster.',
+                  'This creates an order-linked inquiry for ${order.id}. DCX Support can reply from the admin panel and you can continue the conversation in Help & support.',
                   style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 11.5,
@@ -194,9 +195,16 @@ class OrderDetailsPage extends StatelessWidget {
                 SizedBox(
                   height: 50,
                   child: FilledButton.icon(
-                    onPressed: () => Navigator.pop(sheetContext),
+                    onPressed: () {
+                      Navigator.pop(sheetContext);
+                      Navigator.of(context).push(
+                        AppPageRoute(
+                          page: SupportRequestPage(initialOrderId: order.id),
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
-                    label: const Text('Done'),
+                    label: const Text('Create order inquiry'),
                   ),
                 ),
               ],

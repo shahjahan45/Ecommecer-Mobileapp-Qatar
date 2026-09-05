@@ -1,18 +1,32 @@
 import 'package:flutter/foundation.dart';
 
 import '../../data/demo_catalog.dart';
-import '../../data/demo_promotions.dart';
 import '../../models/cart_item.dart';
 import '../../models/product.dart';
 import '../../models/promotion.dart';
+import '../../core/storefront/storefront_controller.dart';
 
 class CartController extends ChangeNotifier {
-  CartController._();
+  CartController._() {
+    StorefrontController.instance.addListener(_handleStorefrontChanged);
+  }
 
   static final CartController instance = CartController._();
 
   static const double freeDeliveryThreshold = 200;
   static const double standardDeliveryFee = 15;
+
+  double get liveFreeDeliveryThreshold => StorefrontController.instance.settingDouble(
+        'delivery',
+        'free_delivery_threshold',
+        freeDeliveryThreshold,
+      );
+
+  double get liveStandardDeliveryFee => StorefrontController.instance.settingDouble(
+        'delivery',
+        'standard_delivery_fee',
+        standardDeliveryFee,
+      );
 
   final Map<String, CartItem> _items = <String, CartItem>{};
   Promotion? _appliedPromotion;
@@ -51,8 +65,8 @@ class CartController extends ChangeNotifier {
   }
 
   double get baseDeliveryFee {
-    if (isEmpty || subtotal >= freeDeliveryThreshold) return 0;
-    return standardDeliveryFee;
+    if (isEmpty || subtotal >= liveFreeDeliveryThreshold) return 0;
+    return liveStandardDeliveryFee;
   }
 
   bool get _promotionUnlocksDelivery {
@@ -80,10 +94,10 @@ class CartController extends ChangeNotifier {
   }
 
   double get amountToFreeDelivery {
-    if (isEmpty || subtotal >= freeDeliveryThreshold || _promotionUnlocksDelivery) {
+    if (isEmpty || subtotal >= liveFreeDeliveryThreshold || _promotionUnlocksDelivery) {
       return 0;
     }
-    return freeDeliveryThreshold - subtotal;
+    return liveFreeDeliveryThreshold - subtotal;
   }
 
   String keyFor(Product product, {String? variant}) {
@@ -214,7 +228,7 @@ class CartController extends ChangeNotifier {
       );
     }
 
-    final promotion = DemoPromotions.findByCode(normalized);
+    final promotion = StorefrontController.instance.promotionByCode(normalized);
     if (promotion == null) {
       return const PromotionApplicationResult(
         applied: false,
@@ -249,9 +263,40 @@ class CartController extends ChangeNotifier {
   void _reconcilePromotion() {
     final promotion = _appliedPromotion;
     if (promotion == null) return;
-    if (isEmpty || !promotion.isEligible(subtotal)) {
+    final latest = StorefrontController.instance.promotionByCode(promotion.code);
+    if (latest == null || isEmpty || !latest.isEligible(subtotal)) {
       _appliedPromotion = null;
+      return;
     }
+    _appliedPromotion = latest;
+  }
+
+  void _handleStorefrontChanged() {
+    var changed = false;
+    final latestCatalog = StorefrontController.instance;
+    final keys = _items.keys.toList(growable: false);
+    for (final key in keys) {
+      final current = _items[key];
+      if (current == null) continue;
+      final latest = latestCatalog.productById(current.product.id);
+      if (latest == null || !latest.inStock || latest.stockQuantity <= 0) {
+        _items.remove(key);
+        changed = true;
+        continue;
+      }
+      final quantity = current.quantity.clamp(1, latest.stockQuantity).toInt();
+      if (!identical(latest, current.product) || quantity != current.quantity) {
+        _items[key] = current.copyWith(product: latest, quantity: quantity);
+        changed = true;
+      }
+    }
+    final beforeCode = _appliedPromotion?.code;
+    final beforeValue = _appliedPromotion?.value;
+    _reconcilePromotion();
+    if (beforeCode != _appliedPromotion?.code || beforeValue != _appliedPromotion?.value) {
+      changed = true;
+    }
+    if (changed) notifyListeners();
   }
 
   @visibleForTesting

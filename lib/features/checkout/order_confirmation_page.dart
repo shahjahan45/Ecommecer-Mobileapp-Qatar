@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/design_system/app_tokens.dart';
 import '../../core/navigation/app_page_route.dart';
+import '../../core/network/api_environment.dart';
 import '../../core/theme/app_theme_context.dart';
 import '../../models/payment.dart';
 import '../../models/shop_order.dart';
@@ -11,10 +12,14 @@ import '../profile/help_support_page.dart';
 
 class OrderConfirmationPage extends StatelessWidget {
   final ShopOrder order;
+  final bool? cloudSynced;
+  final String? cloudSyncMessage;
 
   const OrderConfirmationPage({
     super.key,
     required this.order,
+    this.cloudSynced,
+    this.cloudSyncMessage,
   });
 
   @override
@@ -42,6 +47,13 @@ class OrderConfirmationPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _SuccessHero(order: order),
+                        if (cloudSynced != null) ...[
+                          const SizedBox(height: 12),
+                          _CloudSyncStatusCard(
+                            synced: cloudSynced!,
+                            message: cloudSyncMessage,
+                          ),
+                        ],
                         const SizedBox(height: 14),
                         _StatusCard(order: order),
                         const SizedBox(height: 12),
@@ -84,6 +96,84 @@ class OrderConfirmationPage extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+
+class _CloudSyncStatusCard extends StatelessWidget {
+  final bool synced;
+  final String? message;
+
+  const _CloudSyncStatusCard({
+    required this.synced,
+    this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = context.dcxScheme;
+    final accent = synced ? scheme.tertiary : scheme.error;
+    final background = synced
+        ? scheme.tertiaryContainer.withValues(alpha: context.isDarkMode ? .28 : .46)
+        : scheme.errorContainer.withValues(alpha: context.isDarkMode ? .28 : .46);
+
+    return Container(
+      key: Key(synced ? 'confirmation-cloud-synced' : 'confirmation-cloud-pending'),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: accent.withValues(alpha: .18)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: .10),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Icon(
+              synced ? Icons.cloud_done_rounded : Icons.cloud_off_rounded,
+              color: accent,
+              size: 21,
+            ),
+          ),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  synced ? 'Synced with DCX Core' : 'Server sync pending',
+                  style: TextStyle(
+                    color: context.dcxTextPrimary,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  message ??
+                      (synced
+                          ? 'Accepted by ${ApiEnvironment.displayHost}. Use the admin dashboard connected to this same DCX Core server/database.'
+                          : 'Open Profile → Data & sync to retry when the server is reachable.'),
+                  style: TextStyle(
+                    color: context.dcxTextTertiary,
+                    fontSize: 9.2,
+                    height: 1.35,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

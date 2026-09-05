@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/firebase/firebase_bootstrap.dart';
+import '../../../core/firebase/firebase_error_message.dart';
+import '../../../core/network/api_environment.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/validators.dart';
 import '../widgets/auth_scaffold.dart';
@@ -18,6 +22,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _emailController = TextEditingController();
   bool _loading = false;
   bool _sent = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -27,15 +32,39 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   Future<void> _sendReset() async {
     FocusScope.of(context).unfocus();
-    if (!_formKey.currentState!.validate()) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    setState(() => _loading = true);
-    await Future<void>.delayed(const Duration(milliseconds: 800));
-    if (!mounted) return;
     setState(() {
-      _loading = false;
-      _sent = true;
+      _loading = true;
+      _error = null;
     });
+    try {
+      if (ApiEnvironment.isRemoteConfigured) {
+        if (!FirebaseBootstrap.isConfigured) {
+          throw FirebaseAuthException(
+            code: 'firebase-not-configured',
+            message: 'Firebase Authentication is not configured for this build.',
+          );
+        }
+        await FirebaseBootstrap.ensureInitialized();
+        await FirebaseAuth.instance.sendPasswordResetEmail(
+          email: _emailController.text.trim(),
+        );
+      } else {
+        await Future<void>.delayed(const Duration(milliseconds: 650));
+      }
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _sent = true;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = firebaseErrorMessage(error);
+      });
+    }
   }
 
   @override
@@ -43,8 +72,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     return AuthScaffold(
       showBackButton: true,
       title: 'Reset your password',
-      subtitle:
-          'Enter your account email. In the backend phase, Laravel will send the real reset link.',
+      subtitle: ApiEnvironment.isRemoteConfigured
+          ? 'Firebase Authentication will send a secure password-reset email to your verified account.'
+          : 'Enter your account email to preview the password-reset experience.',
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 260),
         child: _sent ? _successState(context) : _formState(),
@@ -68,9 +98,24 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             textInputAction: TextInputAction.done,
             onFieldSubmitted: (_) => _sendReset(),
           ),
+          if (_error != null) ...[
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFECEC),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Text(
+                _error!,
+                style: const TextStyle(color: Color(0xFF9A3030), fontSize: 12.5),
+              ),
+            ),
+          ],
           const SizedBox(height: 22),
           PrimaryButton(
-            label: 'Send reset instructions',
+            label: 'Send password reset email',
             icon: Icons.send_rounded,
             loading: _loading,
             onPressed: _sendReset,
@@ -108,7 +153,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         ),
         const SizedBox(height: 8),
         Text(
-          'A reset instruction preview was prepared for ${_emailController.text.trim()}.',
+          ApiEnvironment.isRemoteConfigured
+              ? 'Firebase sent password-reset instructions to ${_emailController.text.trim()}.'
+              : 'A reset instruction preview was prepared for ${_emailController.text.trim()}.',
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: AppColors.textSecondary,

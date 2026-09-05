@@ -1,3 +1,90 @@
+# DCX Online Store — Phase 19.1.2 Firebase Gradle & Analyzer Clean
+
+Version: `1.19.2+62`
+
+Phase 19.1.2 resolves the six reported Flutter analyzer findings and aligns the Android Firebase setup with current Firebase Android guidance using the project's actual Groovy/Flutter Gradle layout: Google Services plugin `4.5.0`, Firebase Android BoM `34.18.0`, and Auth/Messaging native dependencies. Phase 19.1 Firebase verification/FCM, Phase 19.1.1 Search compilation fix, Phase 19.0 real-time Admin storefront and all earlier cumulative work remain preserved.
+
+See `PHASE_19_1_2_FIREBASE_GRADLE_ANALYZER_CLEAN.md` and `PHASE_19_1_2_VERIFICATION_REPORT.md`.
+
+---
+
+# DCX Online Store — Phase 19.1.1 Search Compile Hotfix
+
+Version: `1.19.1+61`
+
+Phase 19.1.1 fixes the Search discovery compilation failure where the `_SearchDiscovery` widget referenced `_popularSearches` owned by `_SearchPageState`. The live server-authoritative popular-search list is now passed explicitly into the child widget. Firebase Phase 19.1, real-time Admin storefront Phase 19.0, official branding, order integrity, support and all previous cumulative functionality remain preserved.
+
+The Android project also pins the Flutter 3.44.x compatibility flags `android.newDsl=false` and `android.builtInKotlin=false`. The Kotlin Gradle Plugin warnings from Firebase plugins are advisory on Flutter 3.44.7 and are not the cause of the reported compile failure.
+
+See `PHASE_19_1_1_SEARCH_COMPILE_HOTFIX.md` and `PHASE_19_1_1_VERIFICATION_REPORT.md`.
+
+---
+
+# DCX Online Store — Phase 19.1 Cumulative Build
+
+> **Phase 19.1 Final Firebase integration:** the supplied Android `google-services.json` is installed and verified for `com.example.ecommerce_mobile`. Normal Android runs auto-initialize Firebase; no Firebase Dart defines are required. Backend FCM sending still requires the private Firebase service-account JSON on DCX Core only.
+
+Version: `1.19.1+60`
+
+Phase 19.1 adds real customer registration with required mobile SMS OTP, Firebase email verification, secure Firebase password-reset email, optional Laravel six-digit email OTP, FCM push notification registration and Firebase-aware account security. DCX Core remains the authoritative commerce/customer backend and Phase 19.0 real-time Admin-controlled products/prices/images/promotions/banners/settings remain preserved.
+
+See `PHASE_19_1_VERIFIED_CUSTOMER_IDENTITY_PUSH.md`, `FIREBASE_SETUP.md`, and `PHASE_19_1_VERIFICATION_REPORT.md`.
+
+---
+
+# DCX Online Store — Phase 19.0 Cumulative Build
+
+Version: `1.19.0+59`
+
+Phase 19.0 replaces hard-coded storefront presentation with a server-authoritative, cached live storefront supplied by DCX Core. Products, pricing, stock, images, categories, promotions, banners, home section copy, store settings, support contacts and information pages refresh automatically after Admin changes without publishing a new APK. The app performs a lightweight revision poll while active, refreshes when resumed, and keeps the last successful snapshot for temporary offline continuity.
+
+See `PHASE_19_0_REALTIME_ADMIN_STOREFRONT.md` and `PHASE_19_0_VERIFICATION_REPORT.md`.
+
+---
+
+# DCX Online Store — Phase 18.9 Cumulative Build
+
+Version: `1.18.9+58`
+
+Phase 18.9 adds immutable checkout pricing snapshots to every customer order. Each synchronized order now carries product name, checkout unit price, line total, subtotal, discount, delivery fee and final total so DCX Core can reproduce exactly what the customer confirmed even when the server catalog mapping is missing or later changes. It preserves all Phase 18.8 live operations, customer care, account, logout and order-status synchronization.
+
+See `PHASE_18_9_ORDER_AMOUNT_INTEGRITY.md` and `PHASE_18_9_VERIFICATION_REPORT.md`.
+
+---
+
+# DCX Online Store — Phase 18.7 Cumulative Build
+
+Version: `1.18.7+56`
+
+Phase 18.7 is a stability/quality patch on top of Phase 18.6. It removes the remaining `curly_braces_in_flow_control_structures` analyzer findings in the password screen and makes the professional profile logout regression test deterministic by scoping the email assertion to the sign-out card and checking the exact confirmation-sheet message. No customer-facing logout UI was removed or simplified.
+
+The Phase 18.6 Flutter compatibility fix and professional animated admin navigation remain preserved in the cumulative full-system package.
+
+See `PHASE_18_7_ANALYZER_TEST_STABILITY_FIX.md` and `PHASE_18_7_VERIFICATION_REPORT.md`.
+
+---
+
+# DCX Online Store — Phase 18.5 Cumulative Build
+
+Version: `1.18.5+54`
+
+Phase 18.5 preserves Phase 18.4 secure logout and Phase 18.3 mobile-to-admin order synchronization, then adds professional customer account management inside Profile: editable personal details, authoritative backend profile loading/saving, secure password changes, live password-strength guidance, validation feedback, immediate session identity refresh, and other-device token revocation through DCX Core.
+
+See `PHASE_18_5_PROFESSIONAL_ACCOUNT_MANAGEMENT.md` and `PHASE_18_5_VERIFICATION_REPORT.md`.
+
+## Previous Phase 18.4 — Professional Profile Logout
+
+Phase 18.4 added the secure logout card, confirmation bottom sheet, Laravel token revocation, local session cleanup and clean navigation back to Login.
+
+# DCX Online Store — Phase 16 Cumulative Build
+
+Version: `1.16.0+50`
+
+Phase 16 adds a versioned local customer-session snapshot so cart contents, applied promotions, wishlist selections, notification read/preferences state, support activity and customer-created orders can resume after a normal app restart. Saved addresses and appearance continue using their existing dedicated persistence stores.
+
+The app hydrates this snapshot in the background while the premium launch experience is running and saves it when the app becomes inactive/hidden/paused/detached. Profile also includes a compact **Shopping continuity** card with a manual **Save now** action. The persistence layer is injectable so widget/unit tests can use deterministic in-memory storage instead of platform plugins.
+
+See `PHASE_16_PERSISTENT_CUSTOMER_STATE.md`, `PHASE_16_CODE_INDEX.md`, and `PHASE_16_VERIFICATION_REPORT.md`.
 
 ## Phase 15.1 — Geocoding 5.x compatibility
 
@@ -183,3 +270,11 @@ Order Confirmation now includes a responsive commercial-app footer with trust in
 
 ## Phase 14.3 — Order Confirmation Scrollable Test Fix
 Fixes the Flutter test `_TypeError` caused by passing a `ListView` finder to `WidgetTester.scrollUntilVisible`. The test now resolves the ListView's internal `Scrollable` descendant before scrolling to the premium footer. Production UI is unchanged. Version 1.14.3+47.
+
+## Phase 17 — Production API Foundation & Sync Readiness
+
+Phase 17 adds an offline-first API boundary, in-memory authenticated session handling, environment-driven remote configuration and a new Profile → Data & sync experience. The app remains fully functional in local demo mode by default. See `PHASE_17_API_SETUP.md` before enabling a real backend.
+
+## Phase 19.1.3 hotfix
+
+Phase 19.1.3 removes the remaining reported flow-control analyzer findings from the new storefront/Firebase registration code without suppressing lint rules. See `PHASE_19_1_3_ANALYZER_FLOW_CONTROL_CLEAN.md` and `PHASE_19_1_3_VERIFICATION_REPORT.md`.

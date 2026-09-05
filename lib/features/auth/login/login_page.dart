@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/design_system/app_tokens.dart';
+import '../../../core/firebase/firebase_error_message.dart';
 import '../../../core/navigation/app_page_route.dart';
+import '../../../core/network/api_models.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/fade_slide_in.dart';
@@ -17,11 +19,11 @@ import '../widgets/primary_button.dart';
 import '../widgets/social_login_button.dart';
 
 class LoginPage extends StatefulWidget {
-  final AuthService authService;
+  final AuthService? authService;
 
   const LoginPage({
     super.key,
-    this.authService = const MockAuthService(),
+    this.authService,
   });
 
   @override
@@ -61,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _loading = true);
 
     try {
-      await widget.authService.login(
+      await (widget.authService ?? AuthServiceFactory.create()).login(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         rememberMe: _rememberMe,
@@ -69,10 +71,10 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!mounted) return;
       _openStore();
-    } catch (_) {
+    } catch (error) {
       if (!mounted) return;
       setState(() => _loading = false);
-      _showFriendlyError();
+      _showFriendlyError(error);
     }
   }
 
@@ -84,13 +86,14 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _socialLoadingProvider = provider);
 
     try {
-      await widget.authService.loginWithProvider(provider);
+      await (widget.authService ?? AuthServiceFactory.create())
+          .loginWithProvider(provider);
       if (!mounted) return;
       _openStore();
-    } catch (_) {
+    } catch (error) {
       if (!mounted) return;
       setState(() => _socialLoadingProvider = null);
-      _showFriendlyError();
+      _showFriendlyError(error);
     }
   }
 
@@ -101,15 +104,14 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _showFriendlyError() {
+  void _showFriendlyError(Object error) {
+    final message = error is ApiException
+        ? error.message
+        : firebaseErrorMessage(error);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        const SnackBar(
-          content: Text(
-            'We could not sign you in. Please check your details and try again.',
-          ),
-        ),
+        SnackBar(content: Text(message)),
       );
   }
 

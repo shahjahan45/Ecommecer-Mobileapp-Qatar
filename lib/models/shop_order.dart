@@ -14,14 +14,16 @@ class ShopOrderItem {
   final Product product;
   final int quantity;
   final String? variant;
+  final double unitPrice;
 
-  const ShopOrderItem({
+  ShopOrderItem({
     required this.product,
     required this.quantity,
     this.variant,
-  });
+    double? unitPrice,
+  }) : unitPrice = unitPrice ?? product.price;
 
-  double get lineTotal => product.price * quantity;
+  double get lineTotal => unitPrice * quantity;
 }
 
 class ShippingEvent {

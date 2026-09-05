@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../../core/design_system/app_tokens.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/storefront/storefront_controller.dart';
 import '../../core/widgets/app_pressable.dart';
 import '../../core/widgets/empty_state_card.dart';
-import '../../data/demo_catalog.dart';
 import '../../models/product.dart';
 import '../../widgets/product_card.dart';
 import '../cart/cart_controller.dart';
@@ -42,6 +42,7 @@ class ProductListingPage extends StatefulWidget {
 }
 
 class _ProductListingPageState extends State<ProductListingPage> {
+  final StorefrontController _storefront = StorefrontController.instance;
   bool _gridView = true;
   ProductSort _sort = ProductSort.featured;
   ProductFilter _filter = const ProductFilter();
@@ -53,10 +54,22 @@ class _ProductListingPageState extends State<ProductListingPage> {
     super.initState();
     _query = widget.searchQuery?.trim() ?? '';
     _subcategory = widget.subcategoryName;
+    _storefront.addListener(_handleStorefrontChanged);
+    _storefront.start();
+  }
+
+  @override
+  void dispose() {
+    _storefront.removeListener(_handleStorefrontChanged);
+    super.dispose();
+  }
+
+  void _handleStorefrontChanged() {
+    if (mounted) setState(() {});
   }
 
   List<Product> get _visibleProducts {
-    var items = DemoCatalog.products.where((product) {
+    var items = _storefront.products.where((product) {
       if (widget.categoryName != null && product.category != widget.categoryName) {
         return false;
       }
@@ -137,7 +150,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     final products = _visibleProducts;
     final category = widget.categoryName == null
         ? null
-        : DemoCatalog.categories.where((item) => item.name == widget.categoryName).firstOrNull;
+        : _storefront.categories.where((item) => item.name == widget.categoryName).firstOrNull;
 
     return Scaffold(
       appBar: AppBar(

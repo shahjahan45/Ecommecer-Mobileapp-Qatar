@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../core/navigation/app_page_route.dart';
+import '../../core/network/api_environment.dart';
+import '../../core/network/session_controller.dart';
+import '../../core/persistence/customer_session_persistence.dart';
+import '../../core/sync/cloud_sync_controller.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/dcx_mobile_footer.dart';
 import '../../data/demo_orders.dart';
@@ -13,12 +17,16 @@ import '../wishlist/wishlist_page.dart';
 import 'account_security_page.dart';
 import 'appearance_page.dart';
 import 'app_information_page.dart';
+import 'data_sync_page.dart';
 import 'address_book_page.dart';
 import 'help_support_page.dart';
 import 'payment_methods_page.dart';
+import 'personal_details_page.dart';
 import 'widgets/account_hero_card.dart';
 import 'widgets/account_menu_section.dart';
 import 'widgets/account_quick_action.dart';
+import 'widgets/account_sign_out_card.dart';
+import 'widgets/shopping_continuity_card.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -31,6 +39,9 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final wishlist = WishlistController.instance;
     final notifications = NotificationController.instance;
+    final sessionPersistence = CustomerSessionPersistence.instance;
+    final syncController = CloudSyncController.instance;
+    final session = SessionController.instance;
 
     return Scaffold(
       appBar: AppBar(
@@ -46,7 +57,13 @@ class ProfilePage extends StatelessWidget {
         top: false,
         bottom: false,
         child: AnimatedBuilder(
-          animation: Listenable.merge([wishlist, notifications]),
+          animation: Listenable.merge([
+            wishlist,
+            notifications,
+            sessionPersistence,
+            syncController,
+            session,
+          ]),
           builder: (context, child) {
             final activeOrders = DemoOrders.orders.where((order) => order.isActive).length;
             return LayoutBuilder(
@@ -133,6 +150,18 @@ class ProfilePage extends StatelessWidget {
                                   title: 'Account & checkout',
                                   items: [
                                     AccountMenuItem(
+                                      actionKey: const Key('profile-personal-details-action'),
+                                      icon: Icons.person_outline_rounded,
+                                      title: 'Personal details',
+                                      subtitle: session.isAuthenticated
+                                          ? (session.email ?? 'Manage your customer information')
+                                          : 'Sign in to manage your customer information',
+                                      color: AppColors.primary,
+                                      softColor: AppColors.primarySoft,
+                                      trailingLabel: session.isAuthenticated ? 'Edit' : null,
+                                      onTap: () => _open(context, const PersonalDetailsPage()),
+                                    ),
+                                    AccountMenuItem(
                                       icon: Icons.location_on_outlined,
                                       title: 'Delivery addresses',
                                       subtitle: 'Manage addresses used for checkout',
@@ -151,7 +180,7 @@ class ProfilePage extends StatelessWidget {
                                     AccountMenuItem(
                                       icon: Icons.shield_outlined,
                                       title: 'Security & privacy',
-                                      subtitle: 'Review how your account is protected',
+                                      subtitle: 'Change password and manage session protection',
                                       color: AppColors.primary,
                                       softColor: AppColors.primarySoft,
                                       onTap: () => _open(context, const AccountSecurityPage()),
@@ -164,6 +193,20 @@ class ProfilePage extends StatelessWidget {
                                       color: AppColors.secondary,
                                       softColor: AppColors.secondarySoft,
                                       onTap: () => _open(context, const AppearancePage()),
+                                    ),
+                                    AccountMenuItem(
+                                      actionKey: const Key('profile-data-sync-action'),
+                                      icon: Icons.cloud_sync_outlined,
+                                      title: 'Data & sync',
+                                      subtitle: ApiEnvironment.isRemoteConfigured
+                                          ? 'Secure API session and cloud continuity'
+                                          : 'Local continuity and backend readiness',
+                                      color: AppColors.info,
+                                      softColor: AppColors.infoSoft,
+                                      trailingLabel: ApiEnvironment.isRemoteConfigured
+                                          ? (session.isAuthenticated ? 'Ready' : 'Sign in')
+                                          : 'Local',
+                                      onTap: () => _open(context, const DataSyncPage()),
                                     ),
                                   ],
                                 ),
@@ -182,6 +225,12 @@ class ProfilePage extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 24),
+                                const AccountSignOutCard(),
+                                const SizedBox(height: 18),
+                                ShoppingContinuityCard(
+                                  persistence: sessionPersistence,
+                                ),
+                                const SizedBox(height: 18),
                                 DcxMobileFooter(
                                   onHelp: () => _open(context, const HelpSupportPage()),
                                   onContact: () => _open(context, const HelpSupportPage()),

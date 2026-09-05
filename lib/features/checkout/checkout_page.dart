@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/design_system/app_tokens.dart';
 import '../../core/navigation/app_page_route.dart';
+import '../../core/network/api_environment.dart';
+import '../../core/network/session_controller.dart';
+import '../../core/storefront/storefront_controller.dart';
+import '../../core/sync/cloud_sync_controller.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/payment.dart';
 import '../../models/saved_address.dart';
@@ -304,6 +308,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _reviewOrder() async {
+    if (ApiEnvironment.isRemoteConfigured) {
+      await StorefrontController.instance.refresh(force: true);
+      if (!mounted) return;
+      if (_cart.isEmpty) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(
+              content: Text('Your cart changed because the live catalog was updated. Please review it again.'),
+            ),
+          );
+        return;
+      }
+    }
+
     if (_deliveryAddress == null) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
@@ -412,6 +431,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final address = _deliveryAddress;
     if (address == null || _cart.isEmpty || _paymentFlow.isProcessing) return;
 
+    if (ApiEnvironment.isRemoteConfigured &&
+        (!SessionController.instance.isAuthenticated ||
+            SessionController.instance.bearerToken == null)) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Please sign in to your DCX customer account before placing an online order.',
+            ),
+          ),
+        );
+      return;
+    }
+
     final payment = await _paymentFlow.authorize(amount: _cart.total);
     if (!mounted) return;
 
@@ -431,9 +465,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
       payment: payment,
     );
 
+    bool? cloudSynced;
+    String? cloudSyncMessage;
+    if (ApiEnvironment.isRemoteConfigured) {
+      final syncController = CloudSyncController.instance;
+      await syncController.syncNow();
+      cloudSynced = syncController.state == CloudSyncState.success;
+      cloudSyncMessage = cloudSynced
+          ? 'Order synced with DCX Core and is available in the admin dashboard.'
+          : syncController.lastError ??
+              'The order is saved safely on this device and is waiting for server sync.';
+    }
+
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
-      AppPageRoute(page: OrderConfirmationPage(order: order)),
+      AppPageRoute(
+        page: OrderConfirmationPage(
+          order: order,
+          cloudSynced: cloudSynced,
+          cloudSyncMessage: cloudSyncMessage,
+        ),
+      ),
     );
   }
 

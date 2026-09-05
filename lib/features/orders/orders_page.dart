@@ -7,6 +7,7 @@ import '../../core/widgets/empty_state_card.dart';
 import '../../data/demo_orders.dart';
 import '../../models/shop_order.dart';
 import '../cart/cart_controller.dart';
+import 'order_remote_sync_controller.dart';
 import 'order_details_page.dart';
 import 'widgets/order_card.dart';
 
@@ -21,6 +22,12 @@ class _OrdersPageState extends State<OrdersPage> {
   final TextEditingController _searchController = TextEditingController();
   _OrderFilter _filter = _OrderFilter.all;
   String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshOrders());
+  }
 
   @override
   void dispose() {
@@ -38,8 +45,12 @@ class _OrdersPageState extends State<OrdersPage> {
         _OrderFilter.delivered => order.isDelivered,
         _OrderFilter.cancelled => order.isCancelled,
       };
-      if (!matchesFilter) return false;
-      if (query.isEmpty) return true;
+      if (!matchesFilter) {
+        return false;
+      }
+      if (query.isEmpty) {
+        return true;
+      }
 
       final searchable = <String>[
         order.id,
@@ -59,6 +70,13 @@ class _OrdersPageState extends State<OrdersPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My orders'),
+        actions: [
+          IconButton(
+            tooltip: 'Refresh order status',
+            onPressed: _refreshOrders,
+            icon: const Icon(Icons.sync_rounded),
+          ),
+        ],
       ),
       body: SafeArea(
         top: false,
@@ -67,9 +85,11 @@ class _OrdersPageState extends State<OrdersPage> {
             final horizontal = constraints.maxWidth < 380 ? 16.0 : 20.0;
             final bottomPadding = MediaQuery.paddingOf(context).bottom + 24;
 
-            return CustomScrollView(
+            return RefreshIndicator(
+              onRefresh: _refreshOrders,
+              child: CustomScrollView(
               key: const PageStorageKey<String>('orders-scroll'),
-              physics: const ClampingScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(parent: ClampingScrollPhysics()),
               slivers: [
                 SliverPadding(
                   padding: EdgeInsets.fromLTRB(horizontal, 8, horizontal, 0),
@@ -181,11 +201,26 @@ class _OrdersPageState extends State<OrdersPage> {
                     ),
                   ),
               ],
+            ),
             );
           },
         ),
       ),
     );
+  }
+
+  Future<void> _refreshOrders() async {
+    await OrderRemoteSyncController.instance.refresh();
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
+    final error = OrderRemoteSyncController.instance.lastError;
+    if (error != null) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(error)));
+    }
   }
 
   void _openOrder(ShopOrder order) {
@@ -205,7 +240,9 @@ class _OrdersPageState extends State<OrdersPage> {
         quantity: item.quantity,
         variant: item.variant,
       );
-      if (after > before) updatedLines++;
+      if (after > before) {
+        updatedLines++;
+      }
     }
 
     ScaffoldMessenger.of(context)
